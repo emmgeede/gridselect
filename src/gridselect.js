@@ -256,8 +256,6 @@ function createPanel(wrapper, radios, opts) {
       else if (pos > 0) contains.push(i);
     });
     const all = items.map((_, i) => i);
-    const count = starts.length + contains.length;
-    status.textContent = !query ? "" : count ? String(resultsText(count)) : empty.textContent;
     if (highlight) {
       const firstMatch = all.find((i) => keys[i].includes(query));
       items.forEach((item, i) => {
@@ -267,14 +265,17 @@ function createPanel(wrapper, radios, opts) {
       order = all;
       if (!query) cursorToSelection();
       else if (firstMatch !== undefined) setCursor(firstMatch);
-      return;
+    } else {
+      order = query ? [...starts, ...contains] : all;
+      items.forEach((item, i) => (item.hidden = !order.includes(i)));
+      list.append(...order.map((i) => items[i]));
+      empty.hidden = !query || order.length > 0;
+      if (query) setCursor(0);
+      else cursorToSelection();
     }
-    order = query ? [...starts, ...contains] : all;
-    items.forEach((item, i) => (item.hidden = !order.includes(i)));
-    list.append(...order.map((i) => items[i]));
-    empty.hidden = !query || order.length > 0;
-    if (query) setCursor(0);
-    else cursorToSelection();
+    // Last, so a throwing resultsText from the page cannot stop the filtering above.
+    const count = starts.length + contains.length;
+    status.textContent = !query ? "" : count ? String(resultsText(count)) : empty.textContent;
   }
   search.addEventListener("input", applyQuery);
 
