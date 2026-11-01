@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 // F3 edge cases, added during saas-qa F3.
 import { describe, it, expect, beforeEach } from "vitest";
-import { gridselect } from "gridselect";
+import { gridselect } from "@emmgeede/gridselect";
 
 function setup(labels, { options, checked = -1, disabled = [] } = {}) {
   const rows = labels.map((l, i) =>

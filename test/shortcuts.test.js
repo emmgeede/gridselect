@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 // F4: digit shortcuts. See docs/features/F4-ziffernwahl/spec.md.
 import { describe, it, expect, beforeEach } from "vitest";
-import { gridselect } from "gridselect";
+import { gridselect } from "@emmgeede/gridselect";
 
 /** Flat group of n inputs (radio or checkbox), labels "L0".."Ln-1". */
 function flat(n, { type = "radio", options, labelHtml = () => "", noLabel = [], wrapperAttrs = "" } = {}) {

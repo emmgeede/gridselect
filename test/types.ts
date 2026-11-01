@@ -1,5 +1,5 @@
 // Type check only (npm run test:types), never executed.
-import { gridselect } from "gridselect";
+import { gridselect } from "@emmgeede/gridselect";
 
 const gs = gridselect(document.createElement("fieldset"));
 const v: string | string[] | null = gs.value;

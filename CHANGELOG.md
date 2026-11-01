@@ -12,6 +12,15 @@ and breaking changes need a new major version.
 
 ## [Unreleased]
 
+## [0.7.1] - 2026-11-01
+
+### Changed
+
+- Published on npm as `@emmgeede/gridselect`: npm rejected the plain name
+  `gridselect` as too similar to an existing package. Imports are now
+  `@emmgeede/gridselect` and `@emmgeede/gridselect/gridselect.css`. 0.7.0 was
+  tagged but never published.
+
 ## [0.7.0] - 2026-11-01
 
 ### Added
@@ -128,7 +137,8 @@ and breaking changes need a new major version.
   radios with different names. Warning for duplicate values.
 - TypeScript declarations generated from JSDoc.
 
-[Unreleased]: https://github.com/emmgeede/gridselect/compare/v0.7.0...HEAD
+[Unreleased]: https://github.com/emmgeede/gridselect/compare/v0.7.1...HEAD
+[0.7.1]: https://github.com/emmgeede/gridselect/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/emmgeede/gridselect/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/emmgeede/gridselect/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/emmgeede/gridselect/compare/v0.4.0...v0.5.0

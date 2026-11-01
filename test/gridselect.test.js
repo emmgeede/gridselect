@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { gridselect } from "gridselect";
+import { gridselect } from "@emmgeede/gridselect";
 
 function mount(html) {
   document.body.innerHTML = `<fieldset data-gridselect>${html}</fieldset>`;

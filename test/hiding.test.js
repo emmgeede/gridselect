@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 // Hiding must survive page CSS that sets `display` (found in the playground after F3).
 import { describe, it, expect, beforeEach } from "vitest";
-import { gridselect } from "gridselect";
+import { gridselect } from "@emmgeede/gridselect";
 
 const css = `<style>
   label { display: inline-flex; }

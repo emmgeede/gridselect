@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 // F2: grid panel above the threshold. See docs/features/F2-grid-panel/spec.md.
 import { describe, it, expect, beforeEach } from "vitest";
-import { gridselect } from "gridselect";
+import { gridselect } from "@emmgeede/gridselect";
 
 const names = ["Euro", "Franc", "Dollar", "Pound", "Yen", "Krone", "Zloty", "Forint", "Lira", "Real", "Rand", "Peso"];
 

@@ -1,9 +1,9 @@
 # GridSelect
 
-[![npm version](https://img.shields.io/npm/v/gridselect)](https://www.npmjs.com/package/gridselect)
+[![npm version](https://img.shields.io/npm/v/@emmgeede/gridselect)](https://www.npmjs.com/package/@emmgeede/gridselect)
 [![CI](https://github.com/emmgeede/gridselect/actions/workflows/ci.yml/badge.svg)](https://github.com/emmgeede/gridselect/actions/workflows/ci.yml)
 [![Accessibility](https://github.com/emmgeede/gridselect/actions/workflows/accessibility.yml/badge.svg)](https://github.com/emmgeede/gridselect/actions/workflows/accessibility.yml)
-[![Bundle size](https://img.shields.io/bundlejs/size/gridselect)](https://bundlejs.com/?q=gridselect)
+[![Bundle size](https://img.shields.io/bundlejs/size/@emmgeede/gridselect)](https://bundlejs.com/?q=@emmgeede/gridselect)
 [![License: MIT](https://img.shields.io/github/license/emmgeede/gridselect)](LICENSE)
 
 A dependency-free JavaScript component for picking from a list of choices.
@@ -33,7 +33,9 @@ everything still works without JavaScript.
   <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/highlight-light.png" width="656" alt="Highlight mode: all currencies stay in place, the two krone entries are shown in bold teal, the others dimmed, digit badges switch to S1, S2 for the second tier.">
 </picture>
 
-**Status:** version 0.7.0, early development, about to be published on npm. Versions
+**Status:** version 0.7.1, early development. Published on npm as
+`@emmgeede/gridselect`, because npm treats the plain name `gridselect` as too
+similar to an older package. Versions
 follow [Semantic Versioning](https://semver.org/). See
 [Features](#features) for what works today and [CHANGELOG.md](CHANGELOG.md)
 for what changed.
@@ -73,7 +75,7 @@ for what changed.
 ```
 
 ```js
-import { gridselect } from "gridselect";
+import { gridselect } from "@emmgeede/gridselect";
 
 const gs = gridselect(document.querySelector("[data-gridselect]"));
 gs.value;           // "EUR"
@@ -266,7 +268,7 @@ GridSelect works without any CSS of ours. For a ready look, include the
 optional stylesheet:
 
 ```js
-import "gridselect/gridselect.css";
+import "@emmgeede/gridselect/gridselect.css";
 ```
 
 or `<link rel="stylesheet" href="…/gridselect/src/gridselect.css">` from a
@@ -418,25 +420,24 @@ come.
 ## Installation
 
 ```sh
-npm install gridselect
+npm install @emmgeede/gridselect
 ```
 
 ```js
-import { gridselect } from "gridselect";
-import "gridselect/gridselect.css"; // optional
+import { gridselect } from "@emmgeede/gridselect";
+import "@emmgeede/gridselect/gridselect.css"; // optional
 ```
 
 Without a bundler, from a CDN (`window.gridselect`):
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gridselect@0/src/gridselect.css">
-<script src="https://cdn.jsdelivr.net/npm/gridselect@0/dist/gridselect.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@emmgeede/gridselect@0/src/gridselect.css">
+<script src="https://cdn.jsdelivr.net/npm/@emmgeede/gridselect@0/dist/gridselect.min.js"></script>
 <script>
   document.querySelectorAll("[data-gridselect]").forEach((el) => gridselect(el));
 </script>
 ```
 
-The package is not on npm yet, these lines work from the first release on.
 
 ## Browser support
 

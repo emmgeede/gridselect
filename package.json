@@ -1,6 +1,6 @@
 {
-  "name": "gridselect",
-  "version": "0.7.0",
+  "name": "@emmgeede/gridselect",
+  "version": "0.7.1",
   "description": "Dependency-free select component: chips for short lists, a searchable grid for long ones.",
   "license": "MIT",
   "author": "Michael Grossklos",
@@ -58,5 +58,8 @@
     "no-dependencies"
   ],
   "homepage": "https://emmgeede.github.io/gridselect/",
-  "bugs": "https://github.com/emmgeede/gridselect/issues"
+  "bugs": "https://github.com/emmgeede/gridselect/issues",
+  "publishConfig": {
+    "access": "public"
+  }
 }

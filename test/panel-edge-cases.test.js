@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 // F2 edge cases and QA checks, added during saas-qa F2.
 import { describe, it, expect, beforeEach } from "vitest";
-import { gridselect } from "gridselect";
+import { gridselect } from "@emmgeede/gridselect";
 
 const rows = (n, name = "cur", extra = (i) => "") =>
   Array.from({ length: n }, (_, i) => `<label${extra(i)}><input type="radio" name="${name}" value="v${i}"> L${i}</label>`).join("");

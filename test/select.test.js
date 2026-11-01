@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 // F5: <select> as source. See docs/features/F5-select-quelle/spec.md.
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { gridselect } from "gridselect";
+import { gridselect } from "@emmgeede/gridselect";
 
 /** Wrapper with a select; `opts` html strings, e.g. ['<option value="a">A</option>']. */
 function setup(opts, { selectAttrs = "", before = "", wrapper = '<fieldset id="w"><legend>Currency</legend>', end = "</fieldset>", options } = {}) {

@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 // Edge cases from docs/features/F1-kern/spec.md, added during saas-qa F1.
 import { describe, it, expect, beforeEach } from "vitest";
-import { gridselect } from "gridselect";
+import { gridselect } from "@emmgeede/gridselect";
 
 beforeEach(() => {
   document.body.innerHTML = "";

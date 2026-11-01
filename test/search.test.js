@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 // F3: search modes. See docs/features/F3-suchmodi/spec.md.
 import { describe, it, expect, beforeEach } from "vitest";
-import { gridselect } from "gridselect";
+import { gridselect } from "@emmgeede/gridselect";
 
 const labels = ["Euro", "Schweizer Franken", "US-Dollar", "Pfund", "Yen", "Dänische Krone",
   "Złoty", "Forint", "Lira", "Real", "Rand", "Kanadischer Dollar"];
