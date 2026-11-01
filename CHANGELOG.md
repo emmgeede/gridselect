@@ -34,6 +34,19 @@ All notable changes to GridSelect. The format follows
 - Picking in the panel checks the native radio and fires `input` and
   `change`. Form submit, reset, `required` and `disabled` keep working.
 
+- Digit shortcuts, option `shortcuts` / `data-shortcuts="off"`: 1 to 9 and
+  0 pick ten entries per tier, tiers default to `["", "Shift", "Alt"]` and
+  take any combination of `Shift`, `Alt`, `Control`, `Meta`. A digit badge
+  (`[data-gridselect-key]`) is added to each label and panel item, or an
+  existing one in the label is used. Inputs and items get `aria-keyshortcuts`.
+
 ### Changed
 
 - Entries are called "items" (was "chips" during development).
+- With digit shortcuts on (the default) GridSelect adds the digit badges to
+  your labels. `destroy()` removes them again.
+
+### Fixed
+
+- Hidden native labels, the closed panel and filtered-out items stay hidden
+  even when the page CSS sets `display` on them.

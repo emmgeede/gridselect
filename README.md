@@ -96,6 +96,7 @@ value wins, for checkboxes all of them are set.
 | `search` | `data-search` | `"filter"` | `"filter"` hides non-matches, `"highlight"` keeps every item in place and marks matches |
 | `noResultsText` | | `"No matches"` | Hint (filter mode) and announcement when nothing matches |
 | `resultsText` | | `n => n === 1 ? "1 result" : n + " results"` | Screen reader announcement of the match count. A function, so plural rules of any language fit |
+| `shortcuts` | `data-shortcuts="off"` | `["", "Shift", "Alt"]` | Digit key tiers, see [Digit shortcuts](#digit-shortcuts). `false` turns them off |
 
 JS options win over data attributes. Invalid values fall back to the default.
 
@@ -179,8 +180,8 @@ Types ship with the package, no `@types` package needed.
 
 ## Keyboard
 
-Up to the threshold everything is native, GridSelect does not intercept any
-key. Radios: Tab enters and leaves the group, arrow keys move and select.
+Up to the threshold the keys are native, GridSelect only adds digits (see
+below). Radios: Tab enters and leaves the group, arrow keys move and select.
 Checkboxes: each checkbox is a Tab stop, Space toggles.
 
 Above the threshold:
@@ -193,6 +194,37 @@ Above the threshold:
 | Panel | Enter, click on an item | Pick it and close |
 | Panel | Escape | Close without change, focus back on the field |
 | Panel | Tab, Shift+Tab, click outside | Close without change, focus moves on as usual |
+| Panel | Digit (per tier) | Pick that item and close |
+
+### Digit shortcuts
+
+Every entry gets a digit: 1 to 9 and 0 pick the first ten, the next tier
+(Shift by default) the next ten, then Alt. Below the threshold the digits
+work while the focus is in the group (a radio gets checked and focused, a
+checkbox toggles). In the panel they always pick and are never typed into
+the search; in `filter` mode the visible matches are renumbered from 1, in
+`highlight` mode the numbers stay put.
+
+```js
+gridselect(el, { shortcuts: ["", "Shift", "Alt"] });      // default
+gridselect(el, { shortcuts: ["Alt", "Control+Shift"] });  // plain digits stay free
+gridselect(el, { shortcuts: false });                     // off
+```
+
+Tiers use `Shift`, `Alt`, `Control` and `Meta`, joined with `+`, and must
+match exactly. The key's position counts, not the character, so Shift+1
+works on every keyboard layout, and the number pad works too. Careful:
+Ctrl+digit and Cmd+digit switch browser tabs, Alt opens menus on Windows.
+Labels with numbers (postcodes, years)? Use tiers without `""` or turn the
+digits off, so numbers can be typed into the search.
+
+GridSelect puts a `<span data-gridselect-key class="gridselect__key">` with
+the digit at the start of each label (and of each panel item), marked
+`aria-hidden` because the input gets `aria-keyshortcuts` instead. The tier is
+in `data-modifiers`, so CSS can show a symbol for it. Want the digit
+somewhere else or in your own form? Put an element with `data-gridselect-key`
+into the label yourself: GridSelect fills it when it is empty and leaves it
+alone when it has content. `destroy()` removes everything it added.
 
 ## Features
 
@@ -201,7 +233,7 @@ Above the threshold:
 | Radio and checkbox groups, `value`, `destroy()`, TypeScript types | available |
 | Grid panel above a configurable threshold (default 10), grid or list layout | available |
 | Search modes `filter` (default) and `highlight` | available |
-| Digit shortcuts with configurable modifier tiers | planned |
+| Digit shortcuts with configurable modifier tiers | available |
 | `<select>` as source | planned |
 | Optional stylesheet with CSS variables, light and dark | planned |
 | npm release and demo page | planned |

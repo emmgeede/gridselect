@@ -155,7 +155,7 @@ describe("panel structure", () => {
     const w = radios(11);
     gridselect(w);
     const c = items(w);
-    expect(c.map((x) => x.textContent)).toEqual(names.slice(0, 11));
+    expect(c.map((x) => x.querySelector("[data-gridselect-label]").textContent)).toEqual(names.slice(0, 11));
     expect(c.map((x) => x.dataset.value)).toEqual(Array.from({ length: 11 }, (_, i) => `v${i}`));
     expect(c.every((x) => x.getAttribute("role") === "option" && x.classList.contains("gridselect__item"))).toBe(true);
     expect(new Set(c.map((x) => x.id)).size).toBe(11);
@@ -166,7 +166,7 @@ describe("panel structure", () => {
     document.body.innerHTML = `<div id="w">${Array.from({ length: 11 }, (_, i) => `<input type="radio" name="a" value="x${i}">`).join("")}</div>`;
     const w = document.getElementById("w");
     gridselect(w);
-    expect(items(w)[0].textContent).toBe("x0");
+    expect(items(w)[0].querySelector("[data-gridselect-label]").textContent).toBe("x0");
   });
 
   it("puts label text in as text, never as markup", () => {

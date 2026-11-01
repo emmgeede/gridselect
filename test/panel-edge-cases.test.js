@@ -27,7 +27,7 @@ describe("F2 edge cases", () => {
       `<input type="radio" name="a" value="v${i}" id="r${i}"><label for="r${i}">First ${i}</label><label for="r${i}">Second ${i}</label>`).join("")}</div>`;
     const w = document.getElementById("w");
     gridselect(w);
-    expect(w.querySelector("[data-gridselect-item]").textContent).toBe("First 0");
+    expect(w.querySelector("[data-gridselect-label]").textContent).toBe("First 0");
     expect([...w.querySelectorAll("label")].every((l) => l.hidden)).toBe(true);
   });
 

@@ -20,8 +20,8 @@ function setup({ options, wrapperAttrs = "", checked = -1, columns = "1fr 1fr 1f
 
 const search = (w) => w.querySelector("[data-gridselect-search]");
 const items = (w) => [...w.querySelectorAll("[data-gridselect-item]")];
-const visible = (w) => items(w).filter((i) => !i.hidden).map((i) => i.textContent);
-const cursor = (w) => w.querySelector("[data-cursor]")?.textContent;
+const visible = (w) => items(w).filter((i) => !i.hidden).map((i) => i.querySelector("[data-gridselect-label]").textContent);
+const cursor = (w) => w.querySelector("[data-cursor] [data-gridselect-label]")?.textContent;
 const empty = (w) => w.querySelector("[data-gridselect-empty]");
 const status = (w) => w.querySelector("[data-gridselect-status]");
 
@@ -76,7 +76,7 @@ describe("filter mode", () => {
     type(w, "r");
     expect(visible(w)).toEqual(["Real", "Rand", "Euro", "Schweizer Franken", "US-Dollar",
       "Dänische Krone", "Forint", "Lira", "Kanadischer Dollar"]);
-    const domOrder = items(w).filter((i) => !i.hidden).map((i) => i.textContent);
+    const domOrder = items(w).filter((i) => !i.hidden).map((i) => i.querySelector("[data-gridselect-label]").textContent);
     expect(domOrder).toEqual(visible(w));
   });
 
@@ -101,7 +101,7 @@ describe("filter mode", () => {
 
     ({ w, gs } = setup());
     type(w, "r");
-    items(w).find((i) => i.textContent === "Lira").click();
+    items(w).find((i) => i.querySelector("[data-gridselect-label]").textContent === "Lira").click();
     expect(gs.value).toBe("try");
   });
 
@@ -141,7 +141,7 @@ describe("filter mode", () => {
 
 describe("highlight mode", () => {
   const hl = (extra = {}) => setup({ options: { search: "highlight" }, ...extra });
-  const marked = (w, attr) => items(w).filter((i) => i.hasAttribute(attr)).map((i) => i.textContent);
+  const marked = (w, attr) => items(w).filter((i) => i.hasAttribute(attr)).map((i) => i.querySelector("[data-gridselect-label]").textContent);
 
   it("keeps every item in place and marks matches and non-matches", () => {
     const { w } = hl();

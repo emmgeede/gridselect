@@ -21,3 +21,8 @@ gridselect(document.body, { search: "highlight", noResultsText: "Nichts", result
 gridselect(document.body, { search: "fuzzy" });
 // @ts-expect-error resultsText is a function
 gridselect(document.body, { resultsText: "x" });
+
+gridselect(document.body, { shortcuts: ["", "Shift", "Control+Alt"] });
+gridselect(document.body, { shortcuts: false });
+// @ts-expect-error shortcuts is an array or false
+gridselect(document.body, { shortcuts: true });

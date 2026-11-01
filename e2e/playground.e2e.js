@@ -82,3 +82,30 @@ test("destroy shows the native labels again", async ({ page }) => {
   await page.getByRole("button", { name: "destroy() / re-init" }).click();
   expect(await page.locator("#required > label:visible").count()).toBe(21);
 });
+
+test("digits pick below the threshold, with a visible badge per label", async ({ page }) => {
+  await expect(page.locator("#short > label").nth(2).locator("[data-gridselect-key]")).toHaveText("3");
+  await page.locator("#short input").first().focus();
+  await page.keyboard.press("3");
+  await expect(page.locator("#short input").nth(2)).toBeChecked();
+  await expect(page.locator("#short input").nth(2)).toBeFocused();
+  await expect(page.locator("#log")).toContainText("#short  change  target=USD");
+});
+
+test("Shift+digit uses the event code, not the shifted character", async ({ page }) => {
+  await field(page, "filter").click();
+  await page.keyboard.press("Shift+Digit2");
+  await expect(field(page, "filter")).toHaveText("Turkish lira (TRY)");
+});
+
+test("digits pick in the filtered panel and are never typed", async ({ page }) => {
+  await field(page, "filter").click();
+  await search(page, "filter").fill("dollar");
+  await page.keyboard.press("2");
+  await expect(field(page, "filter")).toHaveText("Canadian dollar (CAD)");
+});
+
+test("digit badges are visible inside the panel items", async ({ page }) => {
+  await field(page, "filter").click();
+  await expect(page.locator("#filter [data-gridselect-item]").first().locator("[data-gridselect-key]")).toBeVisible();
+});

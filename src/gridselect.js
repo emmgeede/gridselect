@@ -119,8 +119,30 @@ export function gridselect(wrapper, options) {
   const fromAttr = attr !== null && /^\d+$/.test(attr) ? Number(attr) : undefined;
   const threshold = isCount(opts.threshold) ? opts.threshold : (fromAttr ?? DEFAULT_THRESHOLD);
   const tiers = parseTiers(opts.shortcuts, wrapper.getAttribute("data-shortcuts"));
-  const ui = !multiple && radios.length > /** @type {number} */ (threshold) ? createPanel(wrapper, [...radios], opts) : null;
+  const ui = !multiple && radios.length > /** @type {number} */ (threshold) ? createPanel(wrapper, [...radios], opts, tiers) : null;
   const flatUndo = ui || !tiers.length ? [] : addKeyElements(inputs(), tiers);
+  if (!ui && tiers.length) {
+    /** Digit keys while the focus is on one of the group's inputs. @param {KeyboardEvent} e */
+    const onKey = (e) => {
+      const list = inputs();
+      if (e.isComposing || !list.includes(/** @type {HTMLInputElement} */ (e.target))) return;
+      const pos = positionOf(tiers, e);
+      if (pos < 0) return;
+      e.preventDefault();
+      const input = list[pos];
+      if (!input || input.matches(":disabled")) return;
+      if (multiple) input.checked = !input.checked;
+      else if (input.checked) return void input.focus();
+      else {
+        input.checked = true;
+        input.focus();
+      }
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+      input.dispatchEvent(new Event("change", { bubbles: true }));
+    };
+    wrapper.addEventListener("keydown", /** @type {EventListener} */ (onKey));
+    flatUndo.push(() => wrapper.removeEventListener("keydown", /** @type {EventListener} */ (onKey)));
+  }
 
   const values = inputs().map((i) => i.value);
   const dupes = [...new Set(values.filter((v, n) => values.indexOf(v) !== n))];
@@ -247,8 +269,9 @@ const fold = (text) => text.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase(
  * @param {Element} wrapper
  * @param {HTMLInputElement[]} radios
  * @param {Options} opts
+ * @param {Tier[]} tiers digit shortcut tiers, empty when off
  */
-function createPanel(wrapper, radios, opts) {
+function createPanel(wrapper, radios, opts, tiers) {
   const doc = wrapper.ownerDocument;
   const placeholder = typeof opts.placeholder === "string" ? opts.placeholder : "Select…";
 
@@ -300,7 +323,14 @@ function createPanel(wrapper, radios, opts) {
     item.id = uniqueId(doc);
     item.setAttribute("role", "option");
     item.dataset.value = radio.value;
-    item.textContent = labelText(radio);
+    if (tiers.length) {
+      const key = create(doc, "span", "key");
+      key.setAttribute("aria-hidden", "true");
+      item.append(key);
+    }
+    const text = create(doc, "span", "label");
+    text.textContent = labelText(radio);
+    item.append(text);
     return item;
   });
   list.append(...items);
@@ -400,11 +430,26 @@ function createPanel(wrapper, radios, opts) {
       if (query) setCursor(0);
       else cursorToSelection();
     }
+    renumber();
     // Last, so a throwing resultsText from the page cannot stop the filtering above.
     const count = starts.length + contains.length;
     status.textContent = !query ? "" : count ? String(resultsText(count)) : empty.textContent;
   }
   search.addEventListener("input", applyQuery);
+
+  // Digits follow the display order: visible matches in filter mode, fixed positions otherwise.
+  function renumber() {
+    if (!tiers.length) return;
+    items.forEach((item, i) => {
+      const pos = order.indexOf(i);
+      const sc = pos < 0 ? null : shortcutAt(tiers, pos);
+      const key = /** @type {HTMLElement} */ (item.firstChild);
+      key.textContent = sc ? sc.digit : "";
+      key.setAttribute("data-modifiers", sc ? sc.tier.name : "");
+      if (sc) item.setAttribute("aria-keyshortcuts", sc.aria);
+      else item.removeAttribute("aria-keyshortcuts");
+    });
+  }
 
   function open() {
     if (!panel.hidden) return;
@@ -471,6 +516,13 @@ function createPanel(wrapper, radios, opts) {
   search.addEventListener("keydown", (e) => {
     // Keys during an IME composition belong to the input method, not to us.
     if (e.isComposing) return;
+    // Tier digits always pick and are never typed, even without a matching item.
+    const pos = tiers.length ? positionOf(tiers, e) : -1;
+    if (pos >= 0) {
+      e.preventDefault();
+      if (order[pos] !== undefined) pick(order[pos]);
+      return;
+    }
     /** @type {Record<string, () => number>} */
     const moves = isList
       ? { ArrowDown: () => 1, ArrowUp: () => -1 }

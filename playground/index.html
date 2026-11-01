@@ -46,10 +46,18 @@
   [data-gridselect] > label:has(:disabled) { opacity: .55; cursor: not-allowed; }
   [data-gridselect] > label > input { position: absolute; opacity: 0; pointer-events: none; }
 
-  /* Digit badge (F4) */
-  .gridselect__key { font-size: .75rem; font-variant-numeric: tabular-nums; color: var(--gs-muted); min-width: 1ch; }
-  .gridselect__key[data-modifiers="Shift"]::before { content: "⇧"; }
-  .gridselect__key[data-modifiers="Alt"]::before { content: "⌥"; }
+  /* Digit badge (F4), Oskar style: round badge at the left edge of the item */
+  .gridselect__key {
+    display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+    min-width: 1.4rem; height: 1.4rem; padding: 0 .3rem; margin-left: -.5rem; border-radius: 999px;
+    background: rgba(0, 45, 90, .10); color: var(--gs-fg);
+    font: 600 .75rem/1 ui-monospace, "JetBrains Mono", monospace; font-variant-numeric: tabular-nums;
+  }
+  :root[data-theme="dark"] .gridselect__key { background: rgba(192, 218, 240, .14); }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .gridselect__key { background: rgba(192, 218, 240, .14); } }
+  [aria-selected="true"] > .gridselect__key, label:has(:checked) > .gridselect__key { background: rgba(0, 0, 0, .15); color: var(--gs-accent-fg); }
+  .gridselect__key[data-modifiers="Shift"]::before { content: "⇧"; font-size: .7rem; margin-right: .1rem; }
+  .gridselect__key[data-modifiers="Alt"]::before { content: "⌥"; font-size: .7rem; margin-right: .1rem; }
   .gridselect__key:empty { display: none; }
 
   /* Above the threshold: field and panel */

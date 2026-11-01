@@ -14,7 +14,7 @@ function setup(labels, { options, checked = -1, disabled = [] } = {}) {
 }
 const many = (n) => Array.from({ length: n }, (_, i) => `Item ${i}`);
 const search = (w) => w.querySelector("[data-gridselect-search]");
-const visible = (w) => [...w.querySelectorAll("[data-gridselect-item]")].filter((i) => !i.hidden).map((i) => i.textContent);
+const visible = (w) => [...w.querySelectorAll("[data-gridselect-item]")].filter((i) => !i.hidden).map((i) => i.querySelector("[data-gridselect-label]").textContent);
 function type(w, text) {
   search(w).value = text;
   search(w).dispatchEvent(new Event("input", { bubbles: true }));
