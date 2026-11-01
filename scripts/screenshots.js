@@ -1,14 +1,11 @@
 // Regenerates the README screenshots in assets/ from the demo page: npm run screenshots
-// Each shot moves one GridSelect onto a "stage" (gradient, padding, rounded corners) and
-// captures it with a transparent page background, so the corners stay round in the PNG.
+// Each shot moves one GridSelect onto a transparent "stage" with a rounded, shadowed card and
+// captures it with a transparent page background, so only the card is opaque in the PNG.
 import { test } from "@playwright/test";
 import { writeFileSync } from "node:fs";
 
-// Light, neutral backdrops in both modes, so the component (light or dark) stands out.
-const STAGE = {
-  light: "linear-gradient(135deg, #d9e0e8 0%, #c5ced9 55%, #c6dcdd 100%)",
-  dark: "linear-gradient(135deg, #c5ced9 0%, #aeb9c7 55%, #b0cbcd 100%)",
-};
+// Transparent around the card, so the image sits on GitHub's own light or dark background.
+const STAGE = { light: "transparent", dark: "transparent" };
 
 /**
  * Puts the wrapper `id` on a stage at the top of the page, runs `act`, then returns a PNG.
@@ -24,7 +21,7 @@ async function shoot(page, scheme, id, act = async () => {}) {
     stage.id = "shot-stage";
     Object.assign(stage.style, {
       position: "absolute", top: "40px", left: "40px", width: "1000px", boxSizing: "border-box",
-      padding: "48px 56px", borderRadius: "28px", background, fontSize: "16px", zIndex: "1000",
+      padding: "24px 32px 40px", background, fontSize: "16px", zIndex: "1000",
     });
     const card = document.createElement("div");
     Object.assign(card.style, {

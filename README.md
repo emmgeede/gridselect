@@ -19,18 +19,18 @@ everything still works without JavaScript.
 **[Try the demo](https://emmgeede.github.io/gridselect/)**
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/filter-dark.png">
-  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/filter-light.png" width="100%" alt="A currency field with its panel open. The search input contains 'dollar' and six matching currencies are shown as numbered items in a four-column grid, the first one outlined as the cursor.">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/filter-dark.png?v=3">
+  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/filter-light.png?v=3" width="100%" alt="A currency field with its panel open. The search input contains 'dollar' and six matching currencies are shown as numbered items in a four-column grid, the first one outlined as the cursor.">
 </picture>
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/short-dark.png">
-  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/short-light.png" width="100%" alt="A short list of four shipping options shown as rounded items with digit badges 1 to 4, the first one selected.">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/short-dark.png?v=3">
+  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/short-light.png?v=3" width="100%" alt="A short list of four shipping options shown as rounded items with digit badges 1 to 4, the first one selected.">
 </picture>
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/highlight-dark.png">
-  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/highlight-light.png" width="100%" alt="Highlight mode: all currencies stay in place, the two krone entries are shown in bold teal, the others dimmed, digit badges switch to S1, S2 for the second tier.">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/highlight-dark.png?v=3">
+  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/highlight-light.png?v=3" width="100%" alt="Highlight mode: all currencies stay in place, the two krone entries are shown in bold teal, the others dimmed, digit badges switch to S1, S2 for the second tier.">
 </picture>
 
 **Status:** version 0.8.0, early development. Published on npm as
