@@ -32,7 +32,31 @@ gs.value;           // "EUR"
 gs.value = "CHF";   // checks the CHF radio, fires no event
 ```
 
-Several at once:
+### Reacting to changes
+
+GridSelect keeps your inputs as the source of truth. Whenever the user picks
+something, by clicking an input, using the keyboard or choosing an item in
+the panel, GridSelect sets `checked` on the native input and the browser's
+own `input` and `change` events fire on it. Both bubble, so one listener on
+the wrapper covers the whole group:
+
+```js
+const wrapper = document.querySelector("[data-gridselect]");
+const gs = gridselect(wrapper);
+
+wrapper.addEventListener("change", (event) => {
+  console.log(event.target.value); // the input that changed, e.g. "CHF"
+  console.log(gs.value);           // the whole selection: "CHF", or ["a", "c"] for checkboxes
+});
+```
+
+There is no custom event to learn. Code that already listens to `change` on
+radios or checkboxes, form libraries and frameworks (React `onChange`, Vue
+`v-model` on the inputs) keep working unchanged. Setting `gs.value` from
+code fires no event, just like setting `checked` yourself, and a form
+submit always sends the current selection.
+
+### Several at once
 
 ```js
 document.querySelectorAll("[data-gridselect]").forEach((el) => gridselect(el));
