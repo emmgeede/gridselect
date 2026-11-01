@@ -154,3 +154,13 @@ test("generated radios form one native group: one Tab stop, arrows move and sele
   await page.keyboard.press("Tab");
   await expect(radios.nth(2)).not.toBeFocused();
 });
+
+test("the style button switches to the showcase theme and back", async ({ page }) => {
+  const item = page.locator("#short > label").nth(1);
+  const plain = await item.evaluate((el) => getComputedStyle(el).borderTopColor);
+  await page.locator("#style").click();
+  await expect(page.locator("#style")).toHaveText("Style: showcase");
+  await expect(item).not.toHaveCSS("border-top-color", plain);
+  await page.locator("#style").click();
+  await expect(item).toHaveCSS("border-top-color", plain);
+});

@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>GridSelect Playground</title>
 <link rel="stylesheet" href="../src/gridselect.css">
+<link rel="stylesheet" href="../themes/showcase.css" id="showcase" disabled>
 <style>
   /* Page layout only. Everything GridSelect shows comes from src/gridselect.css. */
   :root { --page-bg: #F5F7FA; --page-fg: #0E1117; --page-card: #FFFFFF; --page-line: #7A8494; --page-muted: #636B78; }
@@ -32,7 +33,10 @@
 <main>
   <header>
     <h1>GridSelect Playground</h1>
-    <button class="plain" id="theme" type="button">Theme: auto</button>
+    <div class="row" style="margin: 0">
+      <button class="plain" id="style" type="button">Style: default</button>
+      <button class="plain" id="theme" type="button">Theme: auto</button>
+    </div>
   </header>
   <p class="note">Loads <code>src/gridselect.js</code> and <code>src/gridselect.css</code> directly, so it always shows the current state.</p>
 
@@ -229,6 +233,19 @@
     setTimeout(() => { init("required"); write("#required  re-initialised"); }, 800);
   });
   document.getElementById("clear").addEventListener("click", () => (log.textContent = ""));
+
+  // Default stylesheet vs. themes/showcase.css; the choice survives a reload.
+  const styleButton = document.getElementById("style");
+  const showcase = document.getElementById("showcase");
+  const applyStyle = (name) => {
+    showcase.disabled = name !== "showcase";
+    styleButton.textContent = `Style: ${name}`;
+    try { localStorage.setItem("gs-style", name); } catch {}
+  };
+  let saved = "default";
+  try { saved = localStorage.getItem("gs-style") ?? "default"; } catch {}
+  applyStyle(saved);
+  styleButton.addEventListener("click", () => applyStyle(showcase.disabled ? "showcase" : "default"));
 
   const themes = ["auto", "light", "dark"];
   const themeButton = document.getElementById("theme");
