@@ -56,11 +56,10 @@ describe("F3 edge cases", () => {
     expect(gs.value).toBe("v3");
   });
 
-  it("filters 200 items per keystroke in well under a frame budget", () => {
+  // Timing lives in e2e/performance.e2e.js: jsdom speed says little about browsers and varies on CI.
+  it("filters 200 items correctly", () => {
     const { w } = setup(many(200));
-    const t = performance.now();
     for (const q of ["i", "it", "ite", "item", "item 1", "item 19", "item 199"]) type(w, q);
-    expect((performance.now() - t) / 7).toBeLessThan(16);
     expect(visible(w)).toEqual(["Item 199"]);
   });
 });

@@ -605,7 +605,8 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen) {
       else if (firstMatch !== undefined) setCursor(firstMatch);
     } else {
       order = query ? [...starts, ...contains] : all;
-      items.forEach((item, i) => setHidden(item, !order.includes(i)));
+      const shown = new Set(order);
+      items.forEach((item, i) => setHidden(item, !shown.has(i)));
       list.append(...order.map((i) => items[i]));
       setHidden(empty, !query || order.length > 0);
       if (query) setCursor(0);
@@ -621,8 +622,11 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen) {
   // Digits follow the display order: visible matches in filter mode, fixed positions otherwise.
   function renumber() {
     if (!tiers.length) return;
+    /** @type {number[]} display position per item, -1 when not shown */
+    const posOf = items.map(() => -1);
+    order.forEach((i, pos) => (posOf[i] = pos));
     items.forEach((item, i) => {
-      const pos = order.indexOf(i);
+      const pos = posOf[i];
       const sc = pos < 0 ? null : shortcutAt(tiers, pos);
       const key = /** @type {HTMLElement} */ (item.firstChild);
       key.textContent = sc ? sc.digit : "";
