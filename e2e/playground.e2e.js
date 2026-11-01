@@ -212,3 +212,13 @@ test("fuzzy matching finds abbreviations and words in any order", async ({ page 
   await page.keyboard.press("Enter");
   await expect(field(page, "fuzzy")).toHaveText("Swiss franc (CHF)");
 });
+
+test("a click next to the field, inside its wrapper, closes the panel", async ({ page }) => {
+  await field(page, "filter").click();
+  await expect(page.locator("#filter [data-gridselect-panel]")).toBeVisible();
+  const wrapper = await page.locator("#filter").boundingBox();
+  const f = await field(page, "filter").boundingBox();
+  await page.mouse.click(Math.min(wrapper.x + wrapper.width - 5, f.x + f.width + 150), f.y + f.height / 2);
+  await expect(page.locator("#filter [data-gridselect-panel]")).toBeHidden();
+  await expect(field(page, "filter")).toHaveText("Swiss franc (CHF)");
+});

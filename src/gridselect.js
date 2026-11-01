@@ -855,9 +855,10 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
     if (refocus) field.focus();
   }
 
-  /** @param {MouseEvent} e */
+  /** Anything but the field and the panel closes, also empty space or the legend inside the wrapper. @param {MouseEvent} e */
   function onOutsideClick(e) {
-    if (!wrapper.contains(/** @type {Node} */ (e.target))) close(false);
+    const target = /** @type {Node} */ (e.target);
+    if (!field.contains(target) && !panel.contains(target)) close(false);
   }
 
   /** Like a user click on the input behind item `index`: radios check and close, checkboxes toggle. */

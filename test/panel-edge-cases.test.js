@@ -189,3 +189,21 @@ describe("scroll container (equal row heights need a list that can grow)", () =>
     expect(w.outerHTML).toBe(before);
   });
 });
+
+describe("outside clicks inside the wrapper (reported 2026-11-01)", () => {
+  it("closes on clicks on the legend or the wrapper itself, but not on the field or in the panel", () => {
+    document.body.innerHTML = `<fieldset id="w"><legend>Currency</legend>${rows(11)}</fieldset>`;
+    const w = document.getElementById("w");
+    gridselect(w);
+    const field = w.querySelector("[data-gridselect-field]");
+    const panel = w.querySelector("[data-gridselect-panel]");
+    field.click();
+    w.querySelector("[data-gridselect-search]").click();
+    expect(panel.hidden).toBe(false);
+    w.querySelector("legend").click();
+    expect(panel.hidden).toBe(true);
+    field.click();
+    w.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    expect(panel.hidden).toBe(true);
+  });
+});

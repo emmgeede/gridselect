@@ -12,6 +12,13 @@ and breaking changes need a new major version.
 
 ## [Unreleased]
 
+## [0.12.1] - 2026-11-01
+
+### Fixed
+
+- A click next to the field (inside its wrapper, e.g. on empty space or the
+  legend) now closes the open panel, like any other click outside.
+
 ### Changed
 
 - The demo shows both panel layouts, the auto-width grid and the flow layout.
@@ -236,7 +243,8 @@ and breaking changes need a new major version.
   radios with different names. Warning for duplicate values.
 - TypeScript declarations generated from JSDoc.
 
-[Unreleased]: https://github.com/emmgeede/gridselect/compare/v0.12.0...HEAD
+[Unreleased]: https://github.com/emmgeede/gridselect/compare/v0.12.1...HEAD
+[0.12.1]: https://github.com/emmgeede/gridselect/compare/v0.12.0...v0.12.1
 [0.12.0]: https://github.com/emmgeede/gridselect/compare/v0.11.0...v0.12.0
 [0.11.0]: https://github.com/emmgeede/gridselect/compare/v0.10.0...v0.11.0
 [0.10.0]: https://github.com/emmgeede/gridselect/compare/v0.9.0...v0.10.0
