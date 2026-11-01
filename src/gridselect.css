@@ -1,0 +1,322 @@
+/*
+ * GridSelect default stylesheet.
+ * Everything sits in @layer gridselect, so any rule of your own wins without !important.
+ * Change the look through the --gs-* variables on :root, on a wrapper, or on any ancestor.
+ * Colours and contrast ratios: see the README. Force a mode with data-theme="light|dark"
+ * on any ancestor, otherwise prefers-color-scheme decides.
+ */
+@layer gridselect {
+  :root,
+  [data-theme="light"] {
+    --gs-bg: #ffffff;
+    --gs-item-bg: #f5f7fa;
+    --gs-fg: #0e1117;
+    --gs-muted: #636b78;
+    --gs-border: #7a8494;
+    --gs-accent: #03a2a5;
+    --gs-accent-fg: #0e1117;
+    --gs-accent-text: #00787b;
+    --gs-key-bg: #dce6ec;
+    --gs-key-fg: #0e1117;
+    --gs-key-selected-bg: #8ed5d6;
+    --gs-invalid: #b91c1c;
+    --gs-shadow: 0 8px 30px rgb(0 13 26 / 0.12);
+
+    --gs-font: inherit;
+    --gs-radius: 999px;
+    --gs-gap: 0.5rem;
+    --gs-item-min-height: 2rem;
+    --gs-item-padding: 0.25rem 0.75rem;
+    --gs-item-min-width: 8rem;
+    --gs-focus-width: 2px;
+    --gs-panel-width: min(40rem, 100vw - 2rem);
+    --gs-list-max-height: 18rem;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --gs-bg: #171d28;
+      --gs-item-bg: #1c2433;
+      --gs-fg: #dee4ee;
+      --gs-muted: #9ca3af;
+      --gs-border: #7e8ca0;
+      --gs-accent-text: #03a2a5;
+      --gs-key-bg: #2b3646;
+      --gs-key-fg: #dee4ee;
+      --gs-invalid: #f87171;
+      --gs-shadow: 0 8px 30px rgb(0 0 0 / 0.45);
+    }
+  }
+
+  [data-theme="dark"] {
+    --gs-bg: #171d28;
+    --gs-item-bg: #1c2433;
+    --gs-fg: #dee4ee;
+    --gs-muted: #9ca3af;
+    --gs-border: #7e8ca0;
+    --gs-accent-text: #03a2a5;
+    --gs-key-bg: #2b3646;
+    --gs-key-fg: #dee4ee;
+    --gs-invalid: #f87171;
+    --gs-shadow: 0 8px 30px rgb(0 0 0 / 0.45);
+  }
+
+  /* Wrapper */
+  [data-gridselect] {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--gs-gap);
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font: var(--gs-font);
+  }
+
+  [data-gridselect] > legend {
+    width: 100%;
+    margin-bottom: 0.25rem;
+    padding: 0;
+    font-weight: 600;
+  }
+
+  /* Items below the threshold: your own labels around native inputs */
+  [data-gridselect] > label {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: var(--gs-item-min-height);
+    padding: var(--gs-item-padding);
+    border: 1px solid var(--gs-border);
+    border-radius: var(--gs-radius);
+    background: var(--gs-item-bg);
+    color: var(--gs-fg);
+    cursor: pointer;
+    overflow-wrap: anywhere;
+  }
+
+  /* Invisible but still focusable and announced */
+  [data-gridselect] > label > input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  [data-gridselect] > label:has(:checked) {
+    border-color: var(--gs-accent);
+    background: var(--gs-accent);
+    color: var(--gs-accent-fg);
+    font-weight: 600;
+  }
+
+  [data-gridselect] > label:has(:focus-visible) {
+    outline: var(--gs-focus-width) solid var(--gs-accent);
+    outline-offset: 2px;
+  }
+
+  [data-gridselect] > label:has(:disabled) {
+    color: var(--gs-muted);
+    text-decoration: line-through;
+    cursor: not-allowed;
+  }
+
+  /* Closed field above the threshold */
+  .gridselect__field {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    min-width: min(16rem, 100%);
+    max-width: 100%;
+    min-height: 2.5rem;
+    padding: 0.4rem 2.25rem 0.4rem 0.75rem;
+    border: 1px solid var(--gs-border);
+    border-radius: 0.5rem;
+    background: var(--gs-bg);
+    color: var(--gs-fg);
+    font: inherit;
+    text-align: start;
+    overflow-wrap: anywhere;
+    cursor: pointer;
+  }
+
+  .gridselect__field::after {
+    content: "";
+    position: absolute;
+    inset-inline-end: 0.9rem;
+    top: 50%;
+    width: 0.45rem;
+    height: 0.45rem;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: translateY(-70%) rotate(45deg);
+  }
+
+  .gridselect__field[aria-expanded="true"]::after {
+    transform: translateY(-30%) rotate(-135deg);
+  }
+
+  .gridselect__field:focus-visible,
+  .gridselect__search:focus-visible {
+    outline: var(--gs-focus-width) solid var(--gs-accent);
+    outline-offset: 2px;
+  }
+
+  .gridselect__field[aria-invalid="true"] {
+    border-color: var(--gs-invalid);
+    box-shadow: inset 0 0 0 1px var(--gs-invalid);
+  }
+
+  .gridselect__field:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  /* Panel */
+  .gridselect__panel {
+    position: absolute;
+    top: calc(100% + 0.25rem);
+    left: 0;
+    z-index: 10;
+    box-sizing: border-box;
+    width: var(--gs-panel-width);
+    max-width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--gs-border);
+    border-radius: 0.75rem;
+    background: var(--gs-bg);
+    color: var(--gs-fg);
+    box-shadow: var(--gs-shadow);
+  }
+
+  .gridselect__search {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 2.25rem;
+    margin: 0 0 0.6rem;
+    padding: 0.3rem 0.6rem;
+    border: 1px solid var(--gs-border);
+    border-radius: 0.5rem;
+    background: var(--gs-item-bg);
+    color: var(--gs-fg);
+    font: inherit;
+  }
+
+  .gridselect__search::placeholder {
+    color: var(--gs-muted);
+    opacity: 1;
+  }
+
+  .gridselect__items {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(var(--gs-item-min-width), 100%), 1fr));
+    gap: var(--gs-gap);
+    max-height: var(--gs-list-max-height);
+    margin: 0;
+    /* room for the cursor outline */
+    padding: calc(var(--gs-focus-width) + 2px);
+    overflow-y: auto;
+  }
+
+  .gridselect__items--list {
+    grid-template-columns: 1fr;
+  }
+
+  .gridselect__item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: var(--gs-item-min-height);
+    padding: var(--gs-item-padding);
+    border: 1px solid var(--gs-border);
+    border-radius: var(--gs-radius);
+    background: var(--gs-item-bg);
+    color: var(--gs-fg);
+    overflow-wrap: anywhere;
+    cursor: pointer;
+  }
+
+  .gridselect__items--list .gridselect__item {
+    border-radius: 0.5rem;
+  }
+
+  .gridselect__item:hover {
+    border-color: var(--gs-accent);
+  }
+
+  .gridselect__item[aria-selected="true"] {
+    border-color: var(--gs-accent);
+    background: var(--gs-accent);
+    color: var(--gs-accent-fg);
+    font-weight: 600;
+  }
+
+  .gridselect__item[data-cursor] {
+    outline: var(--gs-focus-width) solid var(--gs-accent);
+    outline-offset: 2px;
+  }
+
+  .gridselect__item[data-match] {
+    color: var(--gs-accent-text);
+    font-weight: 700;
+  }
+
+  .gridselect__item[data-match][aria-selected="true"] {
+    color: var(--gs-accent-fg);
+  }
+
+  .gridselect__item[data-dimmed] {
+    color: var(--gs-muted);
+    font-weight: 400;
+  }
+
+  .gridselect__item[aria-disabled="true"] {
+    color: var(--gs-muted);
+    text-decoration: line-through;
+    cursor: not-allowed;
+  }
+
+  .gridselect__empty {
+    padding: 0.5rem 0.25rem 0;
+    color: var(--gs-muted);
+  }
+
+  /* Digit badge: round, at the start of the item, modifier letters before the digit */
+  .gridselect__key {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    min-width: 1.5rem;
+    min-height: 1.5rem;
+    margin-inline-start: -0.45rem;
+    padding: 0 0.35rem;
+    box-sizing: border-box;
+    border-radius: 999px;
+    background: var(--gs-key-bg);
+    color: var(--gs-key-fg);
+    font: 600 0.75rem/1 ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    font-variant-numeric: tabular-nums;
+    text-decoration: none;
+  }
+
+  .gridselect__key[data-prefix]::before {
+    content: attr(data-prefix);
+  }
+
+  .gridselect__key:empty {
+    display: none;
+  }
+
+  .gridselect__item[aria-selected="true"] > .gridselect__key,
+  [data-gridselect] > label:has(:checked) > .gridselect__key {
+    background: var(--gs-key-selected-bg);
+    color: var(--gs-accent-fg);
+  }
+}

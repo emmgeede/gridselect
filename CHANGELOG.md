@@ -48,6 +48,11 @@ All notable changes to GridSelect. The format follows
   `disabled`, reset and the select's `<label>` are respected.
   `<select multiple>` stays native with a warning, `value` works as an array.
 
+- Optional stylesheet `gridselect/gridselect.css` in `@layer gridselect`:
+  items, field, panel, states and digit badges, light and dark mode
+  (`prefers-color-scheme` or `data-theme`), all colours and sizes as `--gs-*`
+  variables, WCAG 2.2 AA contrast.
+
 ### Changed
 
 - Entries are called "items" (was "chips" during development).

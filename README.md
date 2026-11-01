@@ -28,6 +28,7 @@ for what changed.
   - [`instance.value`](#instancevalue)
   - [`instance.destroy()`](#instancedestroy)
   - [TypeScript](#typescript)
+- [Styling](#styling)
 - [Keyboard](#keyboard)
   - [Digit shortcuts](#digit-shortcuts)
 - [Accessibility](#accessibility)
@@ -146,8 +147,8 @@ the arrow keys are on, `[aria-disabled="true"]` on disabled ones, and
 `.gridselect__items--list` for the list layout. The grid's column count is
 read from the CSS (`grid-template-columns`, e.g.
 `repeat(auto-fill, minmax(6rem, 1fr))`), so arrow up/down always jump one
-visual row. A ready-made stylesheet is planned. Until then the panel needs
-your own CSS to look like a grid.
+visual row. The optional stylesheet (see [Styling](#styling)) does all of this, or
+write your own.
 
 Item text is the label's text content. Icons or other markup inside a label
 are not copied into the panel.
@@ -234,6 +235,56 @@ Forgets the instance and removes everything GridSelect added (field, panel,
 
 Types ship with the package, no `@types` package needed.
 
+## Styling
+
+GridSelect works without any CSS of ours. For a ready look, include the
+optional stylesheet:
+
+```js
+import "gridselect/gridselect.css";
+```
+
+or `<link rel="stylesheet" href="…/gridselect/src/gridselect.css">` from a
+CDN. It styles the wrapper's direct `<label>`s as items (the native input
+stays focusable but invisible, so wrap inputs in their label), the field,
+the panel, the states and the digit badges, in light and dark mode.
+
+Everything is inside `@layer gridselect`, so any rule of your own wins, no
+`!important` needed. Most changes are just variables, on `:root`, on one
+wrapper, or on any ancestor:
+
+```css
+:root {
+  --gs-accent: #6d28d9;
+  --gs-radius: 0.5rem;
+}
+```
+
+| Variable | Light | Dark | Used for |
+|---|---|---|---|
+| `--gs-bg` | `#ffffff` | `#171d28` | Field and panel background |
+| `--gs-item-bg` | `#f5f7fa` | `#1c2433` | Item and search background |
+| `--gs-fg` | `#0e1117` | `#dee4ee` | Text |
+| `--gs-muted` | `#636b78` | `#9ca3af` | Dimmed items, placeholders, disabled |
+| `--gs-border` | `#7a8494` | `#7e8ca0` | Borders |
+| `--gs-accent` | `#03a2a5` | `#03a2a5` | Selected item, focus ring, cursor |
+| `--gs-accent-fg` | `#0e1117` | `#0e1117` | Text on the accent |
+| `--gs-accent-text` | `#00787b` | `#03a2a5` | Matches in highlight mode |
+| `--gs-key-bg` / `--gs-key-fg` | `#dce6ec` / `#0e1117` | `#2b3646` / `#dee4ee` | Digit badge |
+| `--gs-key-selected-bg` | `#8ed5d6` | `#8ed5d6` | Digit badge on the selected item |
+| `--gs-invalid` | `#b91c1c` | `#f87171` | Border of an invalid field |
+
+Sizes: `--gs-font`, `--gs-radius`, `--gs-gap`, `--gs-item-min-height`
+(`2rem`), `--gs-item-padding`, `--gs-item-min-width` (`8rem`, sets the grid
+columns), `--gs-focus-width`, `--gs-panel-width` (`min(40rem, 100vw - 2rem)`),
+`--gs-list-max-height` (`18rem`).
+
+All default text and border colours meet WCAG 2.2 AA contrast (4.5:1 for
+text, 3:1 for borders and focus), checked by the browser tests in both
+modes. If you change colours, keep those ratios. Light or dark follows the
+system; `data-theme="light"` or `data-theme="dark"` on any ancestor (e.g.
+`<html>`) forces one.
+
 ## Keyboard
 
 Up to the threshold the keys are native, GridSelect only adds digits (see
@@ -309,8 +360,10 @@ GridSelect is built for WCAG 2.2 level AA:
   group moves focus to the field and sets `aria-invalid`.
 - **Not by colour alone.** States come from attributes (`aria-selected`,
   `data-match`, `data-dimmed`) that styles can mark with more than colour.
-  The planned default stylesheet meets AA contrast in light and dark mode
-  and shows modifier keys as letters, not hard-to-read symbols.
+  The default stylesheet meets AA contrast in light and dark mode, marks
+  states with weight, outline or strike-through as well as colour, keeps
+  text readable with increased text spacing and at 320 px width, and shows
+  modifier keys as letters, not hard-to-read symbols.
 
 Conformance is a property of the whole page, so a few things stay with you:
 give every group a name, keep sufficient contrast if you write your own CSS,
@@ -327,7 +380,7 @@ browser tests. An automated axe-core check and a manual screen reader pass
 | Search modes `filter` (default) and `highlight` | available |
 | Digit shortcuts with configurable modifier tiers | available |
 | `<select>` as source | available |
-| Optional stylesheet with CSS variables, light and dark | planned |
+| Optional stylesheet with CSS variables, light and dark | available |
 | npm release and demo page | planned |
 | Multiple choice in the grid panel, `<select multiple>` | later |
 | Options from a JS array | later |
