@@ -1,9 +1,9 @@
 // Filtering speed in a real browser: every keystroke on 200 items stays within one frame (16 ms).
 import { test, expect } from "@playwright/test";
 
-test("filters 200 items per keystroke within a frame", async ({ page }) => {
+for (const match of ["substring", "fuzzy"]) test(`filters 200 items per keystroke within a frame (${match})`, async ({ page }) => {
   await page.goto("/playground/");
-  const perKey = await page.evaluate(async () => {
+  const perKey = await page.evaluate(async (match) => {
     const { gridselect } = await import("/src/gridselect.js");
     const wrapper = document.createElement("fieldset");
     wrapper.setAttribute("data-gridselect", "");
@@ -15,7 +15,7 @@ test("filters 200 items per keystroke within a frame", async ({ page }) => {
       wrapper.append(label);
     }
     document.querySelector("main").append(wrapper);
-    gridselect(wrapper);
+    gridselect(wrapper, { match });
     wrapper.querySelector("[data-gridselect-field]").click();
     const search = wrapper.querySelector("[data-gridselect-search]");
     const queries = ["i", "it", "ite", "item", "item 1", "item 19", "item 199", "item 1", "i", ""];
@@ -26,6 +26,6 @@ test("filters 200 items per keystroke within a frame", async ({ page }) => {
       wrapper.querySelector("[data-gridselect-items]").getBoundingClientRect(); // force layout
     }
     return (performance.now() - t) / queries.length;
-  });
+  }, match);
   expect(perKey).toBeLessThan(16);
 });
