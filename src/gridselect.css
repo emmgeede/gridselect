@@ -181,7 +181,7 @@
   .gridselect__panel {
     position: absolute;
     top: calc(100% + 0.25rem);
-    left: 0;
+    inset-inline-start: 0;
     z-index: 10;
     box-sizing: border-box;
     width: var(--gs-panel-width);

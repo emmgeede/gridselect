@@ -237,3 +237,11 @@ test("no transitions or animations, items at least 24 px and 32 px high", async 
   const flat = await page.locator("#short > label").first().boundingBox();
   expect(flat.height).toBeGreaterThanOrEqual(32);
 });
+
+test("right-to-left: the panel opens under the field (QA F6)", async ({ page }) => {
+  await page.evaluate(() => (document.documentElement.dir = "rtl"));
+  await field(page, "filter").click();
+  const f = await field(page, "filter").boundingBox();
+  const p = await page.locator("#filter [data-gridselect-panel]").boundingBox();
+  expect(Math.abs(p.x + p.width - (f.x + f.width))).toBeLessThan(2);
+});

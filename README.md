@@ -10,7 +10,7 @@ accessible. Typing filters the items, or highlights matches in place.
 Your markup stays native, so forms submit, reset and validate as usual, and
 everything still works without JavaScript.
 
-**Status:** version 0.5.0, early development, not released on npm yet. Versions follow [Semantic Versioning](https://semver.org/). See
+**Status:** version 0.6.0, early development, not released on npm yet. Versions follow [Semantic Versioning](https://semver.org/). See
 [Features](#features) for what works today and [CHANGELOG.md](CHANGELOG.md)
 for what changed.
 
