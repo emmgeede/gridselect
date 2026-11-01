@@ -12,6 +12,8 @@ and breaking changes need a new major version.
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-11-01
+
 ### Added
 
 - Entries from a JS array: options `items`, `name`, `value` and `multiple`
@@ -182,7 +184,8 @@ and breaking changes need a new major version.
   radios with different names. Warning for duplicate values.
 - TypeScript declarations generated from JSDoc.
 
-[Unreleased]: https://github.com/emmgeede/gridselect/compare/v0.8.0...HEAD
+[Unreleased]: https://github.com/emmgeede/gridselect/compare/v0.9.0...HEAD
+[0.9.0]: https://github.com/emmgeede/gridselect/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/emmgeede/gridselect/compare/v0.7.1...v0.8.0
 [0.7.1]: https://github.com/emmgeede/gridselect/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/emmgeede/gridselect/compare/v0.6.0...v0.7.0

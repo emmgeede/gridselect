@@ -297,6 +297,20 @@ function fromItems(wrapper, opts) {
     inner = build(wrapper, rest);
   }
 
+  let destroyed = false;
+
+  /**
+   * After a rebuild: the field if there is one, else the input with the same value, the checked
+   * one, or the first enabled one.
+   * @param {string} [value]
+   */
+  function focusAgain(value) {
+    const fieldEl = /** @type {HTMLElement | null} */ (wrapper.querySelector("[data-gridselect-field]"));
+    if (fieldEl) return fieldEl.focus();
+    const list = labels.map((l) => /** @type {HTMLInputElement} */ (l.querySelector("input")));
+    (list.find((i) => i.value === value && !i.disabled) ?? list.find((i) => i.checked) ?? list.find((i) => !i.disabled))?.focus();
+  }
+
   /** @param {unknown} v */
   const asList = (v) => (Array.isArray(v) ? v : v == null ? [] : [v]).map(key).filter((k) => k !== undefined);
   render(normalizeItems(opts.items), asList(opts.value));
@@ -310,14 +324,21 @@ function fromItems(wrapper, opts) {
       inner.value = v;
     },
     setItems(items) {
+      if (destroyed) throw new TypeError("gridselect: setItems() after destroy()");
       const list = normalizeItems(items); // throws before anything changes
       const chosen = asList(inner.value);
+      // Rebuilding removes the focused element; keep keyboard and screen reader users in place.
+      const active = /** @type {HTMLElement | null} */ (doc.activeElement);
+      const hadFocus = !!active && wrapper.contains(active);
+      const focusedValue = active instanceof HTMLInputElement ? active.value : undefined;
       inner.destroy();
       for (const l of labels) l.remove();
       render(list, chosen);
       instances.set(wrapper, outer);
+      if (hadFocus) focusAgain(focusedValue);
     },
     destroy() {
+      destroyed = true;
       inner.destroy();
       for (const l of labels) l.remove();
       instances.delete(wrapper);

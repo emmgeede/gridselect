@@ -154,3 +154,39 @@ describe("invalid input", () => {
     expect(w.outerHTML).toBe(before);
   });
 });
+
+describe("QA F9 fixes", () => {
+  it("keeps the focus in the group when setItems rebuilds it", () => {
+    let w = mount();
+    let gs = gridselect(w, { items: many(12) });
+    field(w).focus();
+    gs.setItems(many(13));
+    expect(document.activeElement).toBe(field(w));
+
+    w = mount();
+    gs = gridselect(w, { items: many(4), value: "v2" });
+    inputs(w)[2].focus();
+    gs.setItems(many(5));
+    expect(document.activeElement).toBe(inputs(w)[2]);
+
+    gs.setItems(many(12)); // focus was on a radio, now there is a field
+    expect(document.activeElement).toBe(field(w));
+  });
+
+  it("leaves the focus alone when it was outside the group", () => {
+    const w = mount();
+    document.body.insertAdjacentHTML("beforeend", '<button id="out">o</button>');
+    const gs = gridselect(w, { items: many(4) });
+    document.getElementById("out").focus();
+    gs.setItems(many(12));
+    expect(document.activeElement.id).toBe("out");
+  });
+
+  it("refuses setItems after destroy", () => {
+    const w = mount();
+    const gs = gridselect(w, { items: many(3) });
+    gs.destroy();
+    expect(() => gs.setItems(many(2))).toThrow(/^gridselect:/);
+    expect(w.querySelectorAll("input")).toHaveLength(0);
+  });
+});
