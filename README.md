@@ -49,6 +49,7 @@ for what changed.
   - [`gridselect(wrapper, options?)`](#gridselectwrapper-options)
   - [Options](#options)
   - [Above the threshold](#above-the-threshold)
+  - [Multiple choice](#multiple-choice)
   - [`<select>` as source](#select-as-source)
   - [Search](#search)
   - [`instance.value`](#instancevalue)
@@ -147,6 +148,7 @@ value wins, for checkboxes all of them are set.
 | `search` | `data-search` | `"filter"` | `"filter"` hides non-matches, `"highlight"` keeps every item in place and marks matches |
 | `noResultsText` | | `"No matches"` | Hint (filter mode) and announcement when nothing matches |
 | `resultsText` | | `n => n === 1 ? "1 result" : n + " results"` | Screen reader announcement of the match count. A function, so plural rules of any language fit |
+| `selectedText` | | `n => n + " selected"` | Field text of a multiple choice group with more than two entries chosen (one or two show their labels) |
 | `shortcuts` | `data-shortcuts="off"` | `["", "Shift", "Alt"]` | Digit key tiers, see [Digit shortcuts](#digit-shortcuts). `false` turns them off |
 
 JS options win over data attributes. Invalid values fall back to the default.
@@ -162,24 +164,38 @@ It adds two elements to the wrapper:
 <button data-gridselect-field class="gridselect__field" aria-haspopup="listbox">Euro</button>
 <div data-gridselect-panel class="gridselect__panel" hidden>
   <input data-gridselect-search class="gridselect__search" role="combobox">
-  <div data-gridselect-items class="gridselect__items" role="listbox">
-    <div data-gridselect-item class="gridselect__item" role="option" aria-selected="true" data-value="EUR">Euro</div>
-    …
+  <div data-gridselect-scroller class="gridselect__scroller" role="listbox">
+    <div data-gridselect-items class="gridselect__items" role="presentation">
+      <div data-gridselect-item class="gridselect__item" role="option" aria-selected="true" data-value="EUR">Euro</div>
+      …
+    </div>
   </div>
 </div>
 ```
+
+The scroller scrolls, the item list inside grows freely, so the stylesheet
+can give every grid row the height of the tallest one.
 
 Style the states through attributes: `[aria-expanded="true"]` on the field,
 `[aria-selected="true"]` on the selected item, `[data-cursor]` on the item
 the arrow keys are on, `[aria-disabled="true"]` on disabled ones, and
 `.gridselect__items--list` for the list layout. The grid's column count is
-read from the CSS (`grid-template-columns`, e.g.
+read from the item list's CSS (`grid-template-columns`, e.g.
 `repeat(auto-fill, minmax(6rem, 1fr))`), so arrow up/down always jump one
 visual row. The optional stylesheet (see [Styling](#styling)) does all of this, or
 write your own.
 
 Item text is the label's text content. Icons or other markup inside a label
 are not copied into the panel.
+
+### Multiple choice
+
+Checkbox groups and `<select multiple>` above the threshold get the same
+field and panel. The list carries `aria-multiselectable="true"`, picking an
+item toggles it, fires `input` and `change` right away (like clicking a
+checkbox) and keeps the panel open with the search as it was, so you can
+filter for "dollar" and tick several in a row. The field shows one or two
+labels, or `selectedText(n)` for more. `gs.value` is always an array.
 
 ### `<select>` as source
 
@@ -212,8 +228,9 @@ sets `select.value` and fires `input` and `change` on the select, so
   `<label>` names the field.
 - Changes made by your code show up after a `change` event on the select or
   a form reset. `gs.value = "m"` updates everything without events.
-- `<select multiple>` is left native for now (a console warning tells you),
-  `gs.value` already reads and writes it as an array.
+- `<select multiple>` becomes checkboxes the same way, with the panel's
+  multiple choice above the threshold. `gs.value` is an array, and the form
+  submits every selected option.
 
 ### Search
 
@@ -345,10 +362,10 @@ Above the threshold:
 | Field | Enter, Space, Arrow down, click | Open the panel, focus the search input. A second click closes it |
 | Panel | Arrow left / right | Previous / next item (grid layout only) |
 | Panel | Arrow up / down | One row up / down (one item in list layout). Stops at the edges |
-| Panel | Enter, click on an item | Pick it and close |
+| Panel | Enter, click on an item | Pick it and close. In multiple choice: toggle it, the panel and the search stay |
 | Panel | Escape | Close without change, focus back on the field |
 | Panel | Tab, Shift+Tab, click outside | Close without change, focus moves on as usual |
-| Panel | Digit (per tier) | Pick that item and close |
+| Panel | Digit (per tier) | Pick that item and close (toggle it in multiple choice) |
 
 ### Digit shortcuts
 
@@ -432,7 +449,7 @@ come.
 | `<select>` as source | available |
 | Optional stylesheet with CSS variables, light and dark | available |
 | npm release and demo page | available |
-| Multiple choice in the grid panel, `<select multiple>` | later |
+| Multiple choice in the grid panel, `<select multiple>` | available (next release) |
 | Options from a JS array | later |
 | `<grid-select>` custom element | later |
 | Fuzzy search, theme gallery, React/Vue wrappers | ideas |
