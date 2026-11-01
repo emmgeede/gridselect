@@ -1,4 +1,4 @@
-<p align="center"><a href="https://emmgeede.github.io/gridselect/"><img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/logo.svg?v=2" width="80" height="80" alt="GridSelect logo: four rounded squares in shades of sky blue"></a></p>
+<p align="center"><a href="https://emmgeede.github.io/gridselect/"><img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/logo.svg?v=2" width="80" alt="GridSelect logo: four rounded squares in shades of sky blue"></a></p>
 
 # GridSelect
 
