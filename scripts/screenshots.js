@@ -33,13 +33,14 @@ async function stage(page, scheme, id) {
       boxShadow: "0 1px 2px rgb(0 0 0 / .06), 0 20px 50px -20px rgb(0 0 0 / .35)",
     });
     card.append(document.getElementById(id));
-    // Shows the key of the current animation step in the top right corner.
+    // Shows the key of the current animation step in the bottom right corner.
     const key = document.createElement("kbd");
     key.id = "shot-key";
     Object.assign(key.style, {
-      position: "absolute", top: "18px", right: "24px", padding: "4px 12px", borderRadius: "8px",
-      font: "600 16px/1.4 system-ui, sans-serif", minWidth: "1.5em", textAlign: "center", color: "var(--page-text)",
-      background: "var(--frame-bg)", border: "1px solid var(--page-line)", visibility: "hidden",
+      // Red with white text (4.8:1), so the pressed key stands out from the teal or blue component.
+      position: "absolute", bottom: "20px", right: "24px", padding: "8px 18px", borderRadius: "10px",
+      font: "700 22px/1.3 system-ui, sans-serif", minWidth: "1.4em", textAlign: "center", color: "#ffffff",
+      background: "#dc2626", boxShadow: "0 4px 14px -4px rgb(220 38 38 / .6)", visibility: "hidden",
     });
     card.style.position = "relative";
     card.append(key);
