@@ -1,4 +1,4 @@
-<p align="center"><img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/logo.svg?v=1" width="96" height="96" alt="GridSelect logo: four rounded squares in shades of sky blue"></p>
+<p align="center"><a href="https://emmgeede.github.io/gridselect/"><img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/logo.svg?v=2" width="80" height="80" alt="GridSelect logo: four rounded squares in shades of sky blue"></a></p>
 
 # GridSelect
 
@@ -20,27 +20,33 @@ everything still works without JavaScript.
 
 **[Try the demo](https://emmgeede.github.io/gridselect/)**
 
+<a href="https://emmgeede.github.io/gridselect/">
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/filter-dark.png?v=4">
-  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/filter-light.png?v=4" width="100%" alt="A currency field with its panel open. The search input contains 'dollar' and six matching currencies are shown as numbered items in a three-column grid, the first one outlined as the cursor.">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/filter-dark.png?v=5">
+  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/filter-light.png?v=5" width="100%" alt="A currency field with its panel open. The search input contains 'dollar' and six matching currencies are shown as numbered items in a three-column grid, the first one outlined as the cursor.">
 </picture>
+</a>
 
 <sub><b>Long list, filter mode (default).</b> The field opened a panel with 40 currencies. Typing
 "dollar" hides everything else and renumbers the six matches 1 to 6. The outlined item is the
 cursor: Enter, a click or its digit picks it.</sub>
 
+<a href="https://emmgeede.github.io/gridselect/">
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/short-dark.png?v=4">
-  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/short-light.png?v=4" width="100%" alt="A short list of four shipping options shown as rounded items with digit badges 1 to 4, the first one selected.">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/short-dark.png?v=5">
+  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/short-light.png?v=5" width="100%" alt="A short list of four shipping options shown as rounded items with digit badges 1 to 4, the first one selected.">
 </picture>
+</a>
 
 <sub><b>Short list.</b> Up to 10 entries stay visible as items. They are native radio buttons
 underneath; arrow keys move between them and the digits 1 to 4 pick one directly.</sub>
 
+<a href="https://emmgeede.github.io/gridselect/">
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/highlight-dark.png?v=4">
-  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/highlight-light.png?v=4" width="100%" alt="Highlight mode: all currencies stay in place, the two krone entries are shown in blue, the others dimmed, the cursor is on Norwegian krone, digit badges switch to S1, S2 for the second tier.">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/highlight-dark.png?v=5">
+  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/highlight-light.png?v=5" width="100%" alt="Highlight mode: all currencies stay in place, the two krone entries are shown in blue, the others dimmed, the cursor is on Norwegian krone, digit badges switch to S1, S2 for the second tier.">
 </picture>
+</a>
 
 <sub><b>Long list, highlight mode</b> (<code>data-search="highlight"</code>). The same list searched for
 "krone". Nothing is hidden on purpose: every entry keeps its place, so people who use the list
@@ -615,6 +621,9 @@ npm run build        # dist/gridselect.d.ts and dist/gridselect.min.js
 npm run screenshots  # README images in assets/, from the demo page
 npm run playground   # http://localhost:5173/playground/ (tests) and /demo/
 ```
+
+Releases: pushing a version tag (`vX.Y.Z`, matching `package.json`) runs the
+Publish workflow, which tests, builds and publishes to npm with provenance.
 
 The playground loads `src/gridselect.js` directly and shows every variant:
 short and long radio groups, checkboxes, both search modes, the list layout,
