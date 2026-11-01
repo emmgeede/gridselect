@@ -7,83 +7,205 @@
 <link rel="stylesheet" href="../src/gridselect.css">
 <link rel="stylesheet" href="../themes/showcase.css" id="showcase" disabled>
 <style>
-  /* Page layout only. Everything GridSelect shows comes from src/gridselect.css. */
-  :root { --page-bg: #F5F7FA; --page-fg: #0E1117; --page-card: #FFFFFF; --page-line: #7A8494; --page-muted: #636B78; }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) { --page-bg: #0E1117; --page-fg: #DEE4EE; --page-card: #171D28; --page-line: #7E8CA0; --page-muted: #9CA3AF; }
+  /* Page layout only, in the spirit of a split "changelog" layout: a fixed dark intro column
+     on the left, the examples scrolling on the right with their names at the divider.
+     Everything GridSelect shows comes from src/gridselect.css (and the optional theme). */
+  :root {
+    --intro-bg: #050816; --intro-fg: #ffffff; --intro-text: #cbd5e1; --intro-muted: #94a3b8; --intro-accent: #7dd3fc;
+    --page-bg: #ffffff; --page-fg: #0f172a; --page-text: #475569; --page-line: #e2e8f0;
+    --frame-bg: #f8fafc; --frame-ring: rgb(15 23 42 / 0.06);
+    --code-bg: #0b1120; --code-fg: #cbd5e1;
+    --btn-bg: #0f172a; --btn-fg: #ffffff; --btn-ghost: #ffffff; --btn-ghost-fg: #0f172a; --btn-ring: rgb(15 23 42 / 0.12);
+    --intro-width: min(40rem, 46vw);
   }
-  :root[data-theme="dark"] { --page-bg: #0E1117; --page-fg: #DEE4EE; --page-card: #171D28; --page-line: #7E8CA0; --page-muted: #9CA3AF; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --page-bg: #030712; --page-fg: #f8fafc; --page-text: #94a3b8; --page-line: #1e293b;
+      --frame-bg: rgb(255 255 255 / 0.025); --frame-ring: rgb(255 255 255 / 0.08);
+      --btn-bg: rgb(255 255 255 / 0.1); --btn-fg: #ffffff; --btn-ghost: transparent; --btn-ghost-fg: #e2e8f0; --btn-ring: rgb(255 255 255 / 0.12);
+    }
+  }
+  :root[data-theme="dark"] {
+    --page-bg: #030712; --page-fg: #f8fafc; --page-text: #94a3b8; --page-line: #1e293b;
+    --frame-bg: rgb(255 255 255 / 0.025); --frame-ring: rgb(255 255 255 / 0.08);
+    --btn-bg: rgb(255 255 255 / 0.1); --btn-fg: #ffffff; --btn-ghost: transparent; --btn-ghost-fg: #e2e8f0; --btn-ring: rgb(255 255 255 / 0.12);
+  }
 
   * { box-sizing: border-box; }
-  body { margin: 0; font: 15px/1.5 system-ui, sans-serif; background: var(--page-bg); color: var(--page-fg); }
-  main { max-width: 60rem; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
-  header { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
-  h1 { font-size: 1.5rem; margin: 0; }
-  h2 { font-size: 1.05rem; margin: 0 0 .25rem; }
-  p.note { color: var(--page-muted); margin: 0 0 .75rem; font-size: .9rem; }
-  section { background: var(--page-card); border: 1px solid var(--page-line); border-radius: .75rem; padding: 1rem; margin-top: 1rem; }
-  button.plain { font: inherit; color: inherit; background: var(--page-bg); border: 1px solid var(--page-line); border-radius: .5rem; padding: .25rem .75rem; cursor: pointer; }
-  code { font-size: .85em; }
-  #log { font: 12px/1.5 ui-monospace, monospace; background: var(--page-bg); border: 1px solid var(--page-line);
-         border-radius: .5rem; padding: .5rem .75rem; height: 12rem; overflow-y: auto; white-space: pre-wrap; margin: .5rem 0 0; }
-  .row { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: .75rem; }
+  body {
+    margin: 0; background: var(--page-bg); color: var(--page-fg);
+    font: 15px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; -webkit-font-smoothing: antialiased;
+  }
+  code { font: 0.8em/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; padding: 0.15em 0.35em; border-radius: 0.3rem; background: var(--frame-bg); box-shadow: inset 0 0 0 1px var(--frame-ring); }
+
+  /* Intro column */
+  .intro {
+    position: fixed; inset: 0 auto 0 0; width: var(--intro-width); overflow-y: auto; z-index: 1;
+    display: flex; flex-direction: column; padding: 3rem clamp(1.5rem, 5vw, 5.5rem);
+    color: var(--intro-text); background-color: var(--intro-bg);
+    background-image:
+      radial-gradient(circle at 100% 45%, rgb(56 189 248 / 0.16), transparent 55%),
+      radial-gradient(circle at 90% 95%, rgb(99 102 241 / 0.12), transparent 45%),
+      radial-gradient(1px 1px at 8% 12%, rgb(255 255 255 / 0.55), transparent),
+      radial-gradient(1px 1px at 22% 6%, rgb(255 255 255 / 0.35), transparent),
+      radial-gradient(1px 1px at 37% 18%, rgb(255 255 255 / 0.45), transparent),
+      radial-gradient(1px 1px at 61% 9%, rgb(255 255 255 / 0.3), transparent),
+      radial-gradient(1px 1px at 74% 27%, rgb(255 255 255 / 0.4), transparent),
+      radial-gradient(1px 1px at 86% 14%, rgb(255 255 255 / 0.3), transparent),
+      radial-gradient(1px 1px at 12% 71%, rgb(255 255 255 / 0.25), transparent),
+      radial-gradient(1px 1px at 81% 63%, rgb(255 255 255 / 0.35), transparent),
+      radial-gradient(1px 1px at 66% 84%, rgb(255 255 255 / 0.25), transparent);
+  }
+  .intro::after {
+    content: ""; position: absolute; inset: 0 0 0 auto; width: 1px;
+    background: repeating-linear-gradient(to bottom, rgb(125 211 252 / 0.35) 0 3px, transparent 3px 7px);
+  }
+  .intro-body { margin-block: auto; max-width: 27rem; }
+  .logo { display: flex; align-items: center; gap: 0.6rem; margin: 0 0 2.5rem; color: var(--intro-fg); font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; }
+  .logo svg { width: 2rem; height: 2rem; }
+  h1 { margin: 0; color: var(--intro-fg); font-size: clamp(1.9rem, 3vw, 2.4rem); font-weight: 300; line-height: 1.2; letter-spacing: -0.02em; }
+  h1 span { color: var(--intro-accent); }
+  .intro p { margin: 1.5rem 0 0; font-size: 0.875rem; line-height: 1.7; }
+  .intro code { background: rgb(255 255 255 / 0.06); box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.1); color: var(--intro-fg); }
+  .switches { display: flex; gap: 0.5rem; margin-top: 2rem; padding: 0.3rem; width: fit-content; border-radius: 0.75rem; background: rgb(255 255 255 / 0.04); box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.1); }
+  .switches button { font: inherit; font-size: 0.8125rem; font-weight: 600; color: var(--intro-fg); background: rgb(255 255 255 / 0.08); border: 0; border-radius: 0.5rem; padding: 0.45rem 0.8rem; cursor: pointer; }
+  .switches button:hover { background: rgb(255 255 255 / 0.14); }
+  .switches button:focus-visible, .links a:focus-visible { outline: 2px solid var(--intro-accent); outline-offset: 2px; }
+  .links { display: flex; flex-wrap: wrap; gap: 0.25rem 1.5rem; margin-top: 2rem; padding: 0; list-style: none; font-size: 0.8125rem; font-weight: 500; }
+  .links a { display: inline-flex; align-items: center; gap: 0.45rem; color: var(--intro-fg); text-decoration: none; }
+  .links a:hover { color: var(--intro-accent); }
+  .links svg { width: 1rem; height: 1rem; color: var(--intro-muted); }
+  .credit { margin-top: 3rem; font-size: 0.8125rem; color: var(--intro-muted); }
+
+  /* Examples */
+  main { margin-left: var(--intro-width); padding: 6rem clamp(1.5rem, 5vw, 4rem) 8rem; max-width: calc(var(--intro-width) + 46rem); }
+  section { position: relative; margin: 0 0 5rem; }
+  .stamp {
+    position: absolute; top: 0.35rem; right: calc(100% + clamp(1.5rem, 5vw, 4rem)); z-index: 2;
+    display: flex; align-items: center; gap: 0.5rem; white-space: nowrap;
+    font-size: 0.6875rem; font-weight: 500; color: rgb(255 255 255 / 0.6);
+  }
+  .stamp::after { content: ""; width: 0.75rem; height: 1px; background: rgb(255 255 255 / 0.5); }
+  h2 { margin: 0 0 0.75rem; font-size: 1.25rem; font-weight: 600; letter-spacing: -0.01em; }
+  .note { margin: 0 0 1.5rem; max-width: 40rem; font-size: 0.875rem; line-height: 1.7; color: var(--page-text); }
+  .frame { padding: 2rem; border-radius: 1rem; background: var(--frame-bg); box-shadow: inset 0 0 0 1px var(--frame-ring); }
+  .frame + .frame { margin-top: 1rem; }
+  .row { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1.25rem; }
+  button.plain {
+    font: inherit; font-size: 0.8125rem; font-weight: 600; color: var(--btn-ghost-fg); background: var(--btn-ghost);
+    border: 0; border-radius: 0.5rem; padding: 0.45rem 0.85rem; cursor: pointer; box-shadow: inset 0 0 0 1px var(--btn-ring);
+  }
+  button.plain[type="submit"] { color: var(--btn-fg); background: var(--btn-bg); box-shadow: none; }
+  button.plain:focus-visible { outline: 2px solid #0b9496; outline-offset: 2px; }
+  #log {
+    margin: 0; height: 14rem; overflow-y: auto; padding: 1rem 1.25rem; border-radius: 1rem; white-space: pre-wrap;
+    font: 12px/1.7 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    color: var(--code-fg); background: var(--code-bg); box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.08);
+  }
+
+  @media (max-width: 64rem) {
+    .intro { position: static; width: auto; padding: 2.5rem 1.25rem; }
+    .intro::after { display: none; }
+    main { margin-left: 0; padding: 3rem 1.25rem 5rem; max-width: none; }
+    .stamp { position: static; margin-bottom: 0.5rem; color: var(--page-text); }
+    .stamp::after { display: none; }
+  }
 </style>
 </head>
 <body>
-<main>
-  <header>
-    <h1>GridSelect Playground</h1>
-    <div class="row" style="margin: 0">
-      <button class="plain" id="style" type="button">Style: default</button>
-      <button class="plain" id="theme" type="button">Theme: auto</button>
+<aside class="intro">
+  <div class="intro-body">
+    <div class="logo">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="3" width="11" height="11" rx="3" fill="#7dd3fc"/><rect x="18" y="3" width="11" height="11" rx="3" fill="#38bdf8" opacity=".55"/><rect x="3" y="18" width="11" height="11" rx="3" fill="#38bdf8" opacity=".55"/><rect x="18" y="18" width="11" height="11" rx="3" fill="#7dd3fc" opacity=".3"/></svg>
+      GridSelect
     </div>
-  </header>
-  <p class="note">Loads <code>src/gridselect.js</code> and <code>src/gridselect.css</code> directly, so it always shows the current state.</p>
+    <h1>Playground for every list,<br><span>short or long</span></h1>
+    <p>Every variant of GridSelect in one place: native radios and checkboxes, the search panel in both modes, selects, forms and digit shortcuts. The page loads <code>src/gridselect.js</code> and <code>src/gridselect.css</code> directly, so it always shows the current state.</p>
+    <div class="switches">
+      <button id="style" type="button">Style: default</button>
+      <button id="theme" type="button">Theme: auto</button>
+    </div>
+    <ul class="links">
+      <li><a href="../demo/"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M2 3.5A1.5 1.5 0 0 1 3.5 2h9A1.5 1.5 0 0 1 14 3.5v9a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 12.5v-9Zm2 1v3h3v-3H4Zm5 0v3h3v-3H9Zm-5 4v3h3v-3H4Zm5 0v3h3v-3H9Z"/></svg>Demo</a></li>
+      <li><a href="https://github.com/emmgeede/gridselect"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 1a7 7 0 0 0-2.2 13.6c.35.07.48-.15.48-.34v-1.2c-1.95.42-2.36-.94-2.36-.94-.32-.81-.78-1.03-.78-1.03-.64-.43.05-.42.05-.42.7.05 1.07.72 1.07.72.62 1.07 1.64.76 2.04.58.06-.45.24-.76.44-.94-1.55-.18-3.19-.78-3.19-3.46 0-.76.27-1.39.72-1.88-.07-.18-.31-.89.07-1.85 0 0 .59-.19 1.92.72a6.7 6.7 0 0 1 3.5 0c1.33-.91 1.92-.72 1.92-.72.38.96.14 1.67.07 1.85.45.49.72 1.12.72 1.88 0 2.69-1.64 3.28-3.2 3.45.25.22.47.64.47 1.29v1.91c0 .19.13.41.48.34A7 7 0 0 0 8 1Z"/></svg>GitHub</a></li>
+      <li><a href="https://www.npmjs.com/package/@emmgeede/gridselect"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M2 2h12v12H2V2Zm2 2v8h4V6h2v6h2V4H4Z"/></svg>npm</a></li>
+    </ul>
+  </div>
+  <p class="credit">Native inputs underneath, WCAG 2.2 AA checks on every push.</p>
+</aside>
 
+<main>
   <section>
+    <div class="stamp">Radios · short</div>
     <h2>Short radio group</h2>
     <p class="note">5 entries, below the threshold: native radios, arrow keys and digits.</p>
-    <fieldset data-gridselect id="short">
-      <legend>Currency</legend>
-    </fieldset>
+    <div class="frame">
+      <fieldset data-gridselect id="short">
+        <legend>Currency</legend>
+      </fieldset>
+    </div>
   </section>
 
   <section>
+    <div class="stamp">Checkboxes · short</div>
     <h2>Checkbox group</h2>
     <p class="note">Multiple choice, each checkbox is a Tab stop, Space or a digit toggles.</p>
-    <fieldset data-gridselect id="checks">
-      <legend>Extras</legend>
-    </fieldset>
+    <div class="frame">
+      <fieldset data-gridselect id="checks">
+        <legend>Extras</legend>
+      </fieldset>
+    </div>
   </section>
 
   <section>
+    <div class="stamp">Radios · filter</div>
     <h2>Long list, filter mode</h2>
     <p class="note">40 entries: closed field, panel with search. Try typing <code>kr</code>, <code>dollar</code> or <code>zur</code>.</p>
-    <fieldset data-gridselect id="filter">
-      <legend>Currency</legend>
-    </fieldset>
+    <div class="frame">
+      <fieldset data-gridselect id="filter">
+        <legend>Currency</legend>
+      </fieldset>
+    </div>
   </section>
 
   <section>
+    <div class="stamp">Radios · highlight</div>
     <h2>Long list, highlight mode</h2>
     <p class="note">Same list, items stay in place, matches are marked.</p>
-    <fieldset data-gridselect data-search="highlight" id="highlight">
-      <legend>Currency</legend>
-    </fieldset>
+    <div class="frame">
+      <fieldset data-gridselect data-search="highlight" id="highlight">
+        <legend>Currency</legend>
+      </fieldset>
+    </div>
   </section>
 
   <section>
+    <div class="stamp">Checkboxes · long</div>
+    <h2>Long checkbox group</h2>
+    <p class="note">Multiple choice in the panel: items toggle, the panel stays open, the search stays. Try <code>dollar</code> and pick several.</p>
+    <div class="frame">
+      <fieldset data-gridselect id="checks-long">
+        <legend>Watchlist</legend>
+      </fieldset>
+    </div>
+  </section>
+
+  <section>
+    <div class="stamp">Layout · list</div>
     <h2>List layout with long labels</h2>
     <p class="note"><code>data-layout="list"</code>: one column, left/right arrows stay in the search input.</p>
-    <fieldset data-gridselect data-layout="list" id="list">
-      <legend>Text module</legend>
-    </fieldset>
+    <div class="frame">
+      <fieldset data-gridselect data-layout="list" id="list">
+        <legend>Text module</legend>
+      </fieldset>
+    </div>
   </section>
 
   <section>
+    <div class="stamp">Select · source</div>
     <h2>Select as source</h2>
-    <p class="note">Plain <code>&lt;select&gt;</code> elements: the short one becomes visible items, the long one the field and panel. The first option with an empty value is the placeholder.</p>
-    <form id="selects">
+    <p class="note">Plain <code>&lt;select&gt;</code> elements: the short one becomes visible items, the long ones get the field and panel, <code>multiple</code> included. The first option with an empty value is the placeholder.</p>
+    <form id="selects" class="frame">
       <div data-gridselect id="select-short">
         <label for="size">Size</label>
         <select id="size" name="size">
@@ -94,7 +216,7 @@
           <option value="xl" disabled>Extra large (sold out)</option>
         </select>
       </div>
-      <div data-gridselect id="select-long" style="margin-top: 1rem">
+      <div data-gridselect id="select-long" style="margin-top: 1.5rem">
         <label for="country">Country</label>
         <select id="country" name="country" required>
           <option value="">Choose a country…</option>
@@ -102,6 +224,16 @@
           <optgroup label="Other"><option value="be">Belgium</option><option value="dk">Denmark</option><option value="fi">Finland</option>
             <option value="fr">France</option><option value="it">Italy</option><option value="nl">Netherlands</option>
             <option value="pt">Portugal</option><option value="es">Spain</option><option value="se">Sweden</option></optgroup>
+        </select>
+      </div>
+      <div data-gridselect id="select-multi" style="margin-top: 1.5rem">
+        <label for="languages">Languages</label>
+        <select id="languages" name="languages" multiple>
+          <option value="">Choose languages…</option>
+          <option value="de">German</option><option value="en" selected>English</option><option value="fr">French</option>
+          <option value="it">Italian</option><option value="es">Spanish</option><option value="pt">Portuguese</option>
+          <option value="nl">Dutch</option><option value="da">Danish</option><option value="sv">Swedish</option>
+          <option value="fi">Finnish</option><option value="pl">Polish</option><option value="cs">Czech</option>
         </select>
       </div>
       <div class="row">
@@ -112,9 +244,10 @@
   </section>
 
   <section>
+    <div class="stamp">Forms</div>
     <h2>Form: required, disabled, submit and reset</h2>
     <p class="note">Submit with nothing chosen: the field gets focus and is flagged. Item 3 is disabled.</p>
-    <form id="form">
+    <form id="form" class="frame">
       <fieldset data-gridselect id="required">
         <legend>Country (required)</legend>
       </fieldset>
@@ -128,6 +261,7 @@
   </section>
 
   <section>
+    <div class="stamp">Events</div>
     <h2>Event log</h2>
     <p class="note">Native <code>input</code> and <code>change</code> events reaching the wrappers, plus <code>gs.value</code>.</p>
     <pre id="log" aria-live="off"></pre>
@@ -200,8 +334,9 @@
   fill("highlight", currencies);
   fill("list", modules);
   fill("required", countries, { required: true, disabled: [2] });
+  fill("checks-long", currencies.slice(0, 24), { type: "checkbox" });
 
-  for (const id of ["short", "checks", "filter", "highlight", "list", "required", "select-short", "select-long"]) {
+  for (const id of ["short", "checks", "filter", "highlight", "checks-long", "list", "required", "select-short", "select-long", "select-multi"]) {
     init(id);
     const wrapper = document.getElementById(id);
     for (const type of ["input", "change"]) {
@@ -214,7 +349,9 @@
   const selectsForm = document.getElementById("selects");
   selectsForm.addEventListener("submit", (e) => {
     e.preventDefault();
-    write(`#selects  submit  FormData: ${JSON.stringify(Object.fromEntries(new FormData(selectsForm)))}`);
+    const data = new FormData(selectsForm);
+    const all = Object.fromEntries([...new Set(data.keys())].map((k) => [k, data.getAll(k).length > 1 ? data.getAll(k) : data.get(k)]));
+    write(`#selects  submit  FormData: ${JSON.stringify(all)}`);
   });
 
   const form = document.getElementById("form");

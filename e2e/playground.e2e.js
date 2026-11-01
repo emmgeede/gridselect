@@ -134,7 +134,7 @@ test("a long select shows only the field, and a panel pick ends up in the form d
   await page.keyboard.press("Enter");
   await expect(field(page, "select-long")).toHaveText("Switzerland");
   await page.getByRole("button", { name: "Submit selects" }).click();
-  await expect(page.locator("#log")).toContainText('#selects  submit  FormData: {"size":"","country":"ch"}');
+  await expect(page.locator("#log")).toContainText('#selects  submit  FormData: {"size":"","country":"ch","languages":"en"}');
 });
 
 test("a required select flags the field on submit", async ({ page }) => {
@@ -163,4 +163,25 @@ test("the style button switches to the showcase theme and back", async ({ page }
   await expect(item).not.toHaveCSS("border-top-color", plain);
   await page.locator("#style").click();
   await expect(item).toHaveCSS("border-top-color", plain);
+});
+
+test("long checkbox group and select multiple: toggling keeps the panel open, form data has all values", async ({ page }) => {
+  await field(page, "checks-long").click();
+  await search(page, "checks-long").fill("dollar");
+  await page.keyboard.press("Enter");
+  await page.keyboard.press("ArrowRight");
+  await page.keyboard.press("Enter");
+  await expect(page.locator("#checks-long [data-gridselect-panel]")).toBeVisible();
+  await expect(search(page, "checks-long")).toHaveValue("dollar");
+  await expect(field(page, "checks-long")).toHaveText("US dollar (USD), Canadian dollar (CAD)");
+  await page.keyboard.press("Escape");
+
+  await field(page, "select-multi").click();
+  await search(page, "select-multi").fill("dan");
+  await page.keyboard.press("Enter");
+  await expect(page.locator("#select-multi [data-gridselect-panel]")).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(field(page, "select-multi")).toHaveText("English, Danish");
+  await expect(page.locator("#log")).toContainText('#select-multi  change  target=en  gs.value=["en","da"]');
+  expect(await page.locator("#languages").evaluate((el) => [...el.selectedOptions].map((o) => o.value))).toEqual(["en", "da"]);
 });
