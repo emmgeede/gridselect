@@ -17,7 +17,8 @@
  * @property {number} [threshold] Radio groups with more inputs than this get the grid panel. Default 10.
  * @property {string} [placeholder] Field text while nothing is selected. Default "Select…".
  * @property {string} [searchPlaceholder] Placeholder of the search input. Default "Search…".
- * @property {"grid" | "list"} [layout] "list" stacks items in one column for long labels. Default "grid".
+ * @property {"grid" | "list" | "flow"} [layout] "grid" (default) aligns items in columns as wide as the
+ *   widest item, "list" stacks them in one column for long labels, "flow" lets them run like chips.
  * @property {string} [noResultsText] Hint and announcement when nothing matches. Default "No matches".
  * @property {string[] | false} [shortcuts] Modifier tiers for digit keys, each tier covers ten
  *   items, e.g. ["", "Shift", "Alt"] (default). Names: Shift, Alt, Control, Meta, joined with "+".
@@ -662,7 +663,8 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
   scroller.append(list);
   const layout = opts.layout ?? wrapper.getAttribute("data-layout");
   const isList = layout === "list";
-  if (isList) list.classList.add("gridselect__items--list");
+  const isFlow = layout === "flow";
+  if (isList || isFlow) list.classList.add(`gridselect__items--${layout}`);
   search.setAttribute("aria-controls", scroller.id);
 
   const items = radios.map((radio) => {
@@ -838,6 +840,7 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
     field.setAttribute("aria-expanded", "true");
     search.setAttribute("aria-expanded", "true");
     applyQuery();
+    if (!isList && !isFlow) measure();
     search.focus();
     doc.addEventListener("click", onOutsideClick, true);
   }
@@ -895,6 +898,34 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
     return Math.max(1, tracks.length);
   }
 
+  // Grid: every column as wide as the widest item on one line (CSS reads --gs-auto-width).
+  function measure() {
+    let max = 0;
+    for (const it of items) Object.assign(it.style, { width: "max-content", whiteSpace: "nowrap" });
+    for (const it of items) max = Math.max(max, it.getBoundingClientRect().width);
+    for (const it of items) Object.assign(it.style, { width: "", whiteSpace: "" });
+    list.style.setProperty("--gs-auto-width", `${Math.ceil(max)}px`);
+  }
+
+  /**
+   * Flow layout: offset to the item in the next (dir 1) or previous (dir -1) row whose centre is
+   * nearest to the cursor's. 0 at the first/last row, ±1 without layout information.
+   * @param {1 | -1} dir
+   */
+  function rowStep(dir) {
+    const rect = (/** @type {number} */ pos) => items[order[pos]].getBoundingClientRect();
+    const cur = rect(cursor);
+    if (!cur.height) return dir;
+    const rows = order.map((_, pos) => ({ pos, r: rect(pos) }))
+      .filter(({ r }) => (dir > 0 ? r.top >= cur.bottom - 1 : r.bottom <= cur.top + 1));
+    if (!rows.length) return 0;
+    const top = dir > 0 ? Math.min(...rows.map((x) => x.r.top)) : Math.max(...rows.map((x) => x.r.top));
+    const centre = (/** @type {DOMRect} */ r) => r.left + r.width / 2;
+    const best = rows.filter((x) => Math.abs(x.r.top - top) < 2)
+      .reduce((a, b) => (Math.abs(centre(b.r) - centre(cur)) < Math.abs(centre(a.r) - centre(cur)) ? b : a));
+    return best.pos - cursor;
+  }
+
   search.addEventListener("keydown", (e) => {
     // Keys during an IME composition belong to the input method, not to us.
     if (e.isComposing) return;
@@ -908,6 +939,7 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
     /** @type {Record<string, () => number>} */
     const moves = isList
       ? { ArrowDown: () => 1, ArrowUp: () => -1 }
+      : isFlow ? { ArrowRight: () => 1, ArrowLeft: () => -1, ArrowDown: () => rowStep(1), ArrowUp: () => rowStep(-1) }
       : { ArrowRight: () => 1, ArrowLeft: () => -1, ArrowDown: columns, ArrowUp: () => -columns() };
     if (moves[e.key]) {
       e.preventDefault();

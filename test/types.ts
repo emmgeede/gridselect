@@ -44,3 +44,5 @@ el.items = ["a", { value: "b", label: "B" }];
 gridselect(document.body, { match: "fuzzy" });
 // @ts-expect-error unknown match mode
 gridselect(document.body, { match: "regex" });
+
+gridselect(document.body, { layout: "flow" });

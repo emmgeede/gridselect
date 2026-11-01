@@ -48,11 +48,11 @@ describe("README on npm (QA F7)", () => {
   });
 });
 
-describe("size budget (PRD principle 6, F10 AC-17)", () => {
-  it("keeps the core under 6 kB and core plus element under 7.5 kB, min+gzip", () => {
+describe("size budget (PRD principle 6: core 6.5 kB, with element 8 kB since F15)", () => {
+  it("keeps the core under 6.5 kB and core plus element under 8 kB, min+gzip", () => {
     const size = (f) => gzipSync(readFileSync(f), { level: 9 }).length;
-    expect(size("dist/gridselect.min.js")).toBeLessThanOrEqual(6144);
-    expect(size("dist/gridselect-element.min.js")).toBeLessThanOrEqual(7680);
+    expect(size("dist/gridselect.min.js")).toBeLessThanOrEqual(6656);
+    expect(size("dist/gridselect-element.min.js")).toBeLessThanOrEqual(8192);
   });
 
   it("registers the element from the IIFE build", () => {

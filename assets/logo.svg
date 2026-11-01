@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="96" height="96" role="img" aria-label="GridSelect logo">
+  <rect x="3" y="3" width="11" height="11" rx="3" fill="#7dd3fc"/>
+  <rect x="18" y="3" width="11" height="11" rx="3" fill="#38bdf8" opacity=".55"/>
+  <rect x="3" y="18" width="11" height="11" rx="3" fill="#38bdf8" opacity=".55"/>
+  <rect x="18" y="18" width="11" height="11" rx="3" fill="#7dd3fc" opacity=".3"/>
+</svg>

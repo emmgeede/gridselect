@@ -1,3 +1,5 @@
+<p align="center"><img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/logo.svg?v=1" width="96" height="96" alt="GridSelect logo: four rounded squares in shades of sky blue"></p>
+
 # GridSelect
 
 [![npm version](https://img.shields.io/npm/v/@emmgeede/gridselect)](https://www.npmjs.com/package/@emmgeede/gridselect)
@@ -19,8 +21,8 @@ everything still works without JavaScript.
 **[Try the demo](https://emmgeede.github.io/gridselect/)**
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/filter-dark.png?v=3">
-  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/filter-light.png?v=3" width="100%" alt="A currency field with its panel open. The search input contains 'dollar' and six matching currencies are shown as numbered items in a three-column grid, the first one outlined as the cursor.">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/filter-dark.png?v=4">
+  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/filter-light.png?v=4" width="100%" alt="A currency field with its panel open. The search input contains 'dollar' and six matching currencies are shown as numbered items in a three-column grid, the first one outlined as the cursor.">
 </picture>
 
 <sub><b>Long list, filter mode (default).</b> The field opened a panel with 40 currencies. Typing
@@ -28,21 +30,21 @@ everything still works without JavaScript.
 cursor: Enter, a click or its digit picks it.</sub>
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/short-dark.png?v=3">
-  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/short-light.png?v=3" width="100%" alt="A short list of four shipping options shown as rounded items with digit badges 1 to 4, the first one selected.">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/short-dark.png?v=4">
+  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/short-light.png?v=4" width="100%" alt="A short list of four shipping options shown as rounded items with digit badges 1 to 4, the first one selected.">
 </picture>
 
 <sub><b>Short list.</b> Up to 10 entries stay visible as items. They are native radio buttons
 underneath; arrow keys move between them and the digits 1 to 4 pick one directly.</sub>
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/highlight-dark.png?v=3">
-  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/highlight-light.png?v=3" width="100%" alt="Highlight mode: all currencies stay in place, the two krone entries are shown in teal, the others dimmed, the cursor is on Norwegian krone, digit badges switch to S1, S2 for the second tier.">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/highlight-dark.png?v=4">
+  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/highlight-light.png?v=4" width="100%" alt="Highlight mode: all currencies stay in place, the two krone entries are shown in blue, the others dimmed, the cursor is on Norwegian krone, digit badges switch to S1, S2 for the second tier.">
 </picture>
 
 <sub><b>Long list, highlight mode</b> (<code>data-search="highlight"</code>). The same list searched for
 "krone". Nothing is hidden on purpose: every entry keeps its place, so people who use the list
-daily can rely on positions. The matches (Danish and Norwegian krone) are marked in teal, the
+daily can rely on positions. The matches (Danish and Norwegian krone) are marked in blue, the
 cursor jumps to the first match, all other entries are dimmed. Entries 11 to 20 are picked with
 Shift and a digit (S1 to S0).</sub>
 
@@ -229,7 +231,7 @@ value wins, for checkboxes all of them are set.
 | Option | Data attribute | Default | Meaning |
 |---|---|---|---|
 | `threshold` | `data-threshold` | `10` | Radio groups with more radios than this get the panel. `0` means always |
-| `layout` | `data-layout` | `"grid"` | `"list"` stacks the items in one column, for long labels |
+| `layout` | `data-layout` | `"grid"` | `"grid"` aligns items in columns as wide as the widest one, `"list"` stacks them in one column for long labels, `"flow"` lets them run one after another like chips |
 | `placeholder` | | `"Select…"` | Field text while nothing is selected |
 | `searchPlaceholder` | | `"Search…"` | Placeholder of the search input |
 | `search` | `data-search` | `"filter"` | `"filter"` hides non-matches, `"highlight"` keeps every item in place and marks matches |
@@ -267,6 +269,14 @@ It adds two elements to the wrapper:
 
 The scroller scrolls, the item list inside grows freely, so the stylesheet
 can give every grid row the height of the tallest one.
+
+In the `grid` layout GridSelect measures the widest item (on one line) each
+time the panel opens and puts it in `--gs-auto-width` on the item list. The
+stylesheet makes every column that wide, at least `--gs-item-min-width` and at
+most half the list, so short labels get many columns and a single long label
+never forces one column. In the `flow` layout (`.gridselect__items--flow`)
+the items run one after another and wrap; arrow up and down jump to the item
+in the row above or below whose centre is closest.
 
 Style the states through attributes: `[aria-expanded="true"]` on the field,
 `[aria-selected="true"]` on the selected item, `[data-cursor]` on the item
@@ -477,7 +487,8 @@ import "@emmgeede/gridselect/gridselect.css";
 import "@emmgeede/gridselect/themes/showcase.css";
 ```
 
-It lives in its own layer (`gridselect-showcase`), so your own CSS still wins.
+It uses sky blue as its accent (the default stylesheet uses teal) and lives
+in its own layer (`gridselect-showcase`), so your own CSS still wins.
 It keeps 4.5:1 for all text and 3:1 for the chevron, focus and cursor, but its
 resting borders are subtle: the field is recognised by its text and chevron,
 and the search input always shows a 3:1 border while it is focused. If you need

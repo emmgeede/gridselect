@@ -12,6 +12,23 @@ and breaking changes need a new major version.
 
 ## [Unreleased]
 
+### Added
+
+- Grid columns as wide as the widest item: the panel measures its items on
+  open and sets `--gs-auto-width`; the stylesheets use it (at least
+  `--gs-item-min-width`, at most half the list), so short labels get as many
+  columns as fit.
+- Flow layout, `layout: "flow"` (`data-layout`, element attribute `layout`):
+  items run one after another like chips; arrow up and down jump to the
+  nearest item in the row above or below.
+- Logo in the README.
+
+### Changed
+
+- The showcase theme, the demo and the README screenshots use sky blue as
+  accent; the default stylesheet stays teal.
+- Size budget: core 6.5 kB, core plus element 8 kB (min+gzip).
+
 ## [0.11.0] - 2026-11-01
 
 ### Added

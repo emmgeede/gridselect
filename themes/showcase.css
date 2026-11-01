@@ -1,5 +1,5 @@
 /*
- * GridSelect "showcase" theme: a compact, contemporary look on top of gridselect.css.
+ * GridSelect "showcase" theme: a compact, contemporary look in sky blue on top of gridselect.css.
  * Load it after gridselect.css. It sits in its own layer, declared after "gridselect",
  * so it wins over the default stylesheet and still loses to any CSS of your own.
  *
@@ -22,14 +22,14 @@
     --gs-subtle-border: #e2e8f0;
     --gs-field-bg: #ffffff;
     --gs-search-bg: #f8fafc;
-    --gs-accent: #0b9496;
+    --gs-accent: #0284c7;
     --gs-accent-fg: #0f172a;
-    --gs-accent-text: #00737a;
-    --gs-ring: #0b9496;
-    --gs-halo: rgb(11 148 150 / 0.18);
+    --gs-accent-text: #0369a1;
+    --gs-ring: #0284c7;
+    --gs-halo: rgb(2 132 199 / 0.18);
     --gs-hover: #f1f5f9;
-    --gs-selected-bg: #e3f5f5;
-    --gs-check: #0b7f82;
+    --gs-selected-bg: #e0f2fe;
+    --gs-check: #0369a1;
     --gs-key-bg: #f1f5f9;
     --gs-key-fg: #475569;
     --gs-key-selected-bg: #ffffff;
@@ -41,7 +41,7 @@
     --gs-gap: 0.25rem;
     --gs-item-min-height: 2rem;
     --gs-item-padding: 0.3rem 0.55rem;
-    --gs-item-min-width: 13rem;
+    --gs-item-min-width: 6rem;
     --gs-focus-width: 2px;
     --gs-panel-width: min(42rem, 100vw - 2rem);
     --gs-list-max-height: 17rem;
@@ -57,17 +57,17 @@
       --gs-subtle-border: #1f2937;
       --gs-field-bg: #1a2332;
       --gs-search-bg: #1a2332;
-      --gs-accent: #3cc6c8;
+      --gs-accent: #38bdf8;
       --gs-accent-fg: #e2e8f0;
-      --gs-accent-text: #3cc6c8;
-      --gs-ring: #3cc6c8;
-      --gs-halo: rgb(60 198 200 / 0.22);
+      --gs-accent-text: #7dd3fc;
+      --gs-ring: #38bdf8;
+      --gs-halo: rgb(56 189 248 / 0.22);
       --gs-hover: #1f2937;
-      --gs-selected-bg: #0f3537;
-      --gs-check: #3cc6c8;
+      --gs-selected-bg: #0c2d48;
+      --gs-check: #7dd3fc;
       --gs-key-bg: #273244;
       --gs-key-fg: #cbd5e1;
-      --gs-key-selected-bg: #164446;
+      --gs-key-selected-bg: #123e5e;
       --gs-shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 16px 40px -8px rgb(0 0 0 / 0.6);
       --gs-field-shadow: 0 1px 2px rgb(0 0 0 / 0.4);
     }
@@ -82,17 +82,17 @@
     --gs-subtle-border: #1f2937;
     --gs-field-bg: #1a2332;
     --gs-search-bg: #1a2332;
-    --gs-accent: #3cc6c8;
+    --gs-accent: #38bdf8;
     --gs-accent-fg: #e2e8f0;
-    --gs-accent-text: #3cc6c8;
-    --gs-ring: #3cc6c8;
-    --gs-halo: rgb(60 198 200 / 0.22);
+    --gs-accent-text: #7dd3fc;
+    --gs-ring: #38bdf8;
+    --gs-halo: rgb(56 189 248 / 0.22);
     --gs-hover: #1f2937;
-    --gs-selected-bg: #0f3537;
-    --gs-check: #3cc6c8;
+    --gs-selected-bg: #0c2d48;
+    --gs-check: #7dd3fc;
     --gs-key-bg: #273244;
     --gs-key-fg: #cbd5e1;
-    --gs-key-selected-bg: #164446;
+    --gs-key-selected-bg: #123e5e;
     --gs-shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 16px 40px -8px rgb(0 0 0 / 0.6);
     --gs-field-shadow: 0 1px 2px rgb(0 0 0 / 0.4);
   }
