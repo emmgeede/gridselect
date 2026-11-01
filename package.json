@@ -1,0 +1,29 @@
+{
+  "name": "gridselect",
+  "version": "0.0.0",
+  "description": "Dependency-free select component: chips for short lists, a searchable grid for long ones.",
+  "license": "MIT",
+  "author": "Michael Grossklos",
+  "repository": "github:emmgeede/gridselect",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/gridselect.d.ts",
+      "default": "./src/gridselect.js"
+    }
+  },
+  "files": [
+    "src",
+    "dist"
+  ],
+  "scripts": {
+    "test": "vitest run && npm run test:types",
+    "types": "tsc -p tsconfig.json",
+    "test:types": "npm run types && tsc -p test/tsconfig.json"
+  },
+  "devDependencies": {
+    "jsdom": "^30.1.3",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.5"
+  }
+}

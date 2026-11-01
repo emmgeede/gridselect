@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "rootDir": "src",
+    "outDir": "dist",
+    "target": "es2020",
+    "module": "nodenext",
+    "lib": ["es2022", "dom"],
+    "strict": true
+  },
+  "include": ["src"]
+}

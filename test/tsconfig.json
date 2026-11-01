@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "noEmit": true,
+    "strict": true,
+    "target": "es2020",
+    "module": "nodenext",
+    "lib": ["es2022", "dom"]
+  },
+  "include": ["types.ts"]
+}
