@@ -12,6 +12,8 @@ and breaking changes need a new major version.
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-11-01
+
 ### Added
 
 - Minified build `dist/gridselect.min.js` for use without a bundler
@@ -22,6 +24,10 @@ and breaking changes need a new major version.
 - Automated accessibility checks with axe-core (WCAG 2.0/2.1/2.2 A and AA)
   in every state, light and dark, on every push.
 - CI on GitHub Actions for unit and browser tests.
+
+### Fixed
+
+- Filtering no longer does quadratic work per keystroke.
 
 ## [0.6.0] - 2026-11-01
 
@@ -122,7 +128,8 @@ and breaking changes need a new major version.
   radios with different names. Warning for duplicate values.
 - TypeScript declarations generated from JSDoc.
 
-[Unreleased]: https://github.com/emmgeede/gridselect/compare/v0.6.0...HEAD
+[Unreleased]: https://github.com/emmgeede/gridselect/compare/v0.7.0...HEAD
+[0.7.0]: https://github.com/emmgeede/gridselect/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/emmgeede/gridselect/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/emmgeede/gridselect/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/emmgeede/gridselect/compare/v0.3.0...v0.4.0

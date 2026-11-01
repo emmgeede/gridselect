@@ -19,21 +19,21 @@ everything still works without JavaScript.
 **[Try the demo](https://emmgeede.github.io/gridselect/)**
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/filter-dark.png">
-  <img src="assets/filter-light.png" width="656" alt="A currency field with its panel open. The search input contains 'dollar' and six matching currencies are shown as numbered items in a four-column grid, the first one outlined as the cursor.">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/filter-dark.png">
+  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/filter-light.png" width="656" alt="A currency field with its panel open. The search input contains 'dollar' and six matching currencies are shown as numbered items in a four-column grid, the first one outlined as the cursor.">
 </picture>
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/short-dark.png">
-  <img src="assets/short-light.png" alt="A short list of four shipping options shown as rounded items with digit badges 1 to 4, the first one selected.">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/short-dark.png">
+  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/short-light.png" alt="A short list of four shipping options shown as rounded items with digit badges 1 to 4, the first one selected.">
 </picture>
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/highlight-dark.png">
-  <img src="assets/highlight-light.png" width="656" alt="Highlight mode: all currencies stay in place, the two krone entries are shown in bold teal, the others dimmed, digit badges switch to S1, S2 for the second tier.">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/highlight-dark.png">
+  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/highlight-light.png" width="656" alt="Highlight mode: all currencies stay in place, the two krone entries are shown in bold teal, the others dimmed, digit badges switch to S1, S2 for the second tier.">
 </picture>
 
-**Status:** version 0.6.0, early development, not on npm yet. Versions
+**Status:** version 0.7.0, early development, about to be published on npm. Versions
 follow [Semantic Versioning](https://semver.org/). See
 [Features](#features) for what works today and [CHANGELOG.md](CHANGELOG.md)
 for what changed.

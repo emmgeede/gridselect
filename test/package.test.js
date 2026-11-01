@@ -36,3 +36,12 @@ describe("npm package", () => {
     expect(Object.keys(pkg.exports)).toEqual([".", "./gridselect.css", "./dist/gridselect.min.js"]);
   });
 });
+
+describe("README on npm (QA F7)", () => {
+  it("uses absolute URLs for images, since assets/ is not in the package", () => {
+    const readme = readFileSync("README.md", "utf8");
+    const srcs = [...readme.matchAll(/(?:src|srcset)="([^"]+)"/g)].map((m) => m[1]);
+    expect(srcs.length).toBeGreaterThan(0);
+    expect(srcs.filter((s) => !s.startsWith("https://"))).toEqual([]);
+  });
+});
