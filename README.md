@@ -218,8 +218,14 @@ Current evergreen browsers (Chrome, Edge, Firefox, Safari).
 
 ```sh
 npm install
-npm test   # unit tests (Vitest + jsdom) and type check
+npm test          # unit tests (Vitest + jsdom) and type check
+npm run playground # manual test page at http://localhost:5173/playground/
 ```
+
+The playground loads `src/gridselect.js` directly and shows every variant:
+short and long radio groups, checkboxes, both search modes, the list layout,
+a form with `required`, `disabled`, submit and reset, and a log of the
+`change` events. Its styling is provisional until the stylesheet ships.
 
 ## License
 
