@@ -284,6 +284,24 @@ never forces one column. In the `flow` layout (`.gridselect__items--flow`)
 the items run one after another and wrap; arrow up and down jump to the item
 in the row above or below whose centre is closest.
 
+<a href="https://emmgeede.github.io/gridselect/">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/layout-grid-dark.png?v=1">
+  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/layout-grid-light.png?v=1" width="100%" alt="Grid layout: a country panel with five columns of equally wide items, as wide as the longest country name.">
+</picture>
+</a>
+
+<sub><b>Grid layout (default).</b> Every column is as wide as the widest country name, so 27 short names fit in five columns.</sub>
+
+<a href="https://emmgeede.github.io/gridselect/">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/layout-flow-dark.png?v=1">
+  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/layout-flow-light.png?v=1" width="100%" alt="Flow layout: currency items of different widths running one after another and wrapping like chips.">
+</picture>
+</a>
+
+<sub><b>Flow layout</b> (<code>data-layout="flow"</code>). Each item is as wide as its label, and the items wrap like chips.</sub>
+
 Style the states through attributes: `[aria-expanded="true"]` on the field,
 `[aria-selected="true"]` on the selected item, `[data-cursor]` on the item
 the arrow keys are on, `[aria-disabled="true"]` on disabled ones, and
@@ -336,6 +354,17 @@ checkbox) and keeps the panel open with the search as it was, so you can
 filter for "dollar" and tick several in a row. The field shows one or two
 labels, or `selectedText(n)` for more. `gs.value` is always an array.
 
+<a href="https://emmgeede.github.io/gridselect/">
+<picture>
+  <source media="(prefers-reduced-motion: reduce) and (prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/multiple-dark.png?v=1">
+  <source media="(prefers-reduced-motion: reduce)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/multiple-light.png?v=1">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/multiple-dark.webp?v=1">
+  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/multiple-light.webp?v=1" width="100%" alt="Animation: the watchlist panel opens, 'dollar' filters it, Enter ticks US dollar, arrow right and Enter tick Canadian dollar, the digit 4 ticks New Zealand dollar, the field reads '3 selected', Escape closes the panel.">
+</picture>
+</a>
+
+<sub><b>Multiple choice.</b> Enter, a click or a digit ticks an item and the panel stays open with the search as it was. The field shows the labels, from three on "3 selected".</sub>
+
 ### `<select>` as source
 
 A wrapper may hold one `<select>` instead of radios:
@@ -384,6 +413,17 @@ it in the label, e.g. `Swiss franc (CHF)`.
 - `highlight`: items never move. Matches get `data-match`, the rest
   `data-dimmed`, the cursor jumps to the first match and arrow keys still
   reach every item, so frequent users can rely on positions.
+
+<a href="https://emmgeede.github.io/gridselect/">
+<picture>
+  <source media="(prefers-reduced-motion: reduce) and (prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/search-dark.png?v=1">
+  <source media="(prefers-reduced-motion: reduce)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/search-light.png?v=1">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/search-dark.webp?v=1">
+  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/search-light.webp?v=1" width="100%" alt="Animation: the currency panel opens and 'dollar' is typed letter by letter. With every letter fewer currencies remain, renumbered from 1, until six dollar currencies are left.">
+</picture>
+</a>
+
+<sub><b>Filter mode.</b> Every letter narrows the list, the matches are renumbered from 1 and the cursor stays on the first one. The highlight mode is shown at the top of this README.</sub>
 
 With `match: "fuzzy"` (or `data-match-mode="fuzzy"`) the letters of each
 word only need to appear in order, gaps allowed, and words may come in any
@@ -519,6 +559,17 @@ Above the threshold:
 | Panel | Tab, Shift+Tab, click outside | Close without change, focus moves on as usual |
 | Panel | Digit (per tier) | Pick that item and close (toggle it in multiple choice) |
 
+<a href="https://emmgeede.github.io/gridselect/">
+<picture>
+  <source media="(prefers-reduced-motion: reduce) and (prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/keyboard-dark.png?v=1">
+  <source media="(prefers-reduced-motion: reduce)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/keyboard-light.png?v=1">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/keyboard-dark.webp?v=1">
+  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/keyboard-light.webp?v=1" width="100%" alt="Animation: Enter opens the currency panel, the cursor outline moves right twice, down twice and left once, Enter picks Polish złoty and the panel closes with it in the field.">
+</picture>
+</a>
+
+<sub><b>Keyboard.</b> Arrow keys move the outlined cursor through the grid, Enter picks the entry and closes the panel. The key in the top right corner is the one just pressed.</sub>
+
 ### Digit shortcuts
 
 Every entry gets a digit: 1 to 9 and 0 pick the first ten, the next tier
@@ -527,6 +578,17 @@ work while the focus is in the group (a radio gets checked and focused, a
 checkbox toggles). In the panel they always pick and are never typed into
 the search; in `filter` mode the visible matches are renumbered from 1, in
 `highlight` mode the numbers stay put.
+
+<a href="https://emmgeede.github.io/gridselect/">
+<picture>
+  <source media="(prefers-reduced-motion: reduce) and (prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/digits-dark.png?v=1">
+  <source media="(prefers-reduced-motion: reduce)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/digits-light.png?v=1">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/digits-dark.webp?v=1">
+  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/digits-light.webp?v=1" width="100%" alt="Animation: Enter opens the currency panel with digit badges 1 to 0, then S1 to S0 and A1. Pressing 4 picks Pound sterling and closes the panel. After reopening, Shift and 3 picks Brazilian real, badge S3.">
+</picture>
+</a>
+
+<sub><b>Digit shortcuts.</b> The badge shows the key: 4 picks the fourth entry, Shift+3 (badge S3) the thirteenth. The panel closes right away.</sub>
 
 ```js
 gridselect(el, { shortcuts: ["", "Shift", "Alt"] });      // default
@@ -618,7 +680,7 @@ npm install
 npm test             # unit tests (Vitest + jsdom), type check, package contents
 npm run test:e2e     # browser tests (Playwright, Chromium) incl. axe-core checks
 npm run build        # dist/gridselect.d.ts and dist/gridselect.min.js
-npm run screenshots  # README images in assets/, from the demo page
+npm run screenshots  # README images and animations in assets/, from the demo page (needs ImageMagick)
 npm run playground   # http://localhost:5173/playground/ (tests) and /demo/
 ```
 

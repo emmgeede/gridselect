@@ -12,6 +12,12 @@ and breaking changes need a new major version.
 
 ## [Unreleased]
 
+### Added
+
+- README images for the grid and flow layouts, and animations for search,
+  multiple choice, keyboard navigation and digit shortcuts. With reduced
+  motion turned on, a still image replaces each animation.
+
 ## [0.12.1] - 2026-11-01
 
 ### Fixed
