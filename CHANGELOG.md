@@ -12,6 +12,11 @@ and breaking changes need a new major version.
 
 ## [Unreleased]
 
+### Changed
+
+- README: installation right after the introduction, screenshots at full
+  width with three columns in the panel and a slightly darker backdrop.
+
 ## [0.8.0] - 2026-11-01
 
 ### Added

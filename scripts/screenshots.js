@@ -6,8 +6,8 @@ import { writeFileSync } from "node:fs";
 
 // Light, neutral backdrops in both modes, so the component (light or dark) stands out.
 const STAGE = {
-  light: "linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 55%, #e6f4f4 100%)",
-  dark: "linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 55%, #d5e6e7 100%)",
+  light: "linear-gradient(135deg, #d9e0e8 0%, #c5ced9 55%, #c6dcdd 100%)",
+  dark: "linear-gradient(135deg, #c5ced9 0%, #aeb9c7 55%, #b0cbcd 100%)",
 };
 
 /**
@@ -23,7 +23,7 @@ async function shoot(page, scheme, id, act = async () => {}) {
     const stage = document.createElement("div");
     stage.id = "shot-stage";
     Object.assign(stage.style, {
-      position: "absolute", top: "40px", left: "40px", width: "760px", boxSizing: "border-box",
+      position: "absolute", top: "40px", left: "40px", width: "1000px", boxSizing: "border-box",
       padding: "48px 56px", borderRadius: "28px", background, fontSize: "16px", zIndex: "1000",
     });
     const card = document.createElement("div");
@@ -67,7 +67,7 @@ for (const scheme of ["light", "dark"]) {
   for (const [name, take] of Object.entries(shots)) {
     test(`${name} ${scheme}`, async ({ page }) => {
       await page.emulateMedia({ colorScheme: scheme });
-      await page.setViewportSize({ width: 860, height: 1200 });
+      await page.setViewportSize({ width: 1100, height: 1200 });
       await page.goto("/demo/");
       writeFileSync(`assets/${name}-${scheme}.png`, await take(page, scheme));
     });

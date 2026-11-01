@@ -20,17 +20,17 @@ everything still works without JavaScript.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/filter-dark.png">
-  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/filter-light.png" width="656" alt="A currency field with its panel open. The search input contains 'dollar' and six matching currencies are shown as numbered items in a four-column grid, the first one outlined as the cursor.">
+  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/filter-light.png" width="100%" alt="A currency field with its panel open. The search input contains 'dollar' and six matching currencies are shown as numbered items in a four-column grid, the first one outlined as the cursor.">
 </picture>
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/short-dark.png">
-  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/short-light.png" alt="A short list of four shipping options shown as rounded items with digit badges 1 to 4, the first one selected.">
+  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/short-light.png" width="100%" alt="A short list of four shipping options shown as rounded items with digit badges 1 to 4, the first one selected.">
 </picture>
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/highlight-dark.png">
-  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/highlight-light.png" width="656" alt="Highlight mode: all currencies stay in place, the two krone entries are shown in bold teal, the others dimmed, digit badges switch to S1, S2 for the second tier.">
+  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/highlight-light.png" width="100%" alt="Highlight mode: all currencies stay in place, the two krone entries are shown in bold teal, the others dimmed, digit badges switch to S1, S2 for the second tier.">
 </picture>
 
 **Status:** version 0.8.0, early development. Published on npm as
@@ -40,8 +40,32 @@ follow [Semantic Versioning](https://semver.org/). See
 [Features](#features) for what works today and [CHANGELOG.md](CHANGELOG.md)
 for what changed.
 
+## Installation
+
+```sh
+npm install @emmgeede/gridselect
+```
+
+```js
+import { gridselect } from "@emmgeede/gridselect";
+import "@emmgeede/gridselect/gridselect.css"; // optional
+```
+
+Without a bundler, from a CDN (`window.gridselect`):
+
+```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@emmgeede/gridselect@0/src/gridselect.css">
+<script src="https://cdn.jsdelivr.net/npm/@emmgeede/gridselect@0/dist/gridselect.min.js"></script>
+<script>
+  document.querySelectorAll("[data-gridselect]").forEach((el) => gridselect(el));
+</script>
+```
+
+
+
 ## Contents
 
+- [Installation](#installation)
 - [Usage](#usage)
   - [Reacting to changes](#reacting-to-changes)
   - [Several at once](#several-at-once)
@@ -61,7 +85,6 @@ for what changed.
   - [Digit shortcuts](#digit-shortcuts)
 - [Accessibility](#accessibility)
 - [Features](#features)
-- [Installation](#installation)
 - [Browser support](#browser-support)
 - [Development](#development)
 - [License](#license)
@@ -453,28 +476,6 @@ come.
 | Options from a JS array | later |
 | `<grid-select>` custom element | later |
 | Fuzzy search, theme gallery, React/Vue wrappers | ideas |
-
-## Installation
-
-```sh
-npm install @emmgeede/gridselect
-```
-
-```js
-import { gridselect } from "@emmgeede/gridselect";
-import "@emmgeede/gridselect/gridselect.css"; // optional
-```
-
-Without a bundler, from a CDN (`window.gridselect`):
-
-```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@emmgeede/gridselect@0/src/gridselect.css">
-<script src="https://cdn.jsdelivr.net/npm/@emmgeede/gridselect@0/dist/gridselect.min.js"></script>
-<script>
-  document.querySelectorAll("[data-gridselect]").forEach((el) => gridselect(el));
-</script>
-```
-
 
 ## Browser support
 
