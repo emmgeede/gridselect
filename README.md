@@ -411,7 +411,7 @@ come.
 | Digit shortcuts with configurable modifier tiers | available |
 | `<select>` as source | available |
 | Optional stylesheet with CSS variables, light and dark | available |
-| npm release and demo page | demo online, npm release pending |
+| npm release and demo page | available |
 | Multiple choice in the grid panel, `<select multiple>` | later |
 | Options from a JS array | later |
 | `<grid-select>` custom element | later |
