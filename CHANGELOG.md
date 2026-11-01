@@ -12,6 +12,17 @@ and breaking changes need a new major version.
 
 ## [Unreleased]
 
+### Added
+
+- Minified build `dist/gridselect.min.js` for use without a bundler
+  (`window.gridselect`), CDN fields `unpkg` and `jsdelivr`, tests and build
+  run before every publish.
+- Demo page, published on GitHub Pages: https://emmgeede.github.io/gridselect/
+- README screenshots (light and dark), badges, installation section.
+- Automated accessibility checks with axe-core (WCAG 2.0/2.1/2.2 A and AA)
+  in every state, light and dark, on every push.
+- CI on GitHub Actions for unit and browser tests.
+
 ## [0.6.0] - 2026-11-01
 
 ### Added

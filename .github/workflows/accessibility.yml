@@ -1,0 +1,20 @@
+name: Accessibility
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  axe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      # axe-core, WCAG 2.0/2.1/2.2 A and AA, every state, light and dark
+      - run: npx playwright test e2e/a11y.e2e.js e2e/demo.e2e.js

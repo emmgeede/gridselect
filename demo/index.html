@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GridSelect demo</title>
+<meta name="description" content="GridSelect: a dependency-free select for short and long lists, with search, keyboard navigation and digit shortcuts.">
+<link rel="stylesheet" href="../src/gridselect.css">
+<style>
+  /* Page layout only. Everything GridSelect shows comes from src/gridselect.css. */
+  :root { --page-bg: #F5F7FA; --page-fg: #0E1117; --page-card: #FFFFFF; --page-line: #7A8494; --page-muted: #636B78; --page-link: #00787B; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --page-bg: #0E1117; --page-fg: #DEE4EE; --page-card: #171D28; --page-line: #7E8CA0; --page-muted: #9CA3AF; --page-link: #03A2A5; }
+  }
+  :root[data-theme="dark"] { --page-bg: #0E1117; --page-fg: #DEE4EE; --page-card: #171D28; --page-line: #7E8CA0; --page-muted: #9CA3AF; --page-link: #03A2A5; }
+
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 16px/1.55 system-ui, sans-serif; background: var(--page-bg); color: var(--page-fg); }
+  main { max-width: 56rem; margin: 0 auto; padding: 2rem 1rem 4rem; }
+  header { display: flex; justify-content: space-between; align-items: start; gap: 1rem; flex-wrap: wrap; }
+  h1 { font-size: 1.9rem; margin: 0 0 .25rem; }
+  h2 { font-size: 1.15rem; margin: 0 0 .25rem; }
+  p { margin: 0 0 .75rem; }
+  .lead { color: var(--page-muted); max-width: 40rem; }
+  a { color: var(--page-link); }
+  section { background: var(--page-card); border: 1px solid var(--page-line); border-radius: .75rem; padding: 1.25rem; margin-top: 1.25rem; }
+  .note { color: var(--page-muted); font-size: .92rem; }
+  pre { background: var(--page-bg); border: 1px solid var(--page-line); border-radius: .5rem; padding: .75rem; overflow-x: auto; font-size: .85rem; margin: 1rem 0 0; }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  button.plain { font: inherit; color: inherit; background: var(--page-bg); border: 1px solid var(--page-line); border-radius: .5rem; padding: .3rem .8rem; cursor: pointer; }
+  button.plain:focus-visible { outline: 2px solid var(--page-link); outline-offset: 2px; }
+  .demo { min-height: 3rem; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div>
+      <h1>GridSelect</h1>
+      <p class="lead">A dependency-free select for any list length. Short lists stay visible, long ones open a searchable grid. Native inputs underneath, full keyboard support, digit shortcuts, light and dark mode.</p>
+      <p><a href="https://github.com/emmgeede/gridselect">Source and documentation on GitHub</a></p>
+    </div>
+    <button class="plain" id="theme" type="button">Theme: auto</button>
+  </header>
+
+  <section>
+    <h2>Short list</h2>
+    <p class="note">Up to 10 entries the radios stay visible. Arrow keys move, digits pick directly.</p>
+    <div class="demo">
+      <fieldset data-gridselect id="short"><legend>Shipping</legend></fieldset>
+    </div>
+    <pre><code>&lt;fieldset data-gridselect&gt;
+  &lt;legend&gt;Shipping&lt;/legend&gt;
+  &lt;label&gt;&lt;input type="radio" name="ship" value="std" checked&gt; Standard&lt;/label&gt;
+  …
+&lt;/fieldset&gt;
+
+gridselect(document.querySelector("[data-gridselect]"));</code></pre>
+  </section>
+
+  <section>
+    <h2>Multiple choice</h2>
+    <p class="note">Checkbox groups work the same way. Space or a digit toggles.</p>
+    <fieldset data-gridselect id="checks"><legend>Extras</legend></fieldset>
+  </section>
+
+  <section>
+    <h2>Long list with filter</h2>
+    <p class="note">More than 10 entries: a compact field opens a panel. Type to filter (try <code>dollar</code> or <code>zur</code>), arrows move through the grid, Enter or a digit picks.</p>
+    <div class="demo">
+      <fieldset data-gridselect id="filter"><legend>Currency</legend></fieldset>
+    </div>
+  </section>
+
+  <section>
+    <h2>Long list with highlight</h2>
+    <p class="note">Items never move, matches are marked. Good for lists people use every day.</p>
+    <div class="demo">
+      <fieldset data-gridselect data-search="highlight" id="highlight"><legend>Currency</legend></fieldset>
+    </div>
+    <pre><code>&lt;fieldset data-gridselect data-search="highlight"&gt; … &lt;/fieldset&gt;</code></pre>
+  </section>
+
+  <section>
+    <h2>Long labels</h2>
+    <p class="note"><code>data-layout="list"</code> stacks the items in one column.</p>
+    <div class="demo">
+      <fieldset data-gridselect data-layout="list" id="list"><legend>Text module</legend></fieldset>
+    </div>
+  </section>
+
+  <section>
+    <h2>From a plain select</h2>
+    <p class="note">An existing <code>&lt;select&gt;</code> keeps working in your form. The empty first option becomes the placeholder.</p>
+    <div class="demo">
+      <div data-gridselect id="select">
+        <label for="country">Country</label>
+        <select id="country" name="country">
+          <option value="">Choose a country…</option>
+          <option value="at">Austria</option><option value="be">Belgium</option><option value="dk">Denmark</option>
+          <option value="fi">Finland</option><option value="fr">France</option><option value="de">Germany</option>
+          <option value="it">Italy</option><option value="nl">Netherlands</option><option value="pt">Portugal</option>
+          <option value="es">Spain</option><option value="se">Sweden</option><option value="ch">Switzerland</option>
+        </select>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script type="module">
+  import { gridselect } from "../src/gridselect.js";
+
+  const currencies = ["Euro (EUR)", "Swiss franc (CHF)", "US dollar (USD)", "Pound sterling (GBP)", "Japanese yen (JPY)",
+    "Danish krone (DKK)", "Norwegian krone (NOK)", "Swedish krona (SEK)", "Polish złoty (PLN)", "Czech koruna (CZK)",
+    "Hungarian forint (HUF)", "Turkish lira (TRY)", "Brazilian real (BRL)", "South African rand (ZAR)", "Canadian dollar (CAD)",
+    "Australian dollar (AUD)", "New Zealand dollar (NZD)", "Mexican peso (MXN)", "Chilean peso (CLP)", "Indian rupee (INR)",
+    "Chinese yuan (CNY)", "Hong Kong dollar (HKD)", "Singapore dollar (SGD)", "Thai baht (THB)", "South Korean won (KRW)",
+    "Israeli shekel (ILS)", "Emirati dirham (AED)", "Saudi riyal (SAR)", "Egyptian pound (EGP)", "Moroccan dirham (MAD)",
+    "Icelandic króna (ISK)", "Romanian leu (RON)", "Bulgarian lev (BGN)", "Serbian dinar (RSD)", "Ukrainian hryvnia (UAH)",
+    "Georgian lari (GEL)", "Kenyan shilling (KES)", "Nigerian naira (NGN)", "Philippine peso (PHP)", "Zürich test entry (ZZZ)"];
+  const modules = ["Standard reply: thank you for your message, we will get back to you within two working days.",
+    "Reminder: the requested documents are still missing, please send them by the end of the month.",
+    "Approval: your application has been approved, the confirmation follows by post.",
+    "Rejection: unfortunately we cannot approve your application, the reasons are listed below.",
+    "Forwarding: your request has been passed on to the responsible department.",
+    "Appointment: please choose a date from the attached list and confirm it by phone.",
+    "Address change: we have updated your address, no further action is needed.",
+    "Payment received: thank you, the amount has been booked to your account.",
+    "Cancellation: your contract ends on the date stated, you will receive a final statement.",
+    "Request for details: please describe the incident in more detail so we can process it.",
+    "Holiday notice: our office is closed between the holidays, urgent matters by phone only."];
+
+  /** Fills a wrapper with native inputs. Text goes in as text only. */
+  function fill(id, labels, { type = "radio", checked = -1 } = {}) {
+    const wrapper = document.getElementById(id);
+    labels.forEach((text, i) => {
+      const label = document.createElement("label");
+      const input = document.createElement("input");
+      input.type = type;
+      input.name = id;
+      input.value = text.match(/\(([A-Z]{3})\)/)?.[1] ?? `${id}-${i}`;
+      input.checked = i === checked;
+      label.append(input, " ", text);
+      wrapper.append(label);
+    });
+  }
+
+  fill("short", ["Standard", "Express", "Next day", "Pick-up"], { checked: 0 });
+  fill("checks", ["Gift wrap", "Insurance", "Newsletter"], { type: "checkbox" });
+  fill("filter", currencies, { checked: 1 });
+  fill("highlight", currencies);
+  fill("list", modules);
+  document.querySelectorAll("[data-gridselect]").forEach((el) => gridselect(el));
+
+  const themes = ["auto", "light", "dark"];
+  const button = document.getElementById("theme");
+  button.addEventListener("click", () => {
+    const next = themes[(themes.indexOf(button.dataset.theme ?? "auto") + 1) % themes.length];
+    button.dataset.theme = next;
+    button.textContent = `Theme: ${next}`;
+    if (next === "auto") document.documentElement.removeAttribute("data-theme");
+    else document.documentElement.dataset.theme = next;
+  });
+</script>
+</body>
+</html>

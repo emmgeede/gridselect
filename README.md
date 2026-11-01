@@ -1,16 +1,40 @@
 # GridSelect
 
+[![npm version](https://img.shields.io/npm/v/gridselect)](https://www.npmjs.com/package/gridselect)
+[![CI](https://github.com/emmgeede/gridselect/actions/workflows/ci.yml/badge.svg)](https://github.com/emmgeede/gridselect/actions/workflows/ci.yml)
+[![Accessibility](https://github.com/emmgeede/gridselect/actions/workflows/accessibility.yml/badge.svg)](https://github.com/emmgeede/gridselect/actions/workflows/accessibility.yml)
+[![Bundle size](https://img.shields.io/bundlejs/size/gridselect)](https://bundlejs.com/?q=gridselect)
+[![License: MIT](https://img.shields.io/github/license/emmgeede/gridselect)](LICENSE)
+
 A dependency-free JavaScript component for picking from a list of choices.
-You write a plain radio or checkbox group (or, later, a `<select>`), wrap it,
-and GridSelect does the rest. Short lists stay visible as plain inputs. Radio
-groups with more than 10 entries switch to a compact field that opens a panel
-with a search input and a multi-column grid of items, fully keyboard
-accessible. Typing filters the items, or highlights matches in place.
+You write a plain radio group, checkbox group or `<select>`, wrap it, and
+GridSelect does the rest. Short lists stay visible as items. Longer lists
+switch to a compact field that opens a panel with a search input and a
+multi-column grid, fully keyboard accessible. Typing filters the items, or
+highlights matches in place, and digits pick an entry directly.
 
 Your markup stays native, so forms submit, reset and validate as usual, and
 everything still works without JavaScript.
 
-**Status:** version 0.6.0, early development, not released on npm yet. Versions follow [Semantic Versioning](https://semver.org/). See
+**[Try the demo](https://emmgeede.github.io/gridselect/)**
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/filter-dark.png">
+  <img src="assets/filter-light.png" width="656" alt="A currency field with its panel open. The search input contains 'dollar' and six matching currencies are shown as numbered items in a four-column grid, the first one outlined as the cursor.">
+</picture>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/short-dark.png">
+  <img src="assets/short-light.png" alt="A short list of four shipping options shown as rounded items with digit badges 1 to 4, the first one selected.">
+</picture>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/highlight-dark.png">
+  <img src="assets/highlight-light.png" width="656" alt="Highlight mode: all currencies stay in place, the two krone entries are shown in bold teal, the others dimmed, digit badges switch to S1, S2 for the second tier.">
+</picture>
+
+**Status:** version 0.6.0, early development, not on npm yet. Versions
+follow [Semantic Versioning](https://semver.org/). See
 [Features](#features) for what works today and [CHANGELOG.md](CHANGELOG.md)
 for what changed.
 
@@ -33,6 +57,7 @@ for what changed.
   - [Digit shortcuts](#digit-shortcuts)
 - [Accessibility](#accessibility)
 - [Features](#features)
+- [Installation](#installation)
 - [Browser support](#browser-support)
 - [Development](#development)
 - [License](#license)
@@ -368,8 +393,11 @@ GridSelect is built for WCAG 2.2 level AA:
 Conformance is a property of the whole page, so a few things stay with you:
 give every group a name, keep sufficient contrast if you write your own CSS,
 and keep focus outlines visible. The behaviour above is covered by unit and
-browser tests. An automated axe-core check and a manual screen reader pass
-(NVDA, VoiceOver) are planned before the first release.
+browser tests, and axe-core checks every state (closed, open, filtered,
+highlighted, no matches, invalid) for WCAG 2.0, 2.1 and 2.2 A and AA in
+light and dark mode on every push; the Accessibility badge above shows the
+result. A manual screen reader pass (Orca, NVDA, VoiceOver) is still to
+come.
 
 ## Features
 
@@ -381,11 +409,34 @@ browser tests. An automated axe-core check and a manual screen reader pass
 | Digit shortcuts with configurable modifier tiers | available |
 | `<select>` as source | available |
 | Optional stylesheet with CSS variables, light and dark | available |
-| npm release and demo page | planned |
+| npm release and demo page | demo online, npm release pending |
 | Multiple choice in the grid panel, `<select multiple>` | later |
 | Options from a JS array | later |
 | `<grid-select>` custom element | later |
 | Fuzzy search, theme gallery, React/Vue wrappers | ideas |
+
+## Installation
+
+```sh
+npm install gridselect
+```
+
+```js
+import { gridselect } from "gridselect";
+import "gridselect/gridselect.css"; // optional
+```
+
+Without a bundler, from a CDN (`window.gridselect`):
+
+```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gridselect@0/src/gridselect.css">
+<script src="https://cdn.jsdelivr.net/npm/gridselect@0/dist/gridselect.min.js"></script>
+<script>
+  document.querySelectorAll("[data-gridselect]").forEach((el) => gridselect(el));
+</script>
+```
+
+The package is not on npm yet, these lines work from the first release on.
 
 ## Browser support
 
@@ -395,9 +446,11 @@ Current evergreen browsers (Chrome, Edge, Firefox, Safari).
 
 ```sh
 npm install
-npm test           # unit tests (Vitest + jsdom) and type check
-npm run test:e2e   # browser tests (Playwright, Chromium) against the playground
-npm run playground # manual test page at http://localhost:5173/playground/
+npm test             # unit tests (Vitest + jsdom), type check, package contents
+npm run test:e2e     # browser tests (Playwright, Chromium) incl. axe-core checks
+npm run build        # dist/gridselect.d.ts and dist/gridselect.min.js
+npm run screenshots  # README images in assets/, from the demo page
+npm run playground   # http://localhost:5173/playground/ (tests) and /demo/
 ```
 
 The playground loads `src/gridselect.js` directly and shows every variant:
