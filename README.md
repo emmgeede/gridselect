@@ -196,7 +196,7 @@ from the element.
 | `label` | Group name, becomes the `<legend>`. Without `label` or `aria-label` the console warns, a group needs a name |
 | `multiple` | Checkboxes instead of radios |
 | `value` | Initial choice, comma-separated with `multiple`. Without it, `selected` options count |
-| `threshold`, `layout`, `search`, `placeholder`, `search-placeholder` | As the options of the same name |
+| `threshold`, `layout`, `search`, `match`, `placeholder`, `search-placeholder` | As the options of the same name |
 | `shortcuts` | `off`, or tiers separated by commas, e.g. `,Shift,Alt` |
 | `required`, `disabled` | As on native inputs |
 
@@ -233,6 +233,7 @@ value wins, for checkboxes all of them are set.
 | `placeholder` | | `"Select…"` | Field text while nothing is selected |
 | `searchPlaceholder` | | `"Search…"` | Placeholder of the search input |
 | `search` | `data-search` | `"filter"` | `"filter"` hides non-matches, `"highlight"` keeps every item in place and marks matches |
+| `match` | `data-match-mode` | `"substring"` | `"fuzzy"` matches letters in order with gaps and words in any order, see [Search](#search) |
 | `noResultsText` | | `"No matches"` | Hint (filter mode) and announcement when nothing matches |
 | `resultsText` | | `n => n === 1 ? "1 result" : n + " results"` | Screen reader announcement of the match count. A function, so plural rules of any language fit |
 | `selectedText` | | `n => n + " selected"` | Field text of a multiple choice group with more than two entries chosen (one or two show their labels) |
@@ -367,6 +368,12 @@ it in the label, e.g. `Swiss franc (CHF)`.
 - `highlight`: items never move. Matches get `data-match`, the rest
   `data-dimmed`, the cursor jumps to the first match and arrow keys still
   reach every item, so frequent users can rely on positions.
+
+With `match: "fuzzy"` (or `data-match-mode="fuzzy"`) the letters of each
+word only need to appear in order, gaps allowed, and words may come in any
+order: `nzd` finds "New Zealand dollar", `swfr` finds "Swiss franc", and
+`franc swiss` finds it too. In filter mode better matches come first (letters
+at word starts and in a row); there is no typo tolerance.
 
 A visually hidden `[data-gridselect-status]` (`role="status"`) announces the
 number of matches to screen readers. The search starts empty on every open.
@@ -580,7 +587,8 @@ come.
 | Multiple choice in the grid panel, `<select multiple>` | available |
 | Entries from a JS array, `setItems()` | available |
 | `<grid-select>` custom element | available |
-| Fuzzy search, theme gallery, React/Vue wrappers | ideas |
+| Fuzzy matching | available (next release) |
+| Theme gallery, React/Vue wrappers, `<optgroup>` headings | ideas |
 
 ## Browser support
 

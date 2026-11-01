@@ -12,6 +12,12 @@ and breaking changes need a new major version.
 
 ## [Unreleased]
 
+### Added
+
+- Fuzzy matching, option `match: "fuzzy"` (`data-match-mode`, element
+  attribute `match`): letters of each word in order with gaps, words in any
+  order, better matches first in filter mode. Works with both search modes.
+
 ### Fixed
 
 - The published demo missed `src/element.js` and showed nothing interactive.

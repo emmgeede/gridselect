@@ -3,7 +3,7 @@
 // <option> children (or the `items` property), so styles, forms and screen readers need nothing extra.
 import { gridselect } from "./gridselect.js";
 
-const ATTRIBUTES = ["name", "label", "aria-label", "multiple", "value", "threshold", "layout", "search",
+const ATTRIBUTES = ["name", "label", "aria-label", "multiple", "value", "threshold", "layout", "search", "match",
   "shortcuts", "placeholder", "search-placeholder", "required", "disabled"];
 
 // Server-side rendering has no HTMLElement; importing must not throw there.
@@ -156,6 +156,7 @@ export class GridSelectElement extends Base {
       threshold: threshold !== null && /^\d+$/.test(threshold) ? Number(threshold) : undefined,
       layout: /** @type {any} */ (attr("layout") ?? undefined),
       search: /** @type {any} */ (attr("search") ?? undefined),
+      match: /** @type {any} */ (attr("match") ?? undefined),
       placeholder: attr("placeholder") ?? placeholderOption?.label ?? undefined,
       searchPlaceholder: attr("search-placeholder") ?? undefined,
       shortcuts: shortcuts === null ? undefined : shortcuts === "off" ? false : shortcuts.split(",").map((s) => s.trim()),

@@ -36,6 +36,12 @@ for (const scheme of ["light", "dark"]) {
       await check(page, "no matches");
     });
 
+    test("fuzzy filtered", async ({ page }) => {
+      await field(page, "fuzzy").click();
+      await page.locator("#fuzzy [data-gridselect-search]").fill("swfr");
+      await check(page, "fuzzy");
+    });
+
     test("highlighted", async ({ page }) => {
       await field(page, "highlight").click();
       await page.locator("#highlight [data-gridselect-search]").fill("dollar");

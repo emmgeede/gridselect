@@ -28,6 +28,8 @@
  *   matches. Default `n => n === 1 ? "1 result" : n + " results"`.
  * @property {"filter" | "highlight"} [search] "filter" hides non-matches, "highlight" keeps every
  *   item in place and marks matches (data-match) and non-matches (data-dimmed). Default "filter".
+ * @property {"substring" | "fuzzy"} [match] How the query matches labels: "substring" (default) or
+ *   "fuzzy" (letters in order with gaps, words in any order, better matches first in filter mode).
  * @property {Item[]} [items] Entries for an empty wrapper: GridSelect builds native radios (or
  *   checkboxes with `multiple`) from them. Strings and numbers are value and label at once.
  * @property {string} [name] Form name of the inputs built from `items`. Without it they are not submitted.
@@ -587,6 +589,28 @@ function setHidden(el, hide) {
   el.style.display = hide ? "none" : "";
 }
 
+/**
+ * Fuzzy score (higher is better) or -1: every word of the query must occur as a subsequence of
+ * the text. Matches at word starts and runs of consecutive letters score higher.
+ * @param {string} text folded label
+ * @param {string} query folded query
+ */
+function fuzzyScore(text, query) {
+  let total = 0;
+  for (const word of query.split(/\s+/)) {
+    let pos = -1;
+    let run = 0;
+    for (const ch of word) {
+      const at = text.indexOf(ch, pos + 1);
+      if (at < 0) return -1;
+      run = at === pos + 1 ? run + 1 : 0;
+      total += 1 + run * 2 + (at === 0 || !/[\p{L}\p{N}]/u.test(text[at - 1]) ? 3 : 0);
+      pos = at;
+    }
+  }
+  return total;
+}
+
 /** Lowercase without accents, so "zur" finds "Zürich". @param {string} text */
 const fold = (text) => text.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
 
@@ -671,6 +695,7 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
   panel.append(search, scroller, empty, status);
   const keys = radios.map((r) => fold(labelText(r)));
   const highlight = (opts.search ?? wrapper.getAttribute("data-search")) === "highlight";
+  const fuzzy = (opts.match ?? wrapper.getAttribute("data-match-mode")) === "fuzzy";
 
   // Group name: <legend>, else the wrapper's aria-labelledby or aria-label.
   const legend = wrapper.querySelector(":scope > legend");
@@ -735,25 +760,34 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
   // and non-matches get marked. An empty query restores the plain list in both modes.
   function applyQuery() {
     const query = fold(search.value.trim());
-    /** @type {number[]} */ const starts = [];
-    /** @type {number[]} */ const contains = [];
-    keys.forEach((key, i) => {
-      const pos = key.indexOf(query);
-      if (pos === 0) starts.push(i);
-      else if (pos > 0) contains.push(i);
-    });
+    /** @type {number[]} matching items, best first */
+    let matched;
+    if (fuzzy) {
+      const scored = keys.map((key, i) => ({ i, s: fuzzyScore(key, query) })).filter((x) => x.s >= 0);
+      matched = scored.sort((a, b) => b.s - a.s || a.i - b.i).map((x) => x.i);
+    } else {
+      /** @type {number[]} */ const starts = [];
+      /** @type {number[]} */ const contains = [];
+      keys.forEach((key, i) => {
+        const pos = key.indexOf(query);
+        if (pos === 0) starts.push(i);
+        else if (pos > 0) contains.push(i);
+      });
+      matched = [...starts, ...contains];
+    }
+    const isMatch = new Set(matched);
     const all = items.map((_, i) => i);
     if (highlight) {
-      const firstMatch = all.find((i) => keys[i].includes(query));
+      const firstMatch = all.find((i) => isMatch.has(i));
       items.forEach((item, i) => {
-        item.toggleAttribute("data-match", !!query && keys[i].includes(query));
-        item.toggleAttribute("data-dimmed", !!query && !keys[i].includes(query));
+        item.toggleAttribute("data-match", !!query && isMatch.has(i));
+        item.toggleAttribute("data-dimmed", !!query && !isMatch.has(i));
       });
       order = all;
       if (!query) cursorToSelection();
       else if (firstMatch !== undefined) setCursor(firstMatch);
     } else {
-      order = query ? [...starts, ...contains] : all;
+      order = query ? matched : all;
       const shown = new Set(order);
       items.forEach((item, i) => setHidden(item, !shown.has(i)));
       list.append(...order.map((i) => items[i]));
@@ -763,7 +797,7 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
     }
     renumber();
     // Last, so a throwing resultsText from the page cannot stop the filtering above.
-    const count = starts.length + contains.length;
+    const count = matched.length;
     status.textContent = !query ? "" : count ? String(resultsText(count)) : empty.textContent;
   }
   // The search input is ours: its input/change events must not look like a new selection.

@@ -180,6 +180,17 @@
   </section>
 
   <section>
+    <div class="stamp">Radios · fuzzy</div>
+    <h2>Fuzzy matching</h2>
+    <p class="note"><code>data-match-mode="fuzzy"</code>: letters in order with gaps, words in any order. Try <code>nzd</code>, <code>swfr</code> or <code>franc swiss</code>.</p>
+    <div class="frame">
+      <fieldset data-gridselect data-match-mode="fuzzy" id="fuzzy">
+        <legend>Currency</legend>
+      </fieldset>
+    </div>
+  </section>
+
+  <section>
     <div class="stamp">Checkboxes · long</div>
     <h2>Long checkbox group</h2>
     <p class="note">Multiple choice in the panel: items toggle, the panel stays open, the search stays. Try <code>dollar</code> and pick several.</p>
@@ -387,11 +398,12 @@
   fill("checks", ["Gift wrap", "Express shipping", "Insurance", "Newsletter"], { type: "checkbox" });
   fill("filter", currencies, { checked: 1 });
   fill("highlight", currencies);
+  fill("fuzzy", currencies);
   fill("list", modules);
   fill("required", countries, { required: true, disabled: [2] });
   fill("checks-long", currencies.slice(0, 24), { type: "checkbox" });
 
-  for (const id of ["short", "checks", "filter", "highlight", "checks-long", "list", "required", "select-short", "select-long", "select-multi"]) {
+  for (const id of ["short", "checks", "filter", "highlight", "fuzzy", "checks-long", "list", "required", "select-short", "select-long", "select-multi"]) {
     init(id);
     const wrapper = document.getElementById(id);
     for (const type of ["input", "change"]) {

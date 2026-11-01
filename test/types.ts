@@ -40,3 +40,7 @@ import "@emmgeede/gridselect/element";
 const el = document.createElement("grid-select");
 const elValue: string | string[] | null = el.value;
 el.items = ["a", { value: "b", label: "B" }];
+
+gridselect(document.body, { match: "fuzzy" });
+// @ts-expect-error unknown match mode
+gridselect(document.body, { match: "regex" });

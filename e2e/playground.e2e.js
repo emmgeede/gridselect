@@ -202,3 +202,13 @@ test("items from JS: setItems switches between flat items and the panel and keep
   expect(await wrapper.locator("label:visible").count()).toBe(4);
   await expect(page.locator("#log")).toContainText('#from-items  setItems(4)  gs.value=null');
 });
+
+test("fuzzy matching finds abbreviations and words in any order", async ({ page }) => {
+  await field(page, "fuzzy").click();
+  await search(page, "fuzzy").fill("swfr");
+  await expect(visibleItems(page, "fuzzy").first()).toContainText("Swiss franc (CHF)");
+  await search(page, "fuzzy").fill("franc swiss");
+  await expect(visibleItems(page, "fuzzy")).toHaveCount(1);
+  await page.keyboard.press("Enter");
+  await expect(field(page, "fuzzy")).toHaveText("Swiss franc (CHF)");
+});
