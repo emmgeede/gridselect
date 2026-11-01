@@ -109,3 +109,11 @@ test("digit badges are visible inside the panel items", async ({ page }) => {
   await field(page, "filter").click();
   await expect(page.locator("#filter [data-gridselect-item]").first().locator("[data-gridselect-key]")).toBeVisible();
 });
+
+test("tiers show readable modifier letters before the digit", async ({ page }) => {
+  await field(page, "filter").click();
+  const key = page.locator("#filter [data-gridselect-item]").nth(10).locator("[data-gridselect-key]");
+  await expect(key).toHaveText("1");
+  const before = await key.evaluate((el) => getComputedStyle(el, "::before").content);
+  expect(before).toBe('"S"');
+});

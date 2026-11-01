@@ -276,3 +276,32 @@ describe("QA F4 fixes", () => {
     expect(inputs(w)[10].getAttribute("aria-keyshortcuts")).toBe("Control+Shift+1");
   });
 });
+
+describe("modifier letters (F4 amendment)", () => {
+  it("puts the modifier abbreviation into data-prefix, in canonical order", () => {
+    const { w } = flat(32, { options: { shortcuts: ["", "Shift", "Shift+Control"] } });
+    const ins = inputs(w);
+    expect(keyOf(ins[0]).hasAttribute("data-prefix")).toBe(false);
+    expect(keyOf(ins[10]).dataset.prefix).toBe("S");
+    expect(keyOf(ins[20]).dataset.prefix).toBe("CS");
+  });
+
+  it("uses A, C, M, S in panel items too and clears it for unnumbered items", () => {
+    const { w, search } = panelGroup(32, { options: { shortcuts: ["Meta", "Alt"] } });
+    const items = panelItems(w);
+    expect(items[0].querySelector("[data-gridselect-key]").dataset.prefix).toBe("M");
+    expect(items[10].querySelector("[data-gridselect-key]").dataset.prefix).toBe("A");
+    expect(items[25].querySelector("[data-gridselect-key]").hasAttribute("data-prefix")).toBe(false);
+    typeInto(search, "l31");
+    expect(items[31].querySelector("[data-gridselect-key]").dataset.prefix).toBe("M");
+  });
+
+  it("removes data-prefix on destroy", () => {
+    const rows = Array.from({ length: 12 }, (_, i) => `<label><b data-gridselect-key></b><input type="radio" name="g" value="v${i}"> L${i}</label>`).join("");
+    document.body.innerHTML = `<fieldset id="w">${rows}</fieldset>`;
+    const w = document.getElementById("w");
+    const before = w.outerHTML;
+    gridselect(w, { threshold: 100 }).destroy();
+    expect(w.outerHTML).toBe(before);
+  });
+});

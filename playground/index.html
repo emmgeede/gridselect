@@ -56,8 +56,7 @@
   :root[data-theme="dark"] .gridselect__key { background: rgba(192, 218, 240, .14); }
   @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .gridselect__key { background: rgba(192, 218, 240, .14); } }
   [aria-selected="true"] > .gridselect__key, label:has(:checked) > .gridselect__key { background: rgba(0, 0, 0, .15); color: var(--gs-accent-fg); }
-  .gridselect__key[data-modifiers="Shift"]::before { content: "⇧"; font-size: .7rem; margin-right: .1rem; }
-  .gridselect__key[data-modifiers="Alt"]::before { content: "⌥"; font-size: .7rem; margin-right: .1rem; }
+  .gridselect__key[data-prefix]::before { content: attr(data-prefix); margin-right: .05rem; }
   .gridselect__key:empty { display: none; }
 
   /* Above the threshold: field and panel */

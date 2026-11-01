@@ -38,7 +38,8 @@ All notable changes to GridSelect. The format follows
   0 pick ten entries per tier, tiers default to `["", "Shift", "Alt"]` and
   take any combination of `Shift`, `Alt`, `Control`, `Meta`. A digit badge
   (`[data-gridselect-key]`) is added to each label and panel item, or an
-  existing one in the label is used. Inputs and items get `aria-keyshortcuts`.
+  existing one in the label is used. Inputs and items get `aria-keyshortcuts`, badges of modifier tiers get
+  readable letters in `data-prefix` (`S1`, `A3`, `CS2`).
 
 ### Changed
 

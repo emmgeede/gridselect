@@ -31,6 +31,7 @@ const MODIFIERS = ["Control", "Alt", "Meta", "Shift"];
  * @typedef {object} Tier
  * @property {string} name The tier as the developer wrote it, e.g. "Shift+Control".
  * @property {string} combo Canonical modifiers, e.g. "Control+Shift" ("" for none).
+ * @property {string} prefix Readable letters for the badge, e.g. "CS" ("" for none).
  */
 
 /**
@@ -46,7 +47,8 @@ function parseTiers(option, attr) {
     const unknown = parts.find((p) => !MODIFIERS.includes(p));
     if (unknown !== undefined)
       throw new TypeError(`gridselect: unknown modifier "${unknown}" in shortcuts, use ${MODIFIERS.join(", ")}`);
-    return { name: parts.join("+"), combo: MODIFIERS.filter((m) => parts.includes(m)).join("+") };
+    const used = MODIFIERS.filter((m) => parts.includes(m));
+    return { name: parts.join("+"), combo: used.join("+"), prefix: used.map((m) => m[0]).join("") };
   });
 }
 
@@ -212,6 +214,16 @@ function labelText(radio) {
 }
 
 /**
+ * Modifier letters for the badge (C, A, M, S), readable where symbols like ⇧ are not.
+ * @param {Element} key
+ * @param {string} prefix
+ */
+function setPrefix(key, prefix) {
+  if (prefix) key.setAttribute("data-prefix", prefix);
+  else key.removeAttribute("data-prefix");
+}
+
+/**
  * Below the threshold: digit element in each label plus aria-keyshortcuts on each input.
  * An existing [data-gridselect-key] in a label is used instead (filled only when empty).
  * @param {HTMLInputElement[]} inputs
@@ -244,8 +256,12 @@ function addKeyElements(inputs, tiers) {
       undo.push(() => added.remove());
     }
     key.setAttribute("data-modifiers", sc.tier.name);
+    setPrefix(key, sc.tier.prefix);
     const el = key;
-    undo.push(() => el.removeAttribute("data-modifiers"));
+    undo.push(() => {
+      el.removeAttribute("data-modifiers");
+      el.removeAttribute("data-prefix");
+    });
   });
   return undo;
 }
@@ -447,6 +463,7 @@ function createPanel(wrapper, radios, opts, tiers) {
       const key = /** @type {HTMLElement} */ (item.firstChild);
       key.textContent = sc ? sc.digit : "";
       key.setAttribute("data-modifiers", sc ? sc.tier.name : "");
+      setPrefix(key, sc ? sc.tier.prefix : "");
       if (sc) item.setAttribute("aria-keyshortcuts", sc.aria);
       else item.removeAttribute("aria-keyshortcuts");
     });

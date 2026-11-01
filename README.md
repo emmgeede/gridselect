@@ -223,7 +223,11 @@ digits off, so numbers can be typed into the search.
 GridSelect puts a `<span data-gridselect-key class="gridselect__key">` with
 the digit at the start of each label (and of each panel item), marked
 `aria-hidden` because the input gets `aria-keyshortcuts` instead. The tier is
-in `data-modifiers`, so CSS can show a symbol for it. Want the digit
+in `data-modifiers`, and `data-prefix` holds readable letters for it (`S`
+Shift, `A` Alt, `C` Control, `M` Meta, e.g. `CS` for Control+Shift), shown
+before the digit with `.gridselect__key[data-prefix]::before { content:
+attr(data-prefix) }`. Letters rather than symbols like ⇧, which are hard to
+make out for many people. Want the digit
 somewhere else or in your own form? Put an element with `data-gridselect-key`
 into the label yourself: GridSelect fills it when it is empty and leaves it
 alone when it has content. `destroy()` removes everything it added.
