@@ -218,7 +218,8 @@ Current evergreen browsers (Chrome, Edge, Firefox, Safari).
 
 ```sh
 npm install
-npm test          # unit tests (Vitest + jsdom) and type check
+npm test           # unit tests (Vitest + jsdom) and type check
+npm run test:e2e   # browser tests (Playwright, Chromium) against the playground
 npm run playground # manual test page at http://localhost:5173/playground/
 ```
 

@@ -4,3 +4,5 @@ coverage/
 .env
 docs/
 CLAUDE.md
+test-results/
+playwright-report/
