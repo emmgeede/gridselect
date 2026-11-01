@@ -7,7 +7,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 test("shows every variant with the real stylesheet and no test tools", async ({ page }) => {
-  for (const id of ["short", "checks", "filter", "highlight", "watch", "langs", "list", "select"]) await expect(page.locator(`#${id}`)).toBeVisible();
+  for (const id of ["short", "checks", "filter", "highlight", "layout-grid", "layout-flow", "watch", "langs", "list", "select"]) await expect(page.locator(`#${id}`)).toBeVisible();
   await expect(page.locator("#filter [data-gridselect-field]")).toBeVisible();
   await expect(page.locator("#select [data-gridselect-field]")).toHaveText("Choose a country…");
   await expect(page.locator("#log")).toHaveCount(0);
@@ -67,3 +67,13 @@ for (const scheme of ["light", "dark"]) {
     expect(layered).toBe(true);
   });
 }
+
+test("the layouts section shows a wide grid and a flowing list", async ({ page }) => {
+  await page.setViewportSize({ width: 1400, height: 1000 });
+  await page.locator("#layout-grid [data-gridselect-field]").click();
+  const cols = await page.locator("#layout-grid [data-gridselect-items]").evaluate((el) => getComputedStyle(el).gridTemplateColumns.split(" ").length);
+  expect(cols).toBeGreaterThanOrEqual(4);
+  await page.keyboard.press("Escape");
+  await page.locator("#layout-flow [data-gridselect-field]").click();
+  await expect(page.locator("#layout-flow [data-gridselect-items]")).toHaveClass(/gridselect__items--flow/);
+});

@@ -187,6 +187,20 @@ gridselect(document.querySelector("[data-gridselect]"));</code></pre>
   </section>
 
   <section>
+    <div class="stamp">Layouts</div>
+    <h2>Grid or flow</h2>
+    <p class="note">The default grid makes every column as wide as the widest entry, so short labels get as many columns as fit. <code>data-layout="flow"</code> lets the entries run one after another like chips, as dense as possible; arrow up and down jump to the nearest entry in the row above or below.</p>
+    <div class="frame">
+      <fieldset data-gridselect id="layout-grid"><legend>Country (grid, columns fit the widest name)</legend></fieldset>
+    </div>
+    <div class="frame">
+      <fieldset data-gridselect data-layout="flow" id="layout-flow"><legend>Currency (flow)</legend></fieldset>
+    </div>
+    <pre class="code"><code>&lt;fieldset data-gridselect&gt; … &lt;/fieldset&gt;                     &lt;!-- grid, the default --&gt;
+&lt;fieldset data-gridselect data-layout="flow"&gt; … &lt;/fieldset&gt;</code></pre>
+  </section>
+
+  <section>
     <div class="stamp">Multiple · long</div>
     <h2>Pick several</h2>
     <p class="note">Checkbox groups and <code>&lt;select multiple&gt;</code> get the same panel. Items toggle, the panel stays open, so you can filter and pick several in a row.</p>
@@ -312,6 +326,10 @@ import "@emmgeede/gridselect/element";</code></pre>
   fill("highlight", currencies);
   fill("list", modules);
   fill("watch", currencies.slice(0, 24), { type: "checkbox" });
+  fill("layout-grid", ["Austria", "Belgium", "Croatia", "Cyprus", "Denmark", "Estonia", "Finland", "France", "Germany",
+    "Greece", "Ireland", "Italy", "Latvia", "Lithuania", "Luxembourg", "Malta", "Netherlands", "Portugal", "Slovakia",
+    "Slovenia", "Spain"]);
+  fill("layout-flow", currencies);
   document.querySelectorAll("[data-gridselect]:not(grid-select [data-gridselect])").forEach((el) => gridselect(el));
 
   const styleButton = document.getElementById("style");

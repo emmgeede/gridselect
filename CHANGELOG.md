@@ -14,6 +14,7 @@ and breaking changes need a new major version.
 
 ### Changed
 
+- The demo shows both panel layouts, the auto-width grid and the flow layout.
 - Releases are published from GitHub Actions with npm Trusted Publishing and
   provenance when a version tag is pushed.
 - README logo and screenshots link to the demo, which also keeps GitHub from
