@@ -50,9 +50,11 @@ wrapper.addEventListener("change", (event) => {
 });
 ```
 
-There is no custom event to learn. Code that already listens to `change` on
-radios or checkboxes, form libraries and frameworks (React `onChange`, Vue
-`v-model` on the inputs) keep working unchanged. Setting `gs.value` from
+There is no custom event to learn: code that listens to `change` or `input`
+with `addEventListener` keeps working unchanged. React is the exception for
+picks inside the panel, because React's `onChange` on radios listens to
+clicks, not to `change`. In React, attach a native listener to the wrapper
+(via a ref) until the planned framework wrappers exist. Setting `gs.value` from
 code fires no event, just like setting `checked` yourself, and a form
 submit always sends the current selection.
 
