@@ -73,8 +73,8 @@ describe("threshold and setup", () => {
       expect(field(w)).toBeNull();
     });
 
-  it("keeps checkbox groups flat at any size", () => {
-    document.body.innerHTML = `<div id="w">${Array.from({ length: 11 }, (_, i) => `<input type="checkbox" value="${i}">`).join("")}</div>`;
+  it("keeps checkbox groups up to the threshold flat", () => {
+    document.body.innerHTML = `<div id="w">${Array.from({ length: 10 }, (_, i) => `<input type="checkbox" value="${i}">`).join("")}</div>`;
     const w = document.getElementById("w");
     const before = w.outerHTML;
     gridselect(w, { shortcuts: false });

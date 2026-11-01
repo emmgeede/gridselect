@@ -26,3 +26,7 @@ gridselect(document.body, { shortcuts: ["", "Shift", "Control+Alt"] });
 gridselect(document.body, { shortcuts: false });
 // @ts-expect-error shortcuts is an array or false
 gridselect(document.body, { shortcuts: true });
+
+gridselect(document.body, { selectedText: (n) => n + " gewählt" });
+// @ts-expect-error selectedText is a function
+gridselect(document.body, { selectedText: "x" });

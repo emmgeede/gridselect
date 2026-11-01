@@ -16,6 +16,8 @@
  * @property {string[] | false} [shortcuts] Modifier tiers for digit keys, each tier covers ten
  *   items, e.g. ["", "Shift", "Alt"] (default). Names: Shift, Alt, Control, Meta, joined with "+".
  *   false turns digit shortcuts off.
+ * @property {(count: number) => string} [selectedText] Field text for more than two chosen
+ *   entries of a multiple choice group. Default `n => n + " selected"`.
  * @property {(count: number) => string} [resultsText] Screen reader announcement for `count` > 0
  *   matches. Default `n => n === 1 ? "1 result" : n + " results"`.
  * @property {"filter" | "highlight"} [search] "filter" hides non-matches, "highlight" keeps every
@@ -123,7 +125,6 @@ export function gridselect(wrapper, options) {
   if (selects.length) {
     if (selects.length > 1 || wrapper.querySelector("input[type=radio], input[type=checkbox]"))
       throw new TypeError("gridselect: wrapper holds a select plus other inputs, use one source");
-    if (selects[0].multiple) return register(wrapper, multiSelect(wrapper, selects[0]));
     source = fromSelect(wrapper, selects[0]);
   }
 
@@ -146,8 +147,9 @@ export function gridselect(wrapper, options) {
   const threshold = isCount(opts.threshold) ? opts.threshold : (fromAttr ?? DEFAULT_THRESHOLD);
   const tiers = parseTiers(opts.shortcuts, wrapper.getAttribute("data-shortcuts"));
   const panelOpts = source?.placeholder !== undefined && opts.placeholder === undefined ? { ...opts, placeholder: source.placeholder } : opts;
-  const ui = !multiple && radios.length > /** @type {number} */ (threshold)
-    ? createPanel(wrapper, [...radios], panelOpts, tiers, source?.label, () => source?.pull()) : null;
+  const all = inputs();
+  const ui = all.length > /** @type {number} */ (threshold)
+    ? createPanel(wrapper, all, panelOpts, tiers, source?.label, () => source?.pull(), multiple) : null;
   const flatUndo = ui || !tiers.length ? [] : addKeyElements(inputs(), tiers);
   if (!ui && tiers.length) {
     /** Digit keys while the focus is on one of the group's inputs. @param {KeyboardEvent} e */
@@ -181,7 +183,7 @@ export function gridselect(wrapper, options) {
   /** @type {GridSelect} */
   const instance = {
     get value() {
-      if (source) return source.select.value || null;
+      if (source) return source.value();
       return multiple ? checked() : (checked()[0] ?? null);
     },
     set value(v) {
@@ -193,6 +195,7 @@ export function gridselect(wrapper, options) {
         if (!Array.isArray(v)) throw new TypeError("gridselect: value of a checkbox group must be an array");
         const wanted = v.map(key);
         for (const i of inputs()) i.checked = wanted.includes(i.value);
+        ui?.render();
         return;
       }
       const match = inputs().find((i) => i.value === key(v));
@@ -228,31 +231,9 @@ function hideHard(el, undo) {
 }
 
 /**
- * `<select multiple>` stays native until the panel supports multiple choice; value works already.
- * @param {Element} wrapper
- * @param {HTMLSelectElement} select
- * @returns {GridSelect}
- */
-function multiSelect(wrapper, select) {
-  console.warn("gridselect: <select multiple> is left native for now, only instance.value is available");
-  return {
-    get value() {
-      return [...select.selectedOptions].map((o) => o.value);
-    },
-    set value(v) {
-      if (!Array.isArray(v)) throw new TypeError("gridselect: value of a multiple select must be an array");
-      const wanted = v.map(key);
-      for (const o of select.options) o.selected = wanted.includes(o.value);
-    },
-    destroy() {
-      instances.delete(wrapper);
-    },
-  };
-}
-
-/**
- * Builds one generated radio per selectable option and hides the select. The radios carry a
- * form attribute pointing nowhere, so only the select is submitted. connect() keeps both in sync.
+ * Builds one generated radio (checkbox for `multiple`) per selectable option and hides the
+ * select. The inputs carry a form attribute pointing nowhere, so only the select is submitted.
+ * connect() keeps both in sync.
  * @param {Element} wrapper
  * @param {HTMLSelectElement} select
  */
@@ -269,7 +250,7 @@ function fromSelect(wrapper, select) {
     const label = doc.createElement("label");
     label.setAttribute("data-gridselect-generated", "");
     const input = doc.createElement("input");
-    input.type = "radio";
+    input.type = select.multiple ? "checkbox" : "radio";
     input.name = name;
     input.value = o.value;
     input.setAttribute("form", noForm);
@@ -287,9 +268,11 @@ function fromSelect(wrapper, select) {
   /** @type {{ render(): void, invalid(): void } | null} */
   let ui = null;
 
-  // Radios follow the select, e.g. after outside code changed it or a form reset.
+  /** @param {string} value */
+  const optionOf = (value) => options.find((o) => o.value === value);
+  // Inputs follow the select, e.g. after outside code changed it or a form reset.
   function pull() {
-    for (const r of radios) r.checked = r.value === select.value;
+    for (const r of radios) r.checked = select.multiple ? !!optionOf(r.value)?.selected : r.value === select.value;
   }
   function sync() {
     pull();
@@ -302,8 +285,19 @@ function fromSelect(wrapper, select) {
     placeholder: placeholderOption?.label,
     label,
     undo,
+    value() {
+      if (select.multiple) return [...select.selectedOptions].map((o) => o.value).filter(Boolean);
+      return select.value || null;
+    },
     /** @param {unknown} v */
     set(v) {
+      if (select.multiple) {
+        if (!Array.isArray(v)) throw new TypeError("gridselect: value of a multiple select must be an array");
+        const wanted = v.map(key);
+        for (const o of options) o.selected = o.value !== "" && wanted.includes(o.value);
+        sync();
+        return;
+      }
       const k = key(v);
       if (k && options.some((o) => o.value === k)) select.value = k;
       else if (placeholderOption) select.value = "";
@@ -324,7 +318,11 @@ function fromSelect(wrapper, select) {
       const onRadioChange = (e) => {
         e.stopPropagation();
         for (const r of radios) r.removeAttribute("aria-invalid");
-        select.value = /** @type {HTMLInputElement} */ (e.target).value;
+        const input = /** @type {HTMLInputElement} */ (e.target);
+        if (select.multiple) {
+          const option = optionOf(input.value);
+          if (option) option.selected = input.checked;
+        } else select.value = input.value;
         select.dispatchEvent(new Event("input", { bubbles: true }));
         select.dispatchEvent(new Event("change", { bubbles: true }));
       };
@@ -464,8 +462,9 @@ const fold = (text) => text.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase(
  * @param {Tier[]} tiers digit shortcut tiers, empty when off
  * @param {HTMLElement} [fallbackLabel] names the field when the wrapper has no name (e.g. a select's label)
  * @param {() => void} [beforeOpen] lets a source update the radios first (select changed without event)
+ * @param {boolean} [multiple] checkboxes: picking toggles and the panel stays open
  */
-function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen) {
+function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, multiple = false) {
   const doc = wrapper.ownerDocument;
   const placeholder = typeof opts.placeholder === "string" ? opts.placeholder : "Select…";
 
@@ -493,6 +492,7 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen) {
   const list = create(doc, "div", "items");
   list.id = uniqueId(doc);
   list.setAttribute("role", "listbox");
+  if (multiple) list.setAttribute("aria-multiselectable", "true");
   const layout = opts.layout ?? wrapper.getAttribute("data-layout");
   const isList = layout === "list";
   if (isList) list.classList.add("gridselect__items--list");
@@ -548,9 +548,15 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen) {
     else if (ariaLabel) el.setAttribute("aria-label", ariaLabel);
   }
 
+  /** @type {(n: number) => string} */
+  const selectedText = typeof opts.selectedText === "function" ? opts.selectedText : (n) => `${n} selected`;
   function render() {
-    const current = radios.find((r) => r.checked);
-    field.textContent = current ? labelText(current) : placeholder;
+    const chosen = radios.filter((r) => r.checked);
+    const current = chosen[0];
+    field.textContent = !chosen.length ? placeholder
+      : chosen.length <= 2 ? chosen.map(labelText).join(", ")
+      : String(selectedText(chosen.length));
+    items.forEach((item, i) => item.setAttribute("aria-selected", String(radios[i].checked)));
     field.disabled = radios.every((r) => r.matches(":disabled"));
     if (current) field.removeAttribute("aria-invalid");
     if (!labelledBy && ariaLabel) field.setAttribute("aria-label", `${ariaLabel}, ${field.textContent}`);
@@ -617,7 +623,12 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen) {
     const count = starts.length + contains.length;
     status.textContent = !query ? "" : count ? String(resultsText(count)) : empty.textContent;
   }
-  search.addEventListener("input", applyQuery);
+  // The search input is ours: its input/change events must not look like a new selection.
+  search.addEventListener("input", (e) => {
+    e.stopPropagation();
+    applyQuery();
+  });
+  search.addEventListener("change", (e) => e.stopPropagation());
 
   // Digits follow the display order: visible matches in filter mode, fixed positions otherwise.
   function renumber() {
@@ -643,7 +654,6 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen) {
     render();
     search.value = "";
     items.forEach((item, i) => {
-      item.setAttribute("aria-selected", String(radios[i].checked));
       if (radios[i].matches(":disabled")) item.setAttribute("aria-disabled", "true");
       else item.removeAttribute("aria-disabled");
     });
@@ -670,11 +680,18 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen) {
     if (!wrapper.contains(/** @type {Node} */ (e.target))) close(false);
   }
 
-  /** Checks the radio behind item `index` like a user click would, then closes. */
+  /** Like a user click on the input behind item `index`: radios check and close, checkboxes toggle. */
   function pick(/** @type {number} */ index) {
     const radio = radios[index];
     if (!radio) return;
     if (radio.matches(":disabled")) return;
+    if (multiple) {
+      radio.checked = !radio.checked;
+      radio.dispatchEvent(new Event("input", { bubbles: true }));
+      radio.dispatchEvent(new Event("change", { bubbles: true }));
+      render();
+      return;
+    }
     if (!radio.checked) {
       radio.checked = true;
       radio.dispatchEvent(new Event("input", { bubbles: true }));

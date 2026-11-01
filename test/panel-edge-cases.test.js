@@ -157,3 +157,20 @@ describe("QA F2 fixes", () => {
     expect(gridselect(w).value).toBeNull();
   });
 });
+
+describe("search input events (found during tdd F8)", () => {
+  it("keeps the search input's own input and change events away from the wrapper", () => {
+    document.body.innerHTML = `<div id="w">${rows(11)}</div><button id="o">o</button>`;
+    const w = document.getElementById("w");
+    gridselect(w);
+    const log = [];
+    for (const t of ["input", "change"]) w.addEventListener(t, (e) => log.push(`${t}:${e.target.tagName}`));
+    w.querySelector("[data-gridselect-field]").click();
+    const s = w.querySelector("[data-gridselect-search]");
+    s.value = "l1";
+    s.dispatchEvent(new Event("input", { bubbles: true }));
+    s.dispatchEvent(new Event("change", { bubbles: true }));
+    expect(log).toEqual([]);
+    expect([...w.querySelectorAll("[data-gridselect-item]")].filter((i) => !i.hidden)).toHaveLength(2);
+  });
+});

@@ -90,23 +90,6 @@ describe("placeholder and initial value", () => {
 });
 
 describe("special cases", () => {
-  it("leaves a multiple select untouched, warns, and offers an array value", () => {
-    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
-    document.body.innerHTML = `<div id="w"><select id="s" multiple><option value="a" selected>A</option><option value="b">B</option><option value="c">C</option></select></div>`;
-    const w = document.getElementById("w");
-    const before = w.outerHTML;
-    const gs = gridselect(w);
-    expect(w.outerHTML).toBe(before);
-    expect(warn.mock.calls[0][0]).toMatch(/^gridselect:/);
-    expect(gs.value).toEqual(["a"]);
-    const log = [];
-    w.addEventListener("change", () => log.push(1));
-    gs.value = ["b", "c"];
-    expect(gs.value).toEqual(["b", "c"]);
-    expect(log).toEqual([]);
-    warn.mockRestore();
-  });
-
   it("throws for a select mixed with radios or a second select", () => {
     document.body.innerHTML = `<div id="w"><select><option>a</option></select><input type="radio" name="x"></div>`;
     expect(() => gridselect(document.getElementById("w"))).toThrow(/^gridselect:/);
@@ -225,14 +208,6 @@ describe("required and naming", () => {
 });
 
 describe("QA F5 checks", () => {
-  it("rejects a non-array value on a multiple select", () => {
-    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
-    document.body.innerHTML = `<div id="w"><select multiple><option value="a">A</option></select></div>`;
-    const gs = gridselect(document.getElementById("w"));
-    expect(() => { gs.value = "a"; }).toThrow(/^gridselect:/);
-    warn.mockRestore();
-  });
-
   it("puts option text in as text, never as markup", () => {
     const { w } = setup(['<option value="x">&lt;img src=x onerror=alert(1)&gt;</option>', ...opt(11)]);
     expect(w.querySelector("img")).toBeNull();

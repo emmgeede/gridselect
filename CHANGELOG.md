@@ -19,10 +19,22 @@ and breaking changes need a new major version.
   mark on selected entries, keycap badges), light and dark, WCAG AA text
   contrast. Used by the demo and the README screenshots.
 
+- Multiple choice in the panel: checkbox groups above the threshold get the
+  field and panel, items toggle and the panel stays open, the field shows up
+  to two labels or `selectedText(n)` (option, default `n + " selected"`).
+- `<select multiple>` is supported: generated checkboxes, the select stays
+  the source of truth and fires `input` and `change`.
+
 ### Changed
 
+- `<select multiple>` is no longer left native with a warning.
 - README screenshots show the showcase theme, framed with padding and
   rounded corners. The demo page has borderless cards.
+
+### Fixed
+
+- Typing in the panel's search input no longer sends `input` and `change`
+  events to the wrapper, so `change` listeners only see real selections.
 
 ## [0.7.1] - 2026-11-01
 
