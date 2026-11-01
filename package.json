@@ -4,7 +4,10 @@
   "description": "Dependency-free select component: chips for short lists, a searchable grid for long ones.",
   "license": "MIT",
   "author": "Michael Grossklos",
-  "repository": "github:emmgeede/gridselect",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/emmgeede/gridselect.git"
+  },
   "type": "module",
   "exports": {
     ".": {
