@@ -7,3 +7,4 @@ CLAUDE.md
 test-results/
 playwright-report/
 _site/
+.claude/settings.local.json
