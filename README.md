@@ -214,7 +214,9 @@ gridselect(el, { shortcuts: false });                     // off
 Tiers use `Shift`, `Alt`, `Control` and `Meta`, joined with `+`, and must
 match exactly. The key's position counts, not the character, so Shift+1
 works on every keyboard layout, and the number pad works too. Careful:
-Ctrl+digit and Cmd+digit switch browser tabs, Alt opens menus on Windows.
+Ctrl+digit and Cmd+digit switch browser tabs, Alt opens menus on Windows,
+and on many European layouts AltGr reports Control+Alt, so a `Control+Alt`
+tier swallows characters like `{` (AltGr+7) in the search.
 Labels with numbers (postcodes, years)? Use tiers without `""` or turn the
 digits off, so numbers can be typed into the search.
 

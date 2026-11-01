@@ -258,3 +258,21 @@ describe("digits in the panel", () => {
     expect(w.querySelector("[data-gridselect-field]").textContent).toBe("L0");
   });
 });
+
+describe("QA F4 fixes", () => {
+  it("leaves numpad keys alone when NumLock is off (key is not a digit)", () => {
+    const { w, gs } = flat(5);
+    expect(digit(inputs(w)[0], "Numpad2", { key: "ArrowDown" }).defaultPrevented).toBe(false);
+    expect(gs.value).toBeNull();
+    const p = panelGroup(12);
+    expect(digit(p.search, "Numpad2", { key: "ArrowDown" }).defaultPrevented).toBe(true); // arrow navigation
+    expect(p.gs.value).toBeNull();
+    expect(p.w.querySelector("[data-cursor] [data-gridselect-label]").textContent).toBe("L1");
+  });
+
+  it("accepts spaces around + in tier names", () => {
+    const { w } = flat(12, { options: { shortcuts: [" Alt ", "Shift + Control"] } });
+    expect(inputs(w)[0].getAttribute("aria-keyshortcuts")).toBe("Alt+1");
+    expect(inputs(w)[10].getAttribute("aria-keyshortcuts")).toBe("Control+Shift+1");
+  });
+});

@@ -42,11 +42,11 @@ function parseTiers(option, attr) {
   if (option === false || (option === undefined && attr === "off")) return [];
   const list = Array.isArray(option) ? option : DEFAULT_SHORTCUTS;
   return list.map((name) => {
-    const parts = String(name).split("+").filter(Boolean);
+    const parts = String(name).split("+").map((p) => p.trim()).filter(Boolean);
     const unknown = parts.find((p) => !MODIFIERS.includes(p));
     if (unknown !== undefined)
       throw new TypeError(`gridselect: unknown modifier "${unknown}" in shortcuts, use ${MODIFIERS.join(", ")}`);
-    return { name: String(name), combo: MODIFIERS.filter((m) => parts.includes(m)).join("+") };
+    return { name: parts.join("+"), combo: MODIFIERS.filter((m) => parts.includes(m)).join("+") };
   });
 }
 
@@ -69,13 +69,14 @@ function shortcutAt(tiers, pos) {
  * @param {KeyboardEvent} e
  */
 function positionOf(tiers, e) {
-  const m = /^(?:Digit|Numpad)(\d)$/.exec(e.code);
-  if (!m) return -1;
+  const m = /^(Digit|Numpad)(\d)$/.exec(e.code);
+  // With NumLock off the number pad sends arrows and Home/End: those stay navigation keys.
+  if (!m || (m[1] === "Numpad" && !/^\d$/.test(e.key))) return -1;
   const pressed = { Control: e.ctrlKey, Alt: e.altKey, Meta: e.metaKey, Shift: e.shiftKey };
   const combo = MODIFIERS.filter((k) => pressed[/** @type {keyof typeof pressed} */ (k)]).join("+");
   const tier = tiers.findIndex((t) => t.combo === combo);
   if (tier < 0) return -1;
-  const d = Number(m[1]);
+  const d = Number(m[2]);
   return tier * 10 + (d === 0 ? 9 : d - 1);
 }
 
