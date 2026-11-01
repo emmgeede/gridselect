@@ -6,28 +6,29 @@
 <title>GridSelect demo</title>
 <meta name="description" content="GridSelect: a dependency-free select for short and long lists, with search, keyboard navigation and digit shortcuts.">
 <link rel="stylesheet" href="../src/gridselect.css">
+<link rel="stylesheet" href="../themes/showcase.css">
 <style>
   /* Page layout only. Everything GridSelect shows comes from src/gridselect.css. */
-  :root { --page-bg: #F5F7FA; --page-fg: #0E1117; --page-card: #FFFFFF; --page-line: #7A8494; --page-muted: #636B78; --page-link: #00787B; }
+  :root { --page-bg: #F4F6F9; --page-fg: #0F172A; --page-card: #FFFFFF; --page-line: #E2E8F0; --page-muted: #5B6575; --page-link: #00737A; --page-shadow: 0 1px 2px rgb(15 23 42 / .04), 0 8px 24px -12px rgb(15 23 42 / .12); }
   @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) { --page-bg: #0E1117; --page-fg: #DEE4EE; --page-card: #171D28; --page-line: #7E8CA0; --page-muted: #9CA3AF; --page-link: #03A2A5; }
+    :root:not([data-theme="light"]) { --page-bg: #0B0F17; --page-fg: #E2E8F0; --page-card: #111827; --page-line: #1F2937; --page-muted: #94A3B8; --page-link: #3CC6C8; --page-shadow: 0 1px 2px rgb(0 0 0 / .4), 0 12px 32px -16px rgb(0 0 0 / .7); }
   }
-  :root[data-theme="dark"] { --page-bg: #0E1117; --page-fg: #DEE4EE; --page-card: #171D28; --page-line: #7E8CA0; --page-muted: #9CA3AF; --page-link: #03A2A5; }
+  :root[data-theme="dark"] { --page-bg: #0B0F17; --page-fg: #E2E8F0; --page-card: #111827; --page-line: #1F2937; --page-muted: #94A3B8; --page-link: #3CC6C8; --page-shadow: 0 1px 2px rgb(0 0 0 / .4), 0 12px 32px -16px rgb(0 0 0 / .7); }
 
   * { box-sizing: border-box; }
-  body { margin: 0; font: 16px/1.55 system-ui, sans-serif; background: var(--page-bg); color: var(--page-fg); }
+  body { margin: 0; font: 15px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; background: var(--page-bg); color: var(--page-fg); -webkit-font-smoothing: antialiased; }
   main { max-width: 56rem; margin: 0 auto; padding: 2rem 1rem 4rem; }
   header { display: flex; justify-content: space-between; align-items: start; gap: 1rem; flex-wrap: wrap; }
-  h1 { font-size: 1.9rem; margin: 0 0 .25rem; }
-  h2 { font-size: 1.15rem; margin: 0 0 .25rem; }
+  h1 { font-size: 1.75rem; margin: 0 0 .25rem; letter-spacing: -.02em; }
+  h2 { font-size: 1rem; margin: 0 0 .2rem; letter-spacing: -.01em; }
   p { margin: 0 0 .75rem; }
   .lead { color: var(--page-muted); max-width: 40rem; }
   a { color: var(--page-link); }
-  section { background: var(--page-card); border: 1px solid var(--page-line); border-radius: .75rem; padding: 1.25rem; margin-top: 1.25rem; }
-  .note { color: var(--page-muted); font-size: .92rem; }
-  pre { background: var(--page-bg); border: 1px solid var(--page-line); border-radius: .5rem; padding: .75rem; overflow-x: auto; font-size: .85rem; margin: 1rem 0 0; }
+  section { background: var(--page-card); border-radius: 1rem; padding: 1.5rem; margin-top: 1rem; box-shadow: var(--page-shadow); }
+  .note { color: var(--page-muted); font-size: .875rem; margin-bottom: 1rem; }
+  pre { background: var(--page-bg); border-radius: .6rem; padding: .85rem 1rem; overflow-x: auto; font-size: .8rem; margin: 1.25rem 0 0; }
   code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
-  button.plain { font: inherit; color: inherit; background: var(--page-bg); border: 1px solid var(--page-line); border-radius: .5rem; padding: .3rem .8rem; cursor: pointer; }
+  button.plain { font: inherit; font-size: .8125rem; font-weight: 500; color: inherit; background: var(--page-card); border: 1px solid var(--page-line); border-radius: .5rem; padding: .35rem .8rem; cursor: pointer; box-shadow: var(--page-shadow); }
   button.plain:focus-visible { outline: 2px solid var(--page-link); outline-offset: 2px; }
   .demo { min-height: 3rem; }
 </style>

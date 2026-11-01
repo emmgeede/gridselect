@@ -12,6 +12,18 @@ and breaking changes need a new major version.
 
 ## [Unreleased]
 
+### Added
+
+- Optional showcase theme `@emmgeede/gridselect/themes/showcase.css`:
+  compact, contemporary look (14 px text, flat panel rows, soft fills, check
+  mark on selected entries, keycap badges), light and dark, WCAG AA text
+  contrast. Used by the demo and the README screenshots.
+
+### Changed
+
+- README screenshots show the showcase theme, framed with padding and
+  rounded corners. The demo page has borderless cards.
+
 ## [0.7.1] - 2026-11-01
 
 ### Changed

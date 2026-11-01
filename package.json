@@ -15,11 +15,13 @@
       "default": "./src/gridselect.js"
     },
     "./gridselect.css": "./src/gridselect.css",
+    "./themes/showcase.css": "./themes/showcase.css",
     "./dist/gridselect.min.js": "./dist/gridselect.min.js"
   },
   "files": [
     "src/gridselect.js",
     "src/gridselect.css",
+    "themes/showcase.css",
     "dist/gridselect.d.ts",
     "dist/gridselect.min.js",
     "CHANGELOG.md"

@@ -55,6 +55,7 @@ for what changed.
   - [`instance.destroy()`](#instancedestroy)
   - [TypeScript](#typescript)
 - [Styling](#styling)
+  - [Showcase theme](#showcase-theme)
 - [Keyboard](#keyboard)
   - [Digit shortcuts](#digit-shortcuts)
 - [Accessibility](#accessibility)
@@ -311,6 +312,25 @@ text, 3:1 for borders and focus), checked by the browser tests in both
 modes. If you change colours, keep those ratios. Light or dark follows the
 system; `data-theme="light"` or `data-theme="dark"` on any ancestor (e.g.
 `<html>`) forces one.
+
+### Showcase theme
+
+The screenshots and the demo use an optional second stylesheet with a compact,
+contemporary look: 14 px text, flat rows in the panel, soft fills instead of
+outlines, a check mark on selected entries and small keycap badges. Load it
+after the default stylesheet:
+
+```js
+import "@emmgeede/gridselect/gridselect.css";
+import "@emmgeede/gridselect/themes/showcase.css";
+```
+
+It lives in its own layer (`gridselect-showcase`), so your own CSS still wins.
+It keeps 4.5:1 for all text and 3:1 for the chevron, focus and cursor, but its
+resting borders are subtle: the field is recognised by its text and chevron,
+and the search input always shows a 3:1 border while it is focused. If you need
+strong borders everywhere, stay with the default stylesheet alone. The theme
+also works as a template for your own: copy it and change the variables.
 
 ## Keyboard
 

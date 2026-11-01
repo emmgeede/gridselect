@@ -33,3 +33,34 @@ for (const scheme of ["light", "dark"]) {
     expect(violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(" ")).join(", ")}`)).toEqual([]);
   });
 }
+
+for (const scheme of ["light", "dark"]) {
+  test(`showcase theme keeps 3:1 for chevron and focus, and marks the selection without colour (${scheme})`, async ({ page }) => {
+    const { contrast } = await import("./contrast.js");
+    await page.emulateMedia({ colorScheme: scheme });
+    const field = page.locator("#filter [data-gridselect-field]");
+    const chevron = await field.evaluate((el) => {
+      const s = getComputedStyle(el, "::after");
+      return { color: s.borderRightColor, bg: getComputedStyle(el).backgroundColor };
+    });
+    expect(await page.evaluate(({ color, bg }) => {
+      const p = (c) => c.match(/[\d.]+/g).slice(0, 3).map(Number);
+      const l = (c) => { const [r, g, b] = p(c).map((v) => { v /= 255; return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; }); return 0.2126 * r + 0.7152 * g + 0.0722 * b; };
+      const [a, b] = [l(color), l(bg)];
+      return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+    }, chevron), "chevron").toBeGreaterThanOrEqual(3);
+    await field.focus();
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Shift+Tab");
+    expect(await contrast(field, "border"), "focused field border").toBeGreaterThanOrEqual(3);
+    await field.click();
+    expect(await contrast(page.locator("#filter [data-gridselect-search]"), "border"), "focused search border").toBeGreaterThanOrEqual(3);
+    const cursor = await page.locator("#filter [data-cursor]").evaluate((el) => getComputedStyle(el).boxShadow);
+    expect(cursor).toContain("inset");
+    const check = await page.locator('#filter [aria-selected="true"]').evaluate((el) => getComputedStyle(el, "::after").borderRightStyle);
+    expect(check).toBe("solid");
+    const layered = await page.evaluate(() => [...document.styleSheets].some((s) => s.href?.endsWith("/themes/showcase.css") &&
+      [...s.cssRules].every((r) => r instanceof CSSLayerBlockRule && r.name === "gridselect-showcase")));
+    expect(layered).toBe(true);
+  });
+}
