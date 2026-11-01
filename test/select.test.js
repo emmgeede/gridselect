@@ -223,3 +223,44 @@ describe("required and naming", () => {
     expect(w.outerHTML).toBe(before);
   });
 });
+
+describe("QA F5 checks", () => {
+  it("rejects a non-array value on a multiple select", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    document.body.innerHTML = `<div id="w"><select multiple><option value="a">A</option></select></div>`;
+    const gs = gridselect(document.getElementById("w"));
+    expect(() => { gs.value = "a"; }).toThrow(/^gridselect:/);
+    warn.mockRestore();
+  });
+
+  it("puts option text in as text, never as markup", () => {
+    const { w } = setup(['<option value="x">&lt;img src=x onerror=alert(1)&gt;</option>', ...opt(11)]);
+    expect(w.querySelector("img")).toBeNull();
+    expect(w.querySelector("[data-gridselect-label]").textContent).toBe("<img src=x onerror=alert(1)>");
+  });
+
+  it("gives two select instances distinct radio names", () => {
+    document.body.innerHTML = `<div id="a"><select>${opt(3).join("")}</select></div><div id="b"><select>${opt(3).join("")}</select></div>`;
+    gridselect(document.getElementById("a"));
+    gridselect(document.getElementById("b"));
+    const names = [...document.querySelectorAll("input[type=radio]")].map((r) => r.name);
+    expect(new Set(names).size).toBe(2);
+  });
+
+  it("treats an empty-value option as placeholder even when it is not first", () => {
+    const { w, gs } = setup(['<option value="a">A</option>', '<option value="">None</option>', '<option value="b">B</option>']);
+    expect(generated(w).map((r) => r.value)).toEqual(["a", "b"]);
+    gs.value = null;
+    expect(gs.value).toBeNull();
+  });
+});
+
+describe("QA F5 fixes", () => {
+  it("picks up a select change without event when the panel opens", () => {
+    const { w, select } = setup(opt(12));
+    select.selectedIndex = 5;
+    w.querySelector("[data-gridselect-field]").click();
+    expect(w.querySelector('[aria-selected="true"] [data-gridselect-label]').textContent).toBe("L5");
+    expect(w.querySelector("[data-gridselect-field]").textContent).toBe("L5");
+  });
+});

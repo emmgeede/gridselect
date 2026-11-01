@@ -142,3 +142,15 @@ test("a required select flags the field on submit", async ({ page }) => {
   await expect(field(page, "select-long")).toBeFocused();
   await expect(field(page, "select-long")).toHaveAttribute("aria-invalid", "true");
 });
+
+test("generated radios form one native group: one Tab stop, arrows move and select", async ({ page }) => {
+  await page.locator("#select-short label", { hasText: "Small" }).click();
+  const radios = page.locator("#select-short input[type=radio]");
+  await expect(radios.nth(0)).toBeFocused();
+  await page.keyboard.press("ArrowRight");
+  await expect(radios.nth(1)).toBeChecked();
+  await expect(radios.nth(1)).toBeFocused();
+  await expect(page.locator("#size")).toHaveValue("m");
+  await page.keyboard.press("Tab");
+  await expect(radios.nth(2)).not.toBeFocused();
+});

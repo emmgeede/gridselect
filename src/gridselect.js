@@ -147,7 +147,7 @@ export function gridselect(wrapper, options) {
   const tiers = parseTiers(opts.shortcuts, wrapper.getAttribute("data-shortcuts"));
   const panelOpts = source?.placeholder !== undefined && opts.placeholder === undefined ? { ...opts, placeholder: source.placeholder } : opts;
   const ui = !multiple && radios.length > /** @type {number} */ (threshold)
-    ? createPanel(wrapper, [...radios], panelOpts, tiers, source?.label) : null;
+    ? createPanel(wrapper, [...radios], panelOpts, tiers, source?.label, () => source?.pull()) : null;
   const flatUndo = ui || !tiers.length ? [] : addKeyElements(inputs(), tiers);
   if (!ui && tiers.length) {
     /** Digit keys while the focus is on one of the group's inputs. @param {KeyboardEvent} e */
@@ -288,13 +288,17 @@ function fromSelect(wrapper, select) {
   let ui = null;
 
   // Radios follow the select, e.g. after outside code changed it or a form reset.
-  function sync() {
+  function pull() {
     for (const r of radios) r.checked = r.value === select.value;
+  }
+  function sync() {
+    pull();
     ui?.render();
   }
 
   return {
     select,
+    pull,
     placeholder: placeholderOption?.label,
     label,
     undo,
@@ -459,8 +463,9 @@ const fold = (text) => text.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase(
  * @param {Options} opts
  * @param {Tier[]} tiers digit shortcut tiers, empty when off
  * @param {HTMLElement} [fallbackLabel] names the field when the wrapper has no name (e.g. a select's label)
+ * @param {() => void} [beforeOpen] lets a source update the radios first (select changed without event)
  */
-function createPanel(wrapper, radios, opts, tiers, fallbackLabel) {
+function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen) {
   const doc = wrapper.ownerDocument;
   const placeholder = typeof opts.placeholder === "string" ? opts.placeholder : "Select…";
 
@@ -630,6 +635,8 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel) {
 
   function open() {
     if (!panel.hidden) return;
+    beforeOpen?.();
+    render();
     search.value = "";
     items.forEach((item, i) => {
       item.setAttribute("aria-selected", String(radios[i].checked));
