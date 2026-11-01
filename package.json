@@ -11,24 +11,48 @@
       "types": "./dist/gridselect.d.ts",
       "default": "./src/gridselect.js"
     },
-    "./gridselect.css": "./src/gridselect.css"
+    "./gridselect.css": "./src/gridselect.css",
+    "./dist/gridselect.min.js": "./dist/gridselect.min.js"
   },
   "files": [
-    "src",
-    "dist"
+    "src/gridselect.js",
+    "src/gridselect.css",
+    "dist/gridselect.d.ts",
+    "dist/gridselect.min.js",
+    "CHANGELOG.md"
   ],
   "scripts": {
     "test": "vitest run && npm run test:types",
     "types": "tsc -p tsconfig.json",
     "test:types": "npm run types && tsc -p test/tsconfig.json",
     "playground": "npx --yes serve -l 5173 .",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "build": "npm run types && esbuild src/gridselect.js --bundle --minify --format=iife --global-name=gridselect --footer:js=\"globalThis.gridselect=gridselect.gridselect;\" --outfile=dist/gridselect.min.js --log-level=warning",
+    "prepublishOnly": "npm test && npm run build"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
     "@playwright/test": "^1.64.1",
+    "esbuild": "^0.28.2",
     "jsdom": "^30.1.3",
     "typescript": "^7.0.2",
     "vitest": "^5.0.5"
   },
-  "style": "./src/gridselect.css"
+  "style": "./src/gridselect.css",
+  "unpkg": "./dist/gridselect.min.js",
+  "jsdelivr": "./dist/gridselect.min.js",
+  "keywords": [
+    "select",
+    "radio",
+    "combobox",
+    "listbox",
+    "accessible",
+    "a11y",
+    "wcag",
+    "keyboard",
+    "vanilla",
+    "no-dependencies"
+  ],
+  "homepage": "https://emmgeede.github.io/gridselect/",
+  "bugs": "https://github.com/emmgeede/gridselect/issues"
 }

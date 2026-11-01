@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GridSelect IIFE check</title>
+<link rel="stylesheet" href="../src/gridselect.css">
+</head>
+<body>
+<!-- Checks the minified build without a bundler: npm run build first. -->
+<fieldset data-gridselect id="iife">
+  <legend>Size</legend>
+  <label><input type="radio" name="size" value="s"> Small</label>
+  <label><input type="radio" name="size" value="m" checked> Medium</label>
+  <label><input type="radio" name="size" value="l"> Large</label>
+</fieldset>
+<p id="out"></p>
+<script src="../dist/gridselect.min.js"></script>
+<script>
+  const gs = gridselect(document.getElementById("iife"));
+  document.getElementById("iife").addEventListener("change", () => (document.getElementById("out").textContent = gs.value));
+</script>
+</body>
+</html>
