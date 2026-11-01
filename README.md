@@ -20,18 +20,31 @@ everything still works without JavaScript.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/filter-dark.png?v=3">
-  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/filter-light.png?v=3" width="100%" alt="A currency field with its panel open. The search input contains 'dollar' and six matching currencies are shown as numbered items in a four-column grid, the first one outlined as the cursor.">
+  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/filter-light.png?v=3" width="100%" alt="A currency field with its panel open. The search input contains 'dollar' and six matching currencies are shown as numbered items in a three-column grid, the first one outlined as the cursor.">
 </picture>
+
+<sub>**Long list, filter mode (default).** The field opened a panel with 40 currencies. Typing
+"dollar" hides everything else and renumbers the six matches 1 to 6. The outlined item is the
+cursor: Enter, a click or its digit picks it.</sub>
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/short-dark.png?v=3">
   <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/short-light.png?v=3" width="100%" alt="A short list of four shipping options shown as rounded items with digit badges 1 to 4, the first one selected.">
 </picture>
 
+<sub>**Short list.** Up to 10 entries stay visible as items. They are native radio buttons
+underneath; arrow keys move between them and the digits 1 to 4 pick one directly.</sub>
+
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/highlight-dark.png?v=3">
-  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/highlight-light.png?v=3" width="100%" alt="Highlight mode: all currencies stay in place, the two krone entries are shown in bold teal, the others dimmed, digit badges switch to S1, S2 for the second tier.">
+  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/highlight-light.png?v=3" width="100%" alt="Highlight mode: all currencies stay in place, the two krone entries are shown in teal, the others dimmed, the cursor is on Norwegian krone, digit badges switch to S1, S2 for the second tier.">
 </picture>
+
+<sub>**Long list, highlight mode** (`data-search="highlight"`). The same list searched for
+"krone". Nothing is hidden on purpose: every entry keeps its place, so people who use the list
+daily can rely on positions. The matches (Danish and Norwegian krone) are marked in teal, the
+cursor jumps to the first match, all other entries are dimmed. Entries 11 to 20 are picked with
+Shift and a digit (S1 to S0).</sub>
 
 **Status:** version 0.8.0, early development. Published on npm as
 `@emmgeede/gridselect`, because npm treats the plain name `gridselect` as too

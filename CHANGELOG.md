@@ -16,7 +16,8 @@ and breaking changes need a new major version.
 
 - README: installation right after the introduction, screenshots at full
   width with three columns in the panel and a transparent backdrop around
-  the card, so they sit on GitHub's own light or dark background.
+  the card, so they sit on GitHub's own light or dark background. Each
+  screenshot has a caption explaining what it shows.
 
 ## [0.8.0] - 2026-11-01
 
