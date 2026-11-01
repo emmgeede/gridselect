@@ -21,7 +21,9 @@ describe("npm package", () => {
   });
 
   it("packs exactly the published files", () => {
-    const [{ files }] = JSON.parse(run("npm pack --dry-run --json --ignore-scripts"));
+    // npm 11 prints an array of packages, newer versions an object keyed by package name.
+    const parsed = JSON.parse(run("npm pack --dry-run --json --ignore-scripts"));
+    const { files } = Array.isArray(parsed) ? parsed[0] : Object.values(parsed)[0];
     expect(files.map((f) => f.path).sort()).toEqual([
       "CHANGELOG.md", "LICENSE", "README.md", "dist/element.d.ts", "dist/gridselect-element.min.js",
       "dist/gridselect.d.ts", "dist/gridselect.min.js", "package.json", "src/element.js", "src/gridselect.css",

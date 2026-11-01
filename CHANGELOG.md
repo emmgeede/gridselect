@@ -12,6 +12,13 @@ and breaking changes need a new major version.
 
 ## [Unreleased]
 
+### Changed
+
+- Releases are published from GitHub Actions with npm Trusted Publishing and
+  provenance when a version tag is pushed.
+- README logo and screenshots link to the demo, which also keeps GitHub from
+  drawing a background behind them.
+
 ## [0.12.0] - 2026-11-01
 
 ### Added
