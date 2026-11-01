@@ -232,6 +232,36 @@ somewhere else or in your own form? Put an element with `data-gridselect-key`
 into the label yourself: GridSelect fills it when it is empty and leaves it
 alone when it has content. `destroy()` removes everything it added.
 
+## Accessibility
+
+GridSelect is built for WCAG 2.2 level AA:
+
+- **Native first.** Below the threshold your radios and checkboxes stay
+  native, with the browser's own semantics and keyboard handling.
+- **WAI-ARIA patterns.** Above the threshold the field, the search input
+  (`role="combobox"`, `aria-expanded`, `aria-activedescendant`) and the list
+  (`role="listbox"`, `role="option"`, `aria-selected`, `aria-disabled`)
+  follow the WAI-ARIA combobox and listbox patterns. All of them take the
+  group's name from your `<legend>`, `aria-label` or `aria-labelledby`.
+- **Keyboard only.** Everything works without a mouse: open, search, arrow
+  keys, Enter, Escape, Tab, digits. Keys during an IME composition are left
+  to the input method.
+- **Announcements.** A `role="status"` region tells screen readers how many
+  items match. Digit shortcuts are exposed as `aria-keyshortcuts`, the visible
+  badges are `aria-hidden`.
+- **Forms.** `required`, `disabled` and validation keep working, an invalid
+  group moves focus to the field and sets `aria-invalid`.
+- **Not by colour alone.** States come from attributes (`aria-selected`,
+  `data-match`, `data-dimmed`) that styles can mark with more than colour.
+  The planned default stylesheet meets AA contrast in light and dark mode
+  and shows modifier keys as letters, not hard-to-read symbols.
+
+Conformance is a property of the whole page, so a few things stay with you:
+give every group a name, keep sufficient contrast if you write your own CSS,
+and keep focus outlines visible. The behaviour above is covered by unit and
+browser tests. An automated axe-core check and a manual screen reader pass
+(NVDA, VoiceOver) are planned before the first release.
+
 ## Features
 
 | Feature | Status |
