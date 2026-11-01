@@ -6,51 +6,150 @@
 <title>GridSelect demo</title>
 <meta name="description" content="GridSelect: a dependency-free select for short and long lists, with search, keyboard navigation and digit shortcuts.">
 <link rel="stylesheet" href="../src/gridselect.css">
-<link rel="stylesheet" href="../themes/showcase.css">
+<link rel="stylesheet" href="../themes/showcase.css" id="showcase">
 <style>
-  /* Page layout only. Everything GridSelect shows comes from src/gridselect.css. */
-  :root { --page-bg: #F4F6F9; --page-fg: #0F172A; --page-card: #FFFFFF; --page-line: #E2E8F0; --page-muted: #5B6575; --page-link: #00737A; --page-shadow: 0 1px 2px rgb(15 23 42 / .04), 0 8px 24px -12px rgb(15 23 42 / .12); }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) { --page-bg: #0B0F17; --page-fg: #E2E8F0; --page-card: #111827; --page-line: #1F2937; --page-muted: #94A3B8; --page-link: #3CC6C8; --page-shadow: 0 1px 2px rgb(0 0 0 / .4), 0 12px 32px -16px rgb(0 0 0 / .7); }
+  /* Page layout only, in the spirit of a split "changelog" layout: a fixed dark intro column
+     on the left, the examples scrolling on the right with their names at the divider.
+     Everything GridSelect shows comes from src/gridselect.css (and the optional theme). */
+  :root {
+    --intro-bg: #050816; --intro-fg: #ffffff; --intro-text: #cbd5e1; --intro-muted: #94a3b8; --intro-accent: #7dd3fc;
+    --page-bg: #ffffff; --page-fg: #0f172a; --page-text: #475569; --page-line: #e2e8f0;
+    --frame-bg: #f8fafc; --frame-ring: rgb(15 23 42 / 0.06); --page-card: #ffffff;
+    --code-bg: #0b1120; --code-fg: #cbd5e1;
+    --btn-bg: #0f172a; --btn-fg: #ffffff; --btn-ghost: #ffffff; --btn-ghost-fg: #0f172a; --btn-ring: rgb(15 23 42 / 0.12);
+    --intro-width: min(40rem, 46vw);
   }
-  :root[data-theme="dark"] { --page-bg: #0B0F17; --page-fg: #E2E8F0; --page-card: #111827; --page-line: #1F2937; --page-muted: #94A3B8; --page-link: #3CC6C8; --page-shadow: 0 1px 2px rgb(0 0 0 / .4), 0 12px 32px -16px rgb(0 0 0 / .7); }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --page-bg: #030712; --page-fg: #f8fafc; --page-text: #94a3b8; --page-line: #1e293b;
+      --frame-bg: rgb(255 255 255 / 0.025); --frame-ring: rgb(255 255 255 / 0.08); --page-card: #111827;
+      --btn-bg: rgb(255 255 255 / 0.1); --btn-fg: #ffffff; --btn-ghost: transparent; --btn-ghost-fg: #e2e8f0; --btn-ring: rgb(255 255 255 / 0.12);
+    }
+  }
+  :root[data-theme="dark"] {
+    --page-bg: #030712; --page-fg: #f8fafc; --page-text: #94a3b8; --page-line: #1e293b;
+    --frame-bg: rgb(255 255 255 / 0.025); --frame-ring: rgb(255 255 255 / 0.08); --page-card: #111827;
+    --btn-bg: rgb(255 255 255 / 0.1); --btn-fg: #ffffff; --btn-ghost: transparent; --btn-ghost-fg: #e2e8f0; --btn-ring: rgb(255 255 255 / 0.12);
+  }
 
   * { box-sizing: border-box; }
-  body { margin: 0; font: 15px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; background: var(--page-bg); color: var(--page-fg); -webkit-font-smoothing: antialiased; }
-  main { max-width: 56rem; margin: 0 auto; padding: 2rem 1rem 4rem; }
-  header { display: flex; justify-content: space-between; align-items: start; gap: 1rem; flex-wrap: wrap; }
-  h1 { font-size: 1.75rem; margin: 0 0 .25rem; letter-spacing: -.02em; }
-  h2 { font-size: 1rem; margin: 0 0 .2rem; letter-spacing: -.01em; }
-  p { margin: 0 0 .75rem; }
-  .lead { color: var(--page-muted); max-width: 40rem; }
-  a { color: var(--page-link); }
-  section { background: var(--page-card); border-radius: 1rem; padding: 1.5rem; margin-top: 1rem; box-shadow: var(--page-shadow); }
-  .note { color: var(--page-muted); font-size: .875rem; margin-bottom: 1rem; }
-  pre { background: var(--page-bg); border-radius: .6rem; padding: .85rem 1rem; overflow-x: auto; font-size: .8rem; margin: 1.25rem 0 0; }
-  code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
-  button.plain { font: inherit; font-size: .8125rem; font-weight: 500; color: inherit; background: var(--page-card); border: 1px solid var(--page-line); border-radius: .5rem; padding: .35rem .8rem; cursor: pointer; box-shadow: var(--page-shadow); }
-  button.plain:focus-visible { outline: 2px solid var(--page-link); outline-offset: 2px; }
-  .demo { min-height: 3rem; }
+  body {
+    margin: 0; background: var(--page-bg); color: var(--page-fg);
+    font: 15px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; -webkit-font-smoothing: antialiased;
+  }
+  code { font: 0.8em/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; padding: 0.15em 0.35em; border-radius: 0.3rem; background: var(--frame-bg); box-shadow: inset 0 0 0 1px var(--frame-ring); }
+
+  /* Intro column */
+  .intro {
+    position: fixed; inset: 0 auto 0 0; width: var(--intro-width); overflow-y: auto; z-index: 1;
+    display: flex; flex-direction: column; padding: 3rem clamp(1.5rem, 5vw, 5.5rem);
+    color: var(--intro-text); background-color: var(--intro-bg);
+    background-image:
+      radial-gradient(circle at 100% 45%, rgb(56 189 248 / 0.16), transparent 55%),
+      radial-gradient(circle at 90% 95%, rgb(99 102 241 / 0.12), transparent 45%),
+      radial-gradient(1px 1px at 8% 12%, rgb(255 255 255 / 0.55), transparent),
+      radial-gradient(1px 1px at 22% 6%, rgb(255 255 255 / 0.35), transparent),
+      radial-gradient(1px 1px at 37% 18%, rgb(255 255 255 / 0.45), transparent),
+      radial-gradient(1px 1px at 61% 9%, rgb(255 255 255 / 0.3), transparent),
+      radial-gradient(1px 1px at 74% 27%, rgb(255 255 255 / 0.4), transparent),
+      radial-gradient(1px 1px at 86% 14%, rgb(255 255 255 / 0.3), transparent),
+      radial-gradient(1px 1px at 12% 71%, rgb(255 255 255 / 0.25), transparent),
+      radial-gradient(1px 1px at 81% 63%, rgb(255 255 255 / 0.35), transparent),
+      radial-gradient(1px 1px at 66% 84%, rgb(255 255 255 / 0.25), transparent);
+  }
+  .intro::after {
+    content: ""; position: absolute; inset: 0 0 0 auto; width: 1px;
+    background: repeating-linear-gradient(to bottom, rgb(125 211 252 / 0.35) 0 3px, transparent 3px 7px);
+  }
+  .intro-body { margin-block: auto; max-width: 27rem; }
+  .logo { display: flex; align-items: center; gap: 0.6rem; margin: 0 0 2.5rem; color: var(--intro-fg); font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; }
+  .logo svg { width: 2rem; height: 2rem; }
+  h1 { margin: 0; color: var(--intro-fg); font-size: clamp(1.9rem, 3vw, 2.4rem); font-weight: 300; line-height: 1.2; letter-spacing: -0.02em; }
+  h1 span { color: var(--intro-accent); }
+  .intro p { margin: 1.5rem 0 0; font-size: 0.875rem; line-height: 1.7; }
+  .intro code { background: rgb(255 255 255 / 0.06); box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.1); color: var(--intro-fg); }
+  .switches { display: flex; gap: 0.5rem; margin-top: 2rem; padding: 0.3rem; width: fit-content; border-radius: 0.75rem; background: rgb(255 255 255 / 0.04); box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.1); }
+  .switches button { font: inherit; font-size: 0.8125rem; font-weight: 600; color: var(--intro-fg); background: rgb(255 255 255 / 0.08); border: 0; border-radius: 0.5rem; padding: 0.45rem 0.8rem; cursor: pointer; }
+  .switches button:hover { background: rgb(255 255 255 / 0.14); }
+  .switches button:focus-visible, .links a:focus-visible { outline: 2px solid var(--intro-accent); outline-offset: 2px; }
+  .links { display: flex; flex-wrap: wrap; gap: 0.25rem 1.5rem; margin-top: 2rem; padding: 0; list-style: none; font-size: 0.8125rem; font-weight: 500; }
+  .links a { display: inline-flex; align-items: center; gap: 0.45rem; color: var(--intro-fg); text-decoration: none; }
+  .links a:hover { color: var(--intro-accent); }
+  .links svg { width: 1rem; height: 1rem; color: var(--intro-muted); }
+  .credit { margin-top: 3rem; font-size: 0.8125rem; color: var(--intro-muted); }
+
+  /* Examples */
+  main { margin-left: var(--intro-width); padding: 6rem clamp(1.5rem, 5vw, 4rem) 8rem; max-width: calc(var(--intro-width) + 46rem); }
+  section { position: relative; margin: 0 0 5rem; }
+  .stamp {
+    position: absolute; top: 0.35rem; right: calc(100% + clamp(1.5rem, 5vw, 4rem)); z-index: 2;
+    display: flex; align-items: center; gap: 0.5rem; white-space: nowrap;
+    font-size: 0.6875rem; font-weight: 500; color: rgb(255 255 255 / 0.6);
+  }
+  .stamp::after { content: ""; width: 0.75rem; height: 1px; background: rgb(255 255 255 / 0.5); }
+  h2 { margin: 0 0 0.75rem; font-size: 1.25rem; font-weight: 600; letter-spacing: -0.01em; }
+  .note { margin: 0 0 1.5rem; max-width: 40rem; font-size: 0.875rem; line-height: 1.7; color: var(--page-text); }
+  .frame { padding: 2rem; border-radius: 1rem; background: var(--frame-bg); box-shadow: inset 0 0 0 1px var(--frame-ring); }
+  .frame + .frame { margin-top: 1rem; }
+  .row { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1.25rem; }
+  button.plain {
+    font: inherit; font-size: 0.8125rem; font-weight: 600; color: var(--btn-ghost-fg); background: var(--btn-ghost);
+    border: 0; border-radius: 0.5rem; padding: 0.45rem 0.85rem; cursor: pointer; box-shadow: inset 0 0 0 1px var(--btn-ring);
+  }
+  button.plain[type="submit"] { color: var(--btn-fg); background: var(--btn-bg); box-shadow: none; }
+  button.plain:focus-visible { outline: 2px solid #0b9496; outline-offset: 2px; }
+  .notice { margin-top: 2rem; padding: 0.9rem 1rem; border-radius: 0.75rem; font-size: 0.8125rem; line-height: 1.6; color: var(--intro-text); background: rgb(125 211 252 / 0.07); box-shadow: inset 0 0 0 1px rgb(125 211 252 / 0.25); }
+  .notice strong { color: var(--intro-fg); }
+  .notice a { color: var(--intro-accent); }
+  pre.code { margin: 1.25rem 0 0; padding: 1rem 1.25rem; white-space: pre-wrap; overflow-wrap: anywhere; border-radius: 1rem; font: 12px/1.7 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: var(--code-fg); background: var(--code-bg); box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.08); }
+  pre.code code { padding: 0; background: none; box-shadow: none; font: inherit; }
+  #log {
+    margin: 0; height: 14rem; overflow-y: auto; padding: 1rem 1.25rem; border-radius: 1rem; white-space: pre-wrap;
+    font: 12px/1.7 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    color: var(--code-fg); background: var(--code-bg); box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.08);
+  }
+
+  @media (max-width: 64rem) {
+    .intro { position: static; width: auto; padding: 2.5rem 1.25rem; }
+    .intro::after { display: none; }
+    main { margin-left: 0; padding: 3rem 1.25rem 5rem; max-width: none; }
+    .stamp { position: static; margin-bottom: 0.5rem; color: var(--page-text); }
+    .stamp::after { display: none; }
+  }
 </style>
 </head>
 <body>
-<main>
-  <header>
-    <div>
-      <h1>GridSelect</h1>
-      <p class="lead">A dependency-free select for any list length. Short lists stay visible, long ones open a searchable grid. Native inputs underneath, full keyboard support, digit shortcuts, light and dark mode.</p>
-      <p><a href="https://github.com/emmgeede/gridselect">Source and documentation on GitHub</a></p>
+<aside class="intro">
+  <div class="intro-body">
+    <div class="logo">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="3" width="11" height="11" rx="3" fill="#7dd3fc"/><rect x="18" y="3" width="11" height="11" rx="3" fill="#38bdf8" opacity=".55"/><rect x="3" y="18" width="11" height="11" rx="3" fill="#38bdf8" opacity=".55"/><rect x="18" y="18" width="11" height="11" rx="3" fill="#7dd3fc" opacity=".3"/></svg>
+      GridSelect
     </div>
-    <button class="plain" id="theme" type="button">Theme: auto</button>
-  </header>
+    <h1>One select for every list,<br><span>short or long</span></h1>
+    <p>A dependency-free component on top of native radios, checkboxes and selects. Short lists stay visible, long ones open a searchable grid. Full keyboard support, digit shortcuts, light and dark mode, about 5 kB.</p>
+    <div class="switches">
+      <button id="style" type="button">Style: showcase</button>
+      <button id="theme" type="button">Theme: auto</button>
+    </div>
+    <p class="notice"><strong>About accessibility:</strong> this page uses the optional showcase theme. Text contrast, keyboard use and screen reader support follow WCAG 2.2 AA, but some resting borders are lighter than the 3:1 the default stylesheet keeps. For strict visual compliance use the default stylesheet (switch "Style" above).</p>
+    <ul class="links">
+      <li><a href="https://github.com/emmgeede/gridselect"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 1a7 7 0 0 0-2.2 13.6c.35.07.48-.15.48-.34v-1.2c-1.95.42-2.36-.94-2.36-.94-.32-.81-.78-1.03-.78-1.03-.64-.43.05-.42.05-.42.7.05 1.07.72 1.07.72.62 1.07 1.64.76 2.04.58.06-.45.24-.76.44-.94-1.55-.18-3.19-.78-3.19-3.46 0-.76.27-1.39.72-1.88-.07-.18-.31-.89.07-1.85 0 0 .59-.19 1.92.72a6.7 6.7 0 0 1 3.5 0c1.33-.91 1.92-.72 1.92-.72.38.96.14 1.67.07 1.85.45.49.72 1.12.72 1.88 0 2.69-1.64 3.28-3.2 3.45.25.22.47.64.47 1.29v1.91c0 .19.13.41.48.34A7 7 0 0 0 8 1Z"/></svg>GitHub</a></li>
+      <li><a href="https://www.npmjs.com/package/@emmgeede/gridselect"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M2 2h12v12H2V2Zm2 2v8h4V6h2v6h2V4H4Z"/></svg>npm</a></li>
+      <li><a href="https://github.com/emmgeede/gridselect#readme"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M3 2.5A1.5 1.5 0 0 1 4.5 1H12v12H4.5a.5.5 0 0 0 0 1H12v1H4.5A1.5 1.5 0 0 1 3 13.5v-11Z"/></svg>Documentation</a></li>
+    </ul>
+  </div>
+  <p class="credit">npm install @emmgeede/gridselect</p>
+</aside>
 
+<main>
   <section>
+    <div class="stamp">Radios · short</div>
     <h2>Short list</h2>
     <p class="note">Up to 10 entries the radios stay visible. Arrow keys move, digits pick directly.</p>
-    <div class="demo">
+    <div class="frame">
       <fieldset data-gridselect id="short"><legend>Shipping</legend></fieldset>
     </div>
-    <pre><code>&lt;fieldset data-gridselect&gt;
+    <pre class="code"><code>&lt;fieldset data-gridselect&gt;
   &lt;legend&gt;Shipping&lt;/legend&gt;
   &lt;label&gt;&lt;input type="radio" name="ship" value="std" checked&gt; Standard&lt;/label&gt;
   …
@@ -60,35 +159,41 @@ gridselect(document.querySelector("[data-gridselect]"));</code></pre>
   </section>
 
   <section>
+    <div class="stamp">Checkboxes · short</div>
     <h2>Multiple choice</h2>
     <p class="note">Checkbox groups work the same way. Space or a digit toggles.</p>
-    <fieldset data-gridselect id="checks"><legend>Extras</legend></fieldset>
+    <div class="frame">
+      <fieldset data-gridselect id="checks"><legend>Extras</legend></fieldset>
+    </div>
   </section>
 
   <section>
+    <div class="stamp">Radios · filter</div>
     <h2>Long list with filter</h2>
     <p class="note">More than 10 entries: a compact field opens a panel. Type to filter (try <code>dollar</code> or <code>zur</code>), arrows move through the grid, Enter or a digit picks.</p>
-    <div class="demo">
+    <div class="frame">
       <fieldset data-gridselect id="filter"><legend>Currency</legend></fieldset>
     </div>
   </section>
 
   <section>
+    <div class="stamp">Radios · highlight</div>
     <h2>Long list with highlight</h2>
     <p class="note">Items never move, matches are marked. Good for lists people use every day.</p>
-    <div class="demo">
+    <div class="frame">
       <fieldset data-gridselect data-search="highlight" id="highlight"><legend>Currency</legend></fieldset>
     </div>
-    <pre><code>&lt;fieldset data-gridselect data-search="highlight"&gt; … &lt;/fieldset&gt;</code></pre>
+    <pre class="code"><code>&lt;fieldset data-gridselect data-search="highlight"&gt; … &lt;/fieldset&gt;</code></pre>
   </section>
 
   <section>
+    <div class="stamp">Multiple · long</div>
     <h2>Pick several</h2>
     <p class="note">Checkbox groups and <code>&lt;select multiple&gt;</code> get the same panel. Items toggle, the panel stays open, so you can filter and pick several in a row.</p>
-    <div class="demo">
+    <div class="frame">
       <fieldset data-gridselect id="watch"><legend>Watchlist</legend></fieldset>
     </div>
-    <div class="demo" style="margin-top: 1.25rem">
+    <div class="frame">
       <div data-gridselect id="langs">
         <label for="languages">Languages</label>
         <select id="languages" name="languages" multiple>
@@ -103,17 +208,19 @@ gridselect(document.querySelector("[data-gridselect]"));</code></pre>
   </section>
 
   <section>
+    <div class="stamp">Layout · list</div>
     <h2>Long labels</h2>
     <p class="note"><code>data-layout="list"</code> stacks the items in one column.</p>
-    <div class="demo">
+    <div class="frame">
       <fieldset data-gridselect data-layout="list" id="list"><legend>Text module</legend></fieldset>
     </div>
   </section>
 
   <section>
+    <div class="stamp">Select · source</div>
     <h2>From a plain select</h2>
     <p class="note">An existing <code>&lt;select&gt;</code> keeps working in your form. The empty first option becomes the placeholder.</p>
-    <div class="demo">
+    <div class="frame">
       <div data-gridselect id="select">
         <label for="country">Country</label>
         <select id="country" name="country">
@@ -173,6 +280,13 @@ gridselect(document.querySelector("[data-gridselect]"));</code></pre>
   fill("list", modules);
   fill("watch", currencies.slice(0, 24), { type: "checkbox" });
   document.querySelectorAll("[data-gridselect]").forEach((el) => gridselect(el));
+
+  const styleButton = document.getElementById("style");
+  const showcase = document.getElementById("showcase");
+  styleButton.addEventListener("click", () => {
+    showcase.disabled = !showcase.disabled;
+    styleButton.textContent = `Style: ${showcase.disabled ? "default" : "showcase"}`;
+  });
 
   const themes = ["auto", "light", "dark"];
   const button = document.getElementById("theme");

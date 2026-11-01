@@ -18,7 +18,8 @@ async function shoot(page, scheme, id, act = async () => {}) {
   await page.evaluate(({ id, background }) => {
     document.documentElement.style.background = "transparent";
     document.body.style.background = "transparent";
-    document.querySelector("main").style.visibility = "hidden"; // nothing may shine through the round corners
+    // Nothing of the page may shine through the round corners.
+    for (const el of document.body.children) el.style.visibility = "hidden";
     const stage = document.createElement("div");
     stage.id = "shot-stage";
     Object.assign(stage.style, {

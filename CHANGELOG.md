@@ -28,8 +28,13 @@ and breaking changes need a new major version.
 ### Changed
 
 - `<select multiple>` is no longer left native with a warning.
-- README screenshots show the showcase theme, framed with padding and
-  rounded corners. The demo page has borderless cards.
+- README screenshots show the showcase theme, framed with padding, rounded
+  corners and a light neutral backdrop.
+- The demo page has a new split layout with a style switch and a note on
+  what the showcase theme does and does not keep from WCAG.
+- Grid rows in the panel share the height of the tallest row, and digit
+  badges have a fixed width so labels line up. The listbox role moved to a
+  new scroll container (`[data-gridselect-scroller]`) around the item list.
 
 ### Fixed
 
