@@ -55,7 +55,8 @@ returns the same instance.
 The wrapper holds either radios with one shared `name` (single choice) or
 checkboxes (multiple choice). Throws a `TypeError` if `wrapper` is not an
 element, if it mixes radios and checkboxes, or if its radios have different
-names. Duplicate values log a warning, the first input wins.
+names. Duplicate values log a warning. For radios the first input with that
+value wins, for checkboxes all of them are set.
 
 ### `instance.value`
 
@@ -64,7 +65,8 @@ names. Duplicate values log a warning, the first input wins.
 | Radios | checked value, or `null` | a value checks that radio. `null` or an unknown value clears the selection |
 | Checkboxes | array of checked values in DOM order, `[]` if none | an array checks exactly those values, unknown ones are ignored. Anything else throws a `TypeError` |
 
-Setting the value fires no event, just like setting `checked` on a native
+Values are compared as strings, so `gs.value = 2` checks the input with
+`value="2"`. Setting the value fires no event, just like setting `checked` on a native
 input. User changes fire the native `change` event, which bubbles up to the
 wrapper:
 

@@ -11,7 +11,8 @@ All notable changes to GridSelect. The format follows
 - `gridselect(wrapper)` turns a native radio or checkbox group inside a
   wrapper into an instance. Same wrapper, same instance.
 - `instance.value` reads and sets the selection: a string or `null` for
-  radios, an array for checkboxes. Setting fires no event.
+  radios, an array for checkboxes. Setting fires no event. Values are
+  compared as strings, so numbers work too.
 - `instance.destroy()`.
 - Clear `TypeError`s for a missing element, mixed radios and checkboxes, and
   radios with different names. Warning for duplicate values.

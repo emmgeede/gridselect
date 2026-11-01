@@ -17,8 +17,10 @@ const instances = new WeakMap();
  * @returns {GridSelect}
  */
 export function gridselect(wrapper) {
-  // nodeType instead of instanceof: works for elements from other frames too
-  if (wrapper?.nodeType !== 1) throw new TypeError("gridselect: expected a DOM element, got " + String(wrapper));
+  // nodeType instead of instanceof: works for elements from other frames too.
+  // Object.prototype.toString never throws, unlike String() on prototype-less objects.
+  if (wrapper?.nodeType !== 1 || typeof wrapper.querySelectorAll !== "function")
+    throw new TypeError("gridselect: expected a DOM element, got " + Object.prototype.toString.call(wrapper));
   const existing = instances.get(wrapper);
   if (existing) return existing;
 
@@ -36,7 +38,7 @@ export function gridselect(wrapper) {
 
   const values = inputs().map((i) => i.value);
   const dupes = [...new Set(values.filter((v, n) => values.indexOf(v) !== n))];
-  if (dupes.length) console.warn("gridselect: duplicate values, the first input wins:", dupes.join(", "));
+  if (dupes.length) console.warn("gridselect: duplicate values:", dupes.join(", "));
 
   /** @type {GridSelect} */
   const instance = {
@@ -46,10 +48,12 @@ export function gridselect(wrapper) {
     set value(v) {
       if (multiple) {
         if (!Array.isArray(v)) throw new TypeError("gridselect: value of a checkbox group must be an array");
-        for (const i of inputs()) i.checked = v.includes(i.value);
+        const wanted = v.map(String);
+        for (const i of inputs()) i.checked = wanted.includes(i.value);
         return;
       }
-      const match = inputs().find((i) => i.value === v);
+      // Input values are always strings, so 2 matches "2". null clears.
+      const match = v == null ? undefined : inputs().find((i) => i.value === String(v));
       for (const i of inputs()) i.checked = i === match;
     },
     destroy() {

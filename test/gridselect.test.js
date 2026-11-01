@@ -183,3 +183,32 @@ describe("checkbox group", () => {
     expect(gs.value).toEqual(["a", "c"]);
   });
 });
+
+describe("QA F1 fixes", () => {
+  it.each([
+    ["an object without prototype", () => Object.create(null)],
+    ["a fake object with nodeType 1", () => ({ nodeType: 1 })],
+  ])("throws a gridselect TypeError for %s", (_, arg) => {
+    expect(() => gridselect(arg())).toThrow(TypeError);
+    expect(() => gridselect(arg())).toThrow(/^gridselect:/);
+  });
+
+  it("matches numbers against string values", () => {
+    const radios = gridselect(mount(`<input type="radio" name="n" value="1" checked><input type="radio" name="n" value="2">`));
+    radios.value = 2;
+    expect(radios.value).toBe("2");
+
+    document.body.innerHTML = "";
+    const boxes = gridselect(mount(`<input type="checkbox" value="1"><input type="checkbox" value="2">`));
+    boxes.value = [1];
+    expect(boxes.value).toEqual(["1"]);
+  });
+
+  it("does not claim the first input wins for duplicate checkbox values", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    gridselect(mount(`<input type="checkbox" value="d"><input type="checkbox" value="d">`));
+    expect(warn.mock.calls[0].join(" ")).not.toContain("first input wins");
+    expect(warn.mock.calls[0].join(" ")).toContain("d");
+    warn.mockRestore();
+  });
+});
