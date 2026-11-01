@@ -72,10 +72,10 @@ describe("instance lifecycle", () => {
     expect(gridselect(wrapper)).toBe(gridselect(wrapper));
   });
 
-  it("leaves the markup untouched", () => {
+  it("leaves the markup untouched without digit shortcuts", () => {
     const wrapper = mount(currencies);
     const before = wrapper.outerHTML;
-    gridselect(wrapper);
+    gridselect(wrapper, { shortcuts: false });
     expect(wrapper.outerHTML).toBe(before);
   });
 
@@ -86,8 +86,8 @@ describe("instance lifecycle", () => {
 
     gs.destroy();
 
-    expect(gridselect(wrapper)).not.toBe(gs);
     expect(wrapper.outerHTML).toBe(before);
+    expect(gridselect(wrapper)).not.toBe(gs);
   });
 });
 

@@ -24,7 +24,7 @@ describe("threshold and setup", () => {
   it("keeps 10 radios flat and untouched", () => {
     const w = radios(10);
     const before = w.outerHTML;
-    gridselect(w);
+    gridselect(w, { shortcuts: false });
     expect(field(w)).toBeNull();
     expect(w.outerHTML).toBe(before);
   });
@@ -77,7 +77,7 @@ describe("threshold and setup", () => {
     document.body.innerHTML = `<div id="w">${Array.from({ length: 11 }, (_, i) => `<input type="checkbox" value="${i}">`).join("")}</div>`;
     const w = document.getElementById("w");
     const before = w.outerHTML;
-    gridselect(w);
+    gridselect(w, { shortcuts: false });
     expect(w.outerHTML).toBe(before);
   });
 });

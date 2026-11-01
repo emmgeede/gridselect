@@ -13,6 +13,9 @@
  * @property {string} [searchPlaceholder] Placeholder of the search input. Default "Search…".
  * @property {"grid" | "list"} [layout] "list" stacks items in one column for long labels. Default "grid".
  * @property {string} [noResultsText] Hint and announcement when nothing matches. Default "No matches".
+ * @property {string[] | false} [shortcuts] Modifier tiers for digit keys, each tier covers ten
+ *   items, e.g. ["", "Shift", "Alt"] (default). Names: Shift, Alt, Control, Meta, joined with "+".
+ *   false turns digit shortcuts off.
  * @property {(count: number) => string} [resultsText] Screen reader announcement for `count` > 0
  *   matches. Default `n => n === 1 ? "1 result" : n + " results"`.
  * @property {"filter" | "highlight"} [search] "filter" hides non-matches, "highlight" keeps every
@@ -20,6 +23,61 @@
  */
 
 const DEFAULT_THRESHOLD = 10;
+const DEFAULT_SHORTCUTS = ["", "Shift", "Alt"];
+/** Canonical order for aria-keyshortcuts and for comparing tiers. */
+const MODIFIERS = ["Control", "Alt", "Meta", "Shift"];
+
+/**
+ * @typedef {object} Tier
+ * @property {string} name The tier as the developer wrote it, e.g. "Shift+Control".
+ * @property {string} combo Canonical modifiers, e.g. "Control+Shift" ("" for none).
+ */
+
+/**
+ * @param {unknown} option `shortcuts` option
+ * @param {string | null} attr `data-shortcuts` attribute
+ * @returns {Tier[]}
+ */
+function parseTiers(option, attr) {
+  if (option === false || (option === undefined && attr === "off")) return [];
+  const list = Array.isArray(option) ? option : DEFAULT_SHORTCUTS;
+  return list.map((name) => {
+    const parts = String(name).split("+").filter(Boolean);
+    const unknown = parts.find((p) => !MODIFIERS.includes(p));
+    if (unknown !== undefined)
+      throw new TypeError(`gridselect: unknown modifier "${unknown}" in shortcuts, use ${MODIFIERS.join(", ")}`);
+    return { name: String(name), combo: MODIFIERS.filter((m) => parts.includes(m)).join("+") };
+  });
+}
+
+/**
+ * Shortcut of the item at display position `pos`, or null beyond the last tier.
+ * Digits 1..9, 0 cover ten items per tier.
+ * @param {Tier[]} tiers
+ * @param {number} pos
+ */
+function shortcutAt(tiers, pos) {
+  const tier = tiers[Math.floor(pos / 10)];
+  if (!tier) return null;
+  const digit = String(((pos % 10) + 1) % 10);
+  return { digit, tier, aria: tier.combo ? `${tier.combo}+${digit}` : digit };
+}
+
+/**
+ * Display position a key press selects, or -1. Uses event.code, so Shift+1 is not "!".
+ * @param {Tier[]} tiers
+ * @param {KeyboardEvent} e
+ */
+function positionOf(tiers, e) {
+  const m = /^(?:Digit|Numpad)(\d)$/.exec(e.code);
+  if (!m) return -1;
+  const pressed = { Control: e.ctrlKey, Alt: e.altKey, Meta: e.metaKey, Shift: e.shiftKey };
+  const combo = MODIFIERS.filter((k) => pressed[/** @type {keyof typeof pressed} */ (k)]).join("+");
+  const tier = tiers.findIndex((t) => t.combo === combo);
+  if (tier < 0) return -1;
+  const d = Number(m[1]);
+  return tier * 10 + (d === 0 ? 9 : d - 1);
+}
 
 /** @param {unknown} n */
 const isCount = (n) => Number.isInteger(n) && /** @type {number} */ (n) >= 0;
@@ -60,7 +118,9 @@ export function gridselect(wrapper, options) {
   const attr = wrapper.getAttribute("data-threshold");
   const fromAttr = attr !== null && /^\d+$/.test(attr) ? Number(attr) : undefined;
   const threshold = isCount(opts.threshold) ? opts.threshold : (fromAttr ?? DEFAULT_THRESHOLD);
+  const tiers = parseTiers(opts.shortcuts, wrapper.getAttribute("data-shortcuts"));
   const ui = !multiple && radios.length > /** @type {number} */ (threshold) ? createPanel(wrapper, [...radios], opts) : null;
+  const flatUndo = ui || !tiers.length ? [] : addKeyElements(inputs(), tiers);
 
   const values = inputs().map((i) => i.value);
   const dupes = [...new Set(values.filter((v, n) => values.indexOf(v) !== n))];
@@ -88,6 +148,7 @@ export function gridselect(wrapper, options) {
     },
     destroy() {
       ui?.destroy();
+      for (const fn of flatUndo) fn();
       instances.delete(wrapper);
     },
   };
@@ -118,8 +179,64 @@ function create(doc, tag, part) {
   return el;
 }
 
-/** @param {HTMLInputElement} radio */
-const labelText = (radio) => (radio.labels?.[0]?.textContent ?? "").trim() || radio.value;
+/** Label text without digit elements, else the value. @param {HTMLInputElement} radio */
+function labelText(radio) {
+  const label = radio.labels?.[0];
+  if (!label) return radio.value;
+  const copy = /** @type {Element} */ (label.cloneNode(true));
+  for (const key of copy.querySelectorAll("[data-gridselect-key]")) key.remove();
+  return (copy.textContent ?? "").trim() || radio.value;
+}
+
+/**
+ * Below the threshold: digit element in each label plus aria-keyshortcuts on each input.
+ * An existing [data-gridselect-key] in a label is used instead (filled only when empty).
+ * @param {HTMLInputElement[]} inputs
+ * @param {Tier[]} tiers
+ * @returns {(() => void)[]} undo steps
+ */
+function addKeyElements(inputs, tiers) {
+  /** @type {(() => void)[]} */
+  const undo = [];
+  inputs.forEach((input, pos) => {
+    const sc = shortcutAt(tiers, pos);
+    if (!sc) return;
+    input.setAttribute("aria-keyshortcuts", sc.aria);
+    undo.push(() => input.removeAttribute("aria-keyshortcuts"));
+    const label = input.labels?.[0];
+    if (!label) return;
+    let key = label.querySelector("[data-gridselect-key]");
+    if (key) {
+      if (!key.textContent) {
+        key.textContent = sc.digit;
+        const own = key;
+        undo.push(() => (own.textContent = ""));
+      }
+    } else {
+      key = create(input.ownerDocument, "span", "key");
+      key.setAttribute("aria-hidden", "true");
+      key.textContent = sc.digit;
+      label.prepend(key);
+      const added = key;
+      undo.push(() => added.remove());
+    }
+    key.setAttribute("data-modifiers", sc.tier.name);
+    const el = key;
+    undo.push(() => el.removeAttribute("data-modifiers"));
+  });
+  return undo;
+}
+
+/**
+ * Hides or shows one of our own elements. The `hidden` attribute alone loses against any page
+ * CSS that sets `display`, so an inline display: none backs it up.
+ * @param {HTMLElement} el
+ * @param {boolean} hide
+ */
+function setHidden(el, hide) {
+  el.hidden = hide;
+  el.style.display = hide ? "none" : "";
+}
 
 /** Lowercase without accents, so "zur" finds "Zürich". @param {string} text */
 const fold = (text) => text.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
@@ -140,8 +257,18 @@ function createPanel(wrapper, radios, opts) {
   const undo = [];
   for (const el of radios.flatMap((r) => [r, ...(r.labels ?? [])])) {
     if (el.hidden) continue;
+    // Page CSS must not bring the native inputs back, so the inline rule is !important.
+    const hadStyle = el.hasAttribute("style");
+    const prev = el.style.getPropertyValue("display");
+    const prio = el.style.getPropertyPriority("display");
     el.hidden = true;
-    undo.push(() => (el.hidden = false));
+    el.style.setProperty("display", "none", "important");
+    undo.push(() => {
+      el.hidden = false;
+      if (prev) el.style.setProperty("display", prev, prio);
+      else el.style.removeProperty("display");
+      if (!hadStyle && !el.style.length) el.removeAttribute("style");
+    });
   }
 
   const field = create(doc, "button", "field");
@@ -151,7 +278,7 @@ function createPanel(wrapper, radios, opts) {
   field.setAttribute("aria-expanded", "false");
 
   const panel = create(doc, "div", "panel");
-  panel.hidden = true;
+  setHidden(panel, true);
 
   const search = create(doc, "input", "search");
   search.type = "text";
@@ -179,7 +306,7 @@ function createPanel(wrapper, radios, opts) {
   list.append(...items);
 
   const empty = create(doc, "div", "empty");
-  empty.hidden = true;
+  setHidden(empty, true);
   empty.textContent = typeof opts.noResultsText === "string" ? opts.noResultsText : "No matches";
   // Announces the match count. Visually hidden by inline style, so it works without our stylesheet.
   const status = create(doc, "div", "status");
@@ -267,9 +394,9 @@ function createPanel(wrapper, radios, opts) {
       else if (firstMatch !== undefined) setCursor(firstMatch);
     } else {
       order = query ? [...starts, ...contains] : all;
-      items.forEach((item, i) => (item.hidden = !order.includes(i)));
+      items.forEach((item, i) => setHidden(item, !order.includes(i)));
       list.append(...order.map((i) => items[i]));
-      empty.hidden = !query || order.length > 0;
+      setHidden(empty, !query || order.length > 0);
       if (query) setCursor(0);
       else cursorToSelection();
     }
@@ -287,7 +414,7 @@ function createPanel(wrapper, radios, opts) {
       if (radios[i].matches(":disabled")) item.setAttribute("aria-disabled", "true");
       else item.removeAttribute("aria-disabled");
     });
-    panel.hidden = false;
+    setHidden(panel, false);
     field.setAttribute("aria-expanded", "true");
     search.setAttribute("aria-expanded", "true");
     applyQuery();
@@ -298,7 +425,7 @@ function createPanel(wrapper, radios, opts) {
   /** @param {boolean} [refocus] Move focus back to the field (not wanted on Tab or outside clicks). */
   function close(refocus = true) {
     if (panel.hidden) return;
-    panel.hidden = true;
+    setHidden(panel, true);
     field.setAttribute("aria-expanded", "false");
     search.setAttribute("aria-expanded", "false");
     doc.removeEventListener("click", onOutsideClick, true);
