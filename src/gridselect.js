@@ -489,14 +489,20 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
   search.setAttribute("aria-expanded", "false");
   search.placeholder = typeof opts.searchPlaceholder === "string" ? opts.searchPlaceholder : "Search…";
 
+  // The scroller is the listbox: it scrolls (the list inside grows freely, so CSS can give every
+  // grid row the height of the tallest one without clipping), and as a widget the scrolling
+  // region is reached through the combobox. The list inside only lays out the items.
+  const scroller = create(doc, "div", "scroller");
+  scroller.id = uniqueId(doc);
+  scroller.setAttribute("role", "listbox");
+  if (multiple) scroller.setAttribute("aria-multiselectable", "true");
   const list = create(doc, "div", "items");
-  list.id = uniqueId(doc);
-  list.setAttribute("role", "listbox");
-  if (multiple) list.setAttribute("aria-multiselectable", "true");
+  list.setAttribute("role", "presentation");
+  scroller.append(list);
   const layout = opts.layout ?? wrapper.getAttribute("data-layout");
   const isList = layout === "list";
   if (isList) list.classList.add("gridselect__items--list");
-  search.setAttribute("aria-controls", list.id);
+  search.setAttribute("aria-controls", scroller.id);
 
   const items = radios.map((radio) => {
     const item = create(doc, "div", "item");
@@ -525,7 +531,7 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
     "position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap";
   /** @type {(n: number) => string} */
   const resultsText = typeof opts.resultsText === "function" ? opts.resultsText : (n) => (n === 1 ? "1 result" : `${n} results`);
-  panel.append(search, list, empty, status);
+  panel.append(search, scroller, empty, status);
   const keys = radios.map((r) => fold(labelText(r)));
   const highlight = (opts.search ?? wrapper.getAttribute("data-search")) === "highlight";
 
@@ -543,7 +549,7 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
   }
   if (labelledBy) field.setAttribute("aria-labelledby", `${labelledBy} ${field.id}`);
   // Search input and listbox carry the group name too, not just the placeholder.
-  for (const el of [search, list]) {
+  for (const el of [search, scroller]) {
     if (labelledBy) el.setAttribute("aria-labelledby", labelledBy);
     else if (ariaLabel) el.setAttribute("aria-label", ariaLabel);
   }

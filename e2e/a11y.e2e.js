@@ -50,6 +50,17 @@ for (const scheme of ["light", "dark"]) {
       await check(page, "select");
     });
 
+    test("multiple choice panel with selections", async ({ page }) => {
+      await field(page, "checks-long").click();
+      await page.keyboard.press("Enter");
+      await page.keyboard.press("ArrowRight");
+      await page.keyboard.press("Enter");
+      await check(page, "multiple");
+      await page.keyboard.press("Escape");
+      await field(page, "select-multi").click();
+      await check(page, "select multiple");
+    });
+
     test("invalid required field", async ({ page }) => {
       await page.getByRole("button", { name: "Submit", exact: true }).click();
       await check(page, "invalid");

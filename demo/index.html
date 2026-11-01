@@ -83,6 +83,26 @@ gridselect(document.querySelector("[data-gridselect]"));</code></pre>
   </section>
 
   <section>
+    <h2>Pick several</h2>
+    <p class="note">Checkbox groups and <code>&lt;select multiple&gt;</code> get the same panel. Items toggle, the panel stays open, so you can filter and pick several in a row.</p>
+    <div class="demo">
+      <fieldset data-gridselect id="watch"><legend>Watchlist</legend></fieldset>
+    </div>
+    <div class="demo" style="margin-top: 1.25rem">
+      <div data-gridselect id="langs">
+        <label for="languages">Languages</label>
+        <select id="languages" name="languages" multiple>
+          <option value="">Choose languages…</option>
+          <option value="de">German</option><option value="en" selected>English</option><option value="fr">French</option>
+          <option value="it">Italian</option><option value="es">Spanish</option><option value="pt">Portuguese</option>
+          <option value="nl">Dutch</option><option value="da">Danish</option><option value="sv">Swedish</option>
+          <option value="fi">Finnish</option><option value="pl">Polish</option><option value="cs">Czech</option>
+        </select>
+      </div>
+    </div>
+  </section>
+
+  <section>
     <h2>Long labels</h2>
     <p class="note"><code>data-layout="list"</code> stacks the items in one column.</p>
     <div class="demo">
@@ -151,6 +171,7 @@ gridselect(document.querySelector("[data-gridselect]"));</code></pre>
   fill("filter", currencies, { checked: 1 });
   fill("highlight", currencies);
   fill("list", modules);
+  fill("watch", currencies.slice(0, 24), { type: "checkbox" });
   document.querySelectorAll("[data-gridselect]").forEach((el) => gridselect(el));
 
   const themes = ["auto", "light", "dark"];

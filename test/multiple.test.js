@@ -45,7 +45,7 @@ describe("checkbox groups above the threshold", () => {
   it("get the panel with a multiselectable listbox", () => {
     const { w } = boxes(11);
     expect(field(w)).not.toBeNull();
-    expect(w.querySelector("[data-gridselect-items]").getAttribute("aria-multiselectable")).toBe("true");
+    expect(w.querySelector("[data-gridselect-scroller]").getAttribute("aria-multiselectable")).toBe("true");
     expect([...w.querySelectorAll("input[type=checkbox]")].every((c) => c.hidden && c.labels[0].hidden)).toBe(true);
   });
 
@@ -126,7 +126,7 @@ describe("<select multiple>", () => {
   it("shows the panel with multiple choice above the threshold", () => {
     const { w } = multiSelect(12);
     expect(field(w)).not.toBeNull();
-    expect(w.querySelector("[data-gridselect-items]").getAttribute("aria-multiselectable")).toBe("true");
+    expect(w.querySelector("[data-gridselect-scroller]").getAttribute("aria-multiselectable")).toBe("true");
   });
 
   it("updates the options, fires select events only, submits all values", () => {

@@ -4,9 +4,10 @@
 import { test } from "@playwright/test";
 import { writeFileSync } from "node:fs";
 
+// Light, neutral backdrops in both modes, so the component (light or dark) stands out.
 const STAGE = {
-  light: "linear-gradient(135deg, #e0f2f1 0%, #eef2ff 55%, #fdf2f8 100%)",
-  dark: "linear-gradient(135deg, #0b2a2c 0%, #111827 55%, #1e1b2e 100%)",
+  light: "linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 55%, #e6f4f4 100%)",
+  dark: "linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 55%, #d5e6e7 100%)",
 };
 
 /**
@@ -57,7 +58,7 @@ const shots = {
       await page.locator("#highlight [data-gridselect-field]").click();
       await page.locator("#highlight [data-gridselect-search]").fill("krone");
       await page.keyboard.press("ArrowRight");
-      await page.locator("#highlight [data-gridselect-items]").evaluate((el) => (el.style.maxHeight = "15.5rem"));
+      await page.locator("#highlight [data-gridselect-scroller]").evaluate((el) => (el.style.maxHeight = "15.5rem"));
     }),
 };
 

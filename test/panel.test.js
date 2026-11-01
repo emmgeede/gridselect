@@ -139,9 +139,13 @@ describe("panel structure", () => {
     expect(s.classList.contains("gridselect__search")).toBe(true);
     expect(s.getAttribute("role")).toBe("combobox");
     expect(s.getAttribute("aria-autocomplete")).toBe("list");
-    expect(s.getAttribute("aria-controls")).toBe(list(w).id);
+    const listbox = w.querySelector("[data-gridselect-scroller]");
+    expect(s.getAttribute("aria-controls")).toBe(listbox.id);
     expect(s.placeholder).toBe("Suchen…");
-    expect(list(w).getAttribute("role")).toBe("listbox");
+    expect(listbox.getAttribute("role")).toBe("listbox");
+    expect(listbox.classList.contains("gridselect__scroller")).toBe(true);
+    expect(list(w).parentElement).toBe(listbox);
+    expect(list(w).getAttribute("role")).toBe("presentation");
     expect(list(w).classList.contains("gridselect__items")).toBe(true);
   });
 

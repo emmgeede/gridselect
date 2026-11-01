@@ -213,19 +213,25 @@
     opacity: 1;
   }
 
+  .gridselect__scroller {
+    max-height: var(--gs-list-max-height);
+    overflow-y: auto;
+  }
+
   .gridselect__items {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(min(var(--gs-item-min-width), 100%), 1fr));
+    /* every row as tall as the tallest one, so a wrapped label never makes the grid uneven */
+    grid-auto-rows: 1fr;
     gap: var(--gs-gap);
-    max-height: var(--gs-list-max-height);
     margin: 0;
     /* room for the cursor outline */
     padding: calc(var(--gs-focus-width) + 2px);
-    overflow-y: auto;
   }
 
   .gridselect__items--list {
     grid-template-columns: 1fr;
+    grid-auto-rows: auto;
   }
 
   .gridselect__item {
@@ -293,7 +299,8 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    min-width: 1.5rem;
+    /* wide enough for "S1", so labels after one- and two-character badges line up */
+    min-width: 1.75rem;
     min-height: 1.5rem;
     margin-inline-start: -0.45rem;
     padding: 0 0.35rem;

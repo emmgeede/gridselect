@@ -104,7 +104,7 @@ describe("QA F2 fixes", () => {
       w,
       field: w.querySelector("[data-gridselect-field]"),
       search: w.querySelector("[data-gridselect-search]"),
-      list: w.querySelector("[data-gridselect-items]"),
+      list: w.querySelector("[data-gridselect-scroller]"),
       panel: w.querySelector("[data-gridselect-panel]"),
     };
   };
@@ -172,5 +172,20 @@ describe("search input events (found during tdd F8)", () => {
     s.dispatchEvent(new Event("change", { bubbles: true }));
     expect(log).toEqual([]);
     expect([...w.querySelectorAll("[data-gridselect-item]")].filter((i) => !i.hidden)).toHaveLength(2);
+  });
+});
+
+describe("scroll container (equal row heights need a list that can grow)", () => {
+  it("wraps the item list in a scroller inside the panel and removes it on destroy", () => {
+    document.body.innerHTML = `<div id="w">${rows(11)}</div>`;
+    const w = document.getElementById("w");
+    const before = w.outerHTML;
+    const gs = gridselect(w);
+    const scroller = w.querySelector("[data-gridselect-scroller]");
+    expect(scroller.classList.contains("gridselect__scroller")).toBe(true);
+    expect(scroller.parentElement).toBe(w.querySelector("[data-gridselect-panel]"));
+    expect(scroller.firstElementChild).toBe(w.querySelector("[data-gridselect-items]"));
+    gs.destroy();
+    expect(w.outerHTML).toBe(before);
   });
 });

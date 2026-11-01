@@ -114,9 +114,9 @@ test("the panel sits under the field, is sized and scrolls", async ({ page }) =>
   expect(p.y).toBeGreaterThanOrEqual(f.y + f.height);
   expect(p.y - (f.y + f.height)).toBeLessThan(12);
   expect(p.width).toBeLessThanOrEqual(640 + 1);
-  const list = page.locator("#filter [data-gridselect-items]");
-  await expect(list).toHaveCSS("overflow-y", "auto");
-  expect((await list.boundingBox()).height).toBeLessThanOrEqual(18 * 16 + 1);
+  const scroller = page.locator("#filter [data-gridselect-scroller]");
+  await expect(scroller).toHaveCSS("overflow-y", "auto");
+  expect((await scroller.boundingBox()).height).toBeLessThanOrEqual(18 * 16 + 1);
 });
 
 test("grid layout has several columns, list layout exactly one", async ({ page }) => {
@@ -196,3 +196,24 @@ test("right-to-left: the panel opens under the field (QA F6)", async ({ page }) 
   const p = await page.locator("#filter [data-gridselect-panel]").boundingBox();
   expect(Math.abs(p.x + p.width - (f.x + f.width))).toBeLessThan(2);
 });
+
+for (const style of ["default", "showcase"]) {
+  test(`grid rows share one height and labels line up (${style})`, async ({ page }) => {
+    await page.setViewportSize({ width: 1000, height: 900 });
+    if (style === "showcase") await page.locator("#style").click();
+    await field(page, "filter").click();
+    const rows = await items(page, "filter").evaluateAll((els) => els.slice(0, 24).map((el) => {
+      const r = el.getBoundingClientRect();
+      const label = el.querySelector("[data-gridselect-label]").getBoundingClientRect();
+      return { h: Math.round(r.height), labelOffset: Math.round(label.left - r.left) };
+    }));
+    expect(new Set(rows.map((r) => r.h)).size, "one item height").toBe(1);
+    expect(new Set(rows.map((r) => r.labelOffset)).size, "labels start at the same offset").toBe(1);
+    const gap = await page.evaluate(() => {
+      const s = document.querySelector("#filter [data-gridselect-search]").getBoundingClientRect();
+      const l = document.querySelector("#filter [data-gridselect-items]").getBoundingClientRect();
+      return l.top - s.bottom;
+    });
+    expect(gap, "space between search and list").toBeGreaterThanOrEqual(style === "showcase" ? 10 : 8);
+  });
+}

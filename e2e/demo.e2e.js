@@ -7,7 +7,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 test("shows every variant with the real stylesheet and no test tools", async ({ page }) => {
-  for (const id of ["short", "checks", "filter", "highlight", "list", "select"]) await expect(page.locator(`#${id}`)).toBeVisible();
+  for (const id of ["short", "checks", "filter", "highlight", "watch", "langs", "list", "select"]) await expect(page.locator(`#${id}`)).toBeVisible();
   await expect(page.locator("#filter [data-gridselect-field]")).toBeVisible();
   await expect(page.locator("#select [data-gridselect-field]")).toHaveText("Choose a country…");
   await expect(page.locator("#log")).toHaveCount(0);
@@ -29,6 +29,9 @@ for (const scheme of ["light", "dark"]) {
     await page.emulateMedia({ colorScheme: scheme });
     await page.locator("#filter [data-gridselect-field]").click();
     await page.locator("#filter [data-gridselect-search]").fill("dollar");
+    await page.keyboard.press("Escape");
+    await page.locator("#watch [data-gridselect-field]").click();
+    await page.keyboard.press("Enter");
     const { violations } = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"]).analyze();
     expect(violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(" ")).join(", ")}`)).toEqual([]);
   });
