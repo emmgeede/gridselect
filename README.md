@@ -356,10 +356,10 @@ labels, or `selectedText(n)` for more. `gs.value` is always an array.
 
 <a href="https://emmgeede.github.io/gridselect/">
 <picture>
-  <source media="(prefers-reduced-motion: reduce) and (prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/multiple-dark.png?v=2">
-  <source media="(prefers-reduced-motion: reduce)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/multiple-light.png?v=2">
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/multiple-dark.webp?v=2">
-  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/multiple-light.webp?v=2" width="100%" alt="Animation: the watchlist panel opens, 'dollar' filters it, Enter ticks US dollar, arrow right and Enter tick Canadian dollar, the digit 4 ticks New Zealand dollar, the field reads '3 selected', Escape closes the panel.">
+  <source media="(prefers-reduced-motion: reduce) and (prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/multiple-dark.png?v=3">
+  <source media="(prefers-reduced-motion: reduce)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/multiple-light.png?v=3">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/multiple-dark.webp?v=3">
+  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/multiple-light.webp?v=3" width="100%" alt="Animation: the watchlist panel opens, 'dollar' filters it, Enter ticks US dollar, arrow right and Enter tick Canadian dollar, the digit 4 ticks New Zealand dollar, the field reads '3 selected', Escape closes the panel.">
 </picture>
 </a>
 
@@ -416,10 +416,10 @@ it in the label, e.g. `Swiss franc (CHF)`.
 
 <a href="https://emmgeede.github.io/gridselect/">
 <picture>
-  <source media="(prefers-reduced-motion: reduce) and (prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/search-dark.png?v=2">
-  <source media="(prefers-reduced-motion: reduce)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/search-light.png?v=2">
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/search-dark.webp?v=2">
-  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/search-light.webp?v=2" width="100%" alt="Animation: the currency panel opens and 'dollar' is typed letter by letter. With every letter fewer currencies remain, renumbered from 1, until six dollar currencies are left.">
+  <source media="(prefers-reduced-motion: reduce) and (prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/search-dark.png?v=3">
+  <source media="(prefers-reduced-motion: reduce)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/search-light.png?v=3">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/search-dark.webp?v=3">
+  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/search-light.webp?v=3" width="100%" alt="Animation: the currency panel opens and 'dollar' is typed letter by letter. With every letter fewer currencies remain, renumbered from 1, until six dollar currencies are left.">
 </picture>
 </a>
 
@@ -561,10 +561,10 @@ Above the threshold:
 
 <a href="https://emmgeede.github.io/gridselect/">
 <picture>
-  <source media="(prefers-reduced-motion: reduce) and (prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/keyboard-dark.png?v=2">
-  <source media="(prefers-reduced-motion: reduce)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/keyboard-light.png?v=2">
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/keyboard-dark.webp?v=2">
-  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/keyboard-light.webp?v=2" width="100%" alt="Animation: Enter opens the currency panel, the cursor outline moves right twice, down twice and left once, Enter picks Polish złoty and the panel closes with it in the field.">
+  <source media="(prefers-reduced-motion: reduce) and (prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/keyboard-dark.png?v=3">
+  <source media="(prefers-reduced-motion: reduce)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/keyboard-light.png?v=3">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/keyboard-dark.webp?v=3">
+  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/keyboard-light.webp?v=3" width="100%" alt="Animation: Enter opens the currency panel, the cursor outline moves right twice, down twice and left once, Enter picks Polish złoty and the panel closes with it in the field.">
 </picture>
 </a>
 
@@ -581,10 +581,10 @@ the search; in `filter` mode the visible matches are renumbered from 1, in
 
 <a href="https://emmgeede.github.io/gridselect/">
 <picture>
-  <source media="(prefers-reduced-motion: reduce) and (prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/digits-dark.png?v=2">
-  <source media="(prefers-reduced-motion: reduce)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/digits-light.png?v=2">
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/digits-dark.webp?v=2">
-  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/digits-light.webp?v=2" width="100%" alt="Animation: Enter opens the currency panel with digit badges 1 to 0, then S1 to S0 and A1. Pressing 4 picks Pound sterling and closes the panel. After reopening, Shift and 3 picks Brazilian real, badge S3.">
+  <source media="(prefers-reduced-motion: reduce) and (prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/digits-dark.png?v=3">
+  <source media="(prefers-reduced-motion: reduce)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/digits-light.png?v=3">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/digits-dark.webp?v=3">
+  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/digits-light.webp?v=3" width="100%" alt="Animation: Enter opens the currency panel with digit badges 1 to 0, then S1 to S0 and A1. Pressing 4 picks Pound sterling and closes the panel. After reopening, Shift and 3 picks Brazilian real, badge S3.">
 </picture>
 </a>
 

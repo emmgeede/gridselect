@@ -102,6 +102,9 @@ async function animate(page, scheme, name, id, steps) {
       await page.evaluate((label) => {
         const key = document.getElementById("shot-key");
         key.textContent = label ?? "";
+        // Arrow glyphs are small in most fonts; give single characters a bigger size.
+        key.style.fontSize = label && [...label].length === 1 ? "34px" : "22px";
+        key.style.lineHeight = label && [...label].length === 1 ? "1" : "1.3";
         key.style.visibility = label ? "visible" : "hidden";
       }, step.key);
       const png = await page.locator("#shot-stage").screenshot({ omitBackground: true, animations: "disabled" });
