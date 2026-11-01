@@ -38,10 +38,11 @@
     "types": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\" && tsc -p tsconfig.json && node scripts/element-types.js",
     "test:types": "npm run types && tsc -p test/tsconfig.json",
     "playground": "npx --yes serve -l 5173 .",
-    "test:e2e": "npm run build && playwright test",
+    "test:e2e": "npm run build && npm run site && playwright test",
     "build": "npm run types && esbuild src/gridselect.js --bundle --minify --format=iife --global-name=gridselect --footer:js=\"globalThis.gridselect=gridselect.gridselect;\" --outfile=dist/gridselect.min.js --log-level=warning && esbuild src/element.js --bundle --minify --format=iife --outfile=dist/gridselect-element.min.js --log-level=warning",
     "prepublishOnly": "npm test && npm run build",
-    "screenshots": "playwright test --config playwright.screenshots.config.js"
+    "screenshots": "playwright test --config playwright.screenshots.config.js",
+    "site": "node scripts/site.js"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",

@@ -12,6 +12,12 @@ and breaking changes need a new major version.
 
 ## [Unreleased]
 
+### Fixed
+
+- The published demo missed `src/element.js` and showed nothing interactive.
+  The site is now assembled by `npm run site`, and a browser test checks the
+  assembled site for script errors and missing files before every deploy.
+
 ## [0.10.0] - 2026-11-01
 
 ### Added

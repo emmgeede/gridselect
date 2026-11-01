@@ -6,3 +6,4 @@ docs/
 CLAUDE.md
 test-results/
 playwright-report/
+_site/

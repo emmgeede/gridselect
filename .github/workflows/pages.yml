@@ -19,12 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Assemble site
-        run: |
-          mkdir -p _site/src
-          cp -r demo _site/demo
-          cp src/gridselect.js src/gridselect.css _site/src/
-          cp -r themes _site/themes
-          printf '<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="0; url=demo/"><title>GridSelect</title><a href="demo/">GridSelect demo</a>\n' > _site/index.html
+        run: node scripts/site.js
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
