@@ -33,7 +33,7 @@ everything still works without JavaScript.
   <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/highlight-light.png" width="656" alt="Highlight mode: all currencies stay in place, the two krone entries are shown in bold teal, the others dimmed, digit badges switch to S1, S2 for the second tier.">
 </picture>
 
-**Status:** version 0.7.1, early development. Published on npm as
+**Status:** version 0.8.0, early development. Published on npm as
 `@emmgeede/gridselect`, because npm treats the plain name `gridselect` as too
 similar to an older package. Versions
 follow [Semantic Versioning](https://semver.org/). See
@@ -449,7 +449,7 @@ come.
 | `<select>` as source | available |
 | Optional stylesheet with CSS variables, light and dark | available |
 | npm release and demo page | available |
-| Multiple choice in the grid panel, `<select multiple>` | available (next release) |
+| Multiple choice in the grid panel, `<select multiple>` | available |
 | Options from a JS array | later |
 | `<grid-select>` custom element | later |
 | Fuzzy search, theme gallery, React/Vue wrappers | ideas |

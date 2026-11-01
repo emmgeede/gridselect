@@ -179,3 +179,14 @@ describe("<select multiple>", () => {
     expect(field(w).getAttribute("aria-invalid")).toBe("true");
   });
 });
+
+describe("QA F8 fixes", () => {
+  it("deselects a selected placeholder option once real options are picked", () => {
+    document.body.innerHTML = `<form id="f"><div id="w"><select name="m" multiple><option value="" selected>None</option><option value="a">A</option><option value="c">C</option></select></div></form>`;
+    const w = document.getElementById("w");
+    const gs = gridselect(w);
+    w.querySelectorAll("label[data-gridselect-generated] input")[1].click();
+    expect(new FormData(document.getElementById("f")).getAll("m")).toEqual(["c"]);
+    expect(gs.value).toEqual(["c"]);
+  });
+});

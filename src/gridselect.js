@@ -322,6 +322,8 @@ function fromSelect(wrapper, select) {
         if (select.multiple) {
           const option = optionOf(input.value);
           if (option) option.selected = input.checked;
+          // A placeholder means "nothing chosen": it must not be submitted next to real values.
+          for (const o of options) if (o.value === "") o.selected = false;
         } else select.value = input.value;
         select.dispatchEvent(new Event("input", { bubbles: true }));
         select.dispatchEvent(new Event("change", { bubbles: true }));
