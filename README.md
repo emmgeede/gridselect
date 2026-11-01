@@ -74,7 +74,11 @@ Without a bundler, from a CDN (`window.gridselect`):
 </script>
 ```
 
+Prefer HTML only? Use the custom element, see [`<grid-select>`](#grid-select):
 
+```html
+<script src="https://cdn.jsdelivr.net/npm/@emmgeede/gridselect@0/dist/gridselect-element.min.js"></script>
+```
 
 ## Contents
 
@@ -82,6 +86,7 @@ Without a bundler, from a CDN (`window.gridselect`):
 - [Usage](#usage)
   - [Reacting to changes](#reacting-to-changes)
   - [Several at once](#several-at-once)
+- [`<grid-select>`](#grid-select)
 - [API](#api)
   - [`gridselect(wrapper, options?)`](#gridselectwrapper-options)
   - [Options](#options)
@@ -161,6 +166,50 @@ later versions.
 A `<fieldset>` with a `<legend>` is the recommended wrapper, it gives screen
 readers the group name. Any element works, `data-gridselect` is only a
 convention for selecting wrappers and for the stylesheet.
+
+## `<grid-select>`
+
+The custom element builds everything from HTML, no JavaScript call needed:
+
+```html
+<grid-select name="destination" label="Destination" search="highlight">
+  <option value="">Choose a destination…</option>
+  <option value="BER">Berlin (BER)</option>
+  <option value="OSL" selected>Oslo (OSL)</option>
+  <option value="ZRH" disabled>Zurich (ZRH)</option>
+</grid-select>
+
+<script type="module">
+  import "@emmgeede/gridselect/element"; // registers <grid-select>
+</script>
+```
+
+It works in the light DOM: inside it builds a `<fieldset data-gridselect>`
+with a `<legend>` and native radios (or checkboxes with `multiple`) from its
+`<option>` children, which it hides. So the stylesheet, the theme, forms and
+screen readers work as everywhere else, and `input` and `change` bubble up
+from the element.
+
+| Attribute | Meaning |
+|---|---|
+| `name` | Form name of the inputs |
+| `label` | Group name, becomes the `<legend>`. Without `label` or `aria-label` the console warns, a group needs a name |
+| `multiple` | Checkboxes instead of radios |
+| `value` | Initial choice, comma-separated with `multiple`. Without it, `selected` options count |
+| `threshold`, `layout`, `search`, `placeholder`, `search-placeholder` | As the options of the same name |
+| `shortcuts` | `off`, or tiers separated by commas, e.g. `,Shift,Alt` |
+| `required`, `disabled` | As on native inputs |
+
+Properties: `el.value` reads and sets the selection like `gs.value`, and
+`el.items = [...]` (format as in [Entries from JavaScript](#entries-from-javascript))
+replaces the `<option>` children as source. When attributes or options change,
+as frameworks do all the time, the element rebuilds and keeps the choice and
+the focus. An option with an empty value is the placeholder, an option without
+`value` uses its text.
+
+In React, Vue, Svelte or Angular write `<grid-select>` like any HTML element.
+For events, add a native listener (`addEventListener("change", …)`, in React
+via a ref) rather than relying on framework-specific change props.
 
 ## API
 
@@ -530,7 +579,7 @@ come.
 | npm release and demo page | available |
 | Multiple choice in the grid panel, `<select multiple>` | available |
 | Entries from a JS array, `setItems()` | available |
-| `<grid-select>` custom element | later |
+| `<grid-select>` custom element | available (next release) |
 | Fuzzy search, theme gallery, React/Vue wrappers | ideas |
 
 ## Browser support

@@ -3,6 +3,7 @@ import { describe, it, expect, beforeAll } from "vitest";
 import { execSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { runInNewContext } from "node:vm";
+import { gzipSync } from "node:zlib";
 
 const run = (cmd) => execSync(cmd, { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] });
 
@@ -22,8 +23,9 @@ describe("npm package", () => {
   it("packs exactly the published files", () => {
     const [{ files }] = JSON.parse(run("npm pack --dry-run --json --ignore-scripts"));
     expect(files.map((f) => f.path).sort()).toEqual([
-      "CHANGELOG.md", "LICENSE", "README.md", "dist/gridselect.d.ts", "dist/gridselect.min.js",
-      "package.json", "src/gridselect.css", "src/gridselect.js", "themes/showcase.css",
+      "CHANGELOG.md", "LICENSE", "README.md", "dist/element.d.ts", "dist/gridselect-element.min.js",
+      "dist/gridselect.d.ts", "dist/gridselect.min.js", "package.json", "src/element.js", "src/gridselect.css",
+      "src/gridselect.js", "themes/showcase.css",
     ]);
   });
 
@@ -33,7 +35,7 @@ describe("npm package", () => {
     expect(pkg.scripts.prepublishOnly).toMatch(/npm run build/);
     expect(pkg.unpkg).toBe("./dist/gridselect.min.js");
     expect(pkg.jsdelivr).toBe("./dist/gridselect.min.js");
-    expect(Object.keys(pkg.exports)).toEqual([".", "./gridselect.css", "./themes/showcase.css", "./dist/gridselect.min.js"]);
+    expect(Object.keys(pkg.exports)).toEqual([".", "./element", "./gridselect.css", "./themes/showcase.css", "./dist/gridselect.min.js"]);
   });
 });
 
@@ -43,5 +45,22 @@ describe("README on npm (QA F7)", () => {
     const srcs = [...readme.matchAll(/(?:src|srcset)="([^"]+)"/g)].map((m) => m[1]);
     expect(srcs.length).toBeGreaterThan(0);
     expect(srcs.filter((s) => !s.startsWith("https://"))).toEqual([]);
+  });
+});
+
+describe("size budget (PRD principle 6, F10 AC-17)", () => {
+  it("keeps the core under 6 kB and core plus element under 7.5 kB, min+gzip", () => {
+    const size = (f) => gzipSync(readFileSync(f), { level: 9 }).length;
+    expect(size("dist/gridselect.min.js")).toBeLessThanOrEqual(6144);
+    expect(size("dist/gridselect-element.min.js")).toBeLessThanOrEqual(7680);
+  });
+
+  it("registers the element from the IIFE build", () => {
+    const code = readFileSync("dist/gridselect-element.min.js", "utf8");
+    const defined = [];
+    const sandbox = { customElements: { get: () => undefined, define: (n) => defined.push(n) }, HTMLElement: class {}, queueMicrotask };
+    sandbox.globalThis = sandbox;
+    runInNewContext(code, sandbox);
+    expect(defined).toEqual(["grid-select"]);
   });
 });

@@ -208,6 +208,38 @@ gridselect(document.querySelector("[data-gridselect]"));</code></pre>
   </section>
 
   <section>
+    <div class="stamp">Element · grid-select</div>
+    <h2>As a custom element</h2>
+    <p class="note">Import <code>@emmgeede/gridselect/element</code> and write HTML. Works in plain pages and in React, Vue, Svelte or Angular.</p>
+    <div class="frame">
+      <grid-select id="el-demo" name="destination" label="Destination">
+        <option value="">Choose a destination…</option>
+        <option value="BER">Berlin (BER)</option>
+        <option value="FRA">Frankfurt (FRA)</option>
+        <option value="MUC">Munich (MUC)</option>
+        <option value="ZRH">Zurich (ZRH)</option>
+        <option value="VIE">Vienna (VIE)</option>
+        <option value="AMS">Amsterdam (AMS)</option>
+        <option value="CDG">Paris (CDG)</option>
+        <option value="LHR">London (LHR)</option>
+        <option value="MAD">Madrid (MAD)</option>
+        <option value="FCO">Rome (FCO)</option>
+        <option value="CPH">Copenhagen (CPH)</option>
+        <option value="OSL">Oslo (OSL)</option>
+        <option value="ARN">Stockholm (ARN)</option>
+        <option value="HEL">Helsinki (HEL)</option>
+      </grid-select>
+    </div>
+    <pre class="code"><code>&lt;grid-select name="destination" label="Destination"&gt;
+  &lt;option value=""&gt;Choose a destination…&lt;/option&gt;
+  &lt;option value="BER"&gt;Berlin (BER)&lt;/option&gt;
+  …
+&lt;/grid-select&gt;
+
+import "@emmgeede/gridselect/element";</code></pre>
+  </section>
+
+  <section>
     <div class="stamp">Layout · list</div>
     <h2>Long labels</h2>
     <p class="note"><code>data-layout="list"</code> stacks the items in one column.</p>
@@ -237,6 +269,7 @@ gridselect(document.querySelector("[data-gridselect]"));</code></pre>
 
 <script type="module">
   import { gridselect } from "../src/gridselect.js";
+  import "../src/element.js";
 
   const currencies = ["Euro (EUR)", "Swiss franc (CHF)", "US dollar (USD)", "Pound sterling (GBP)", "Japanese yen (JPY)",
     "Danish krone (DKK)", "Norwegian krone (NOK)", "Swedish krona (SEK)", "Polish złoty (PLN)", "Czech koruna (CZK)",
@@ -279,7 +312,7 @@ gridselect(document.querySelector("[data-gridselect]"));</code></pre>
   fill("highlight", currencies);
   fill("list", modules);
   fill("watch", currencies.slice(0, 24), { type: "checkbox" });
-  document.querySelectorAll("[data-gridselect]").forEach((el) => gridselect(el));
+  document.querySelectorAll("[data-gridselect]:not(grid-select [data-gridselect])").forEach((el) => gridselect(el));
 
   const styleButton = document.getElementById("style");
   const showcase = document.getElementById("showcase");

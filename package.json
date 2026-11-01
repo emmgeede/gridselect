@@ -14,25 +14,32 @@
       "types": "./dist/gridselect.d.ts",
       "default": "./src/gridselect.js"
     },
+    "./element": {
+      "types": "./dist/element.d.ts",
+      "default": "./src/element.js"
+    },
     "./gridselect.css": "./src/gridselect.css",
     "./themes/showcase.css": "./themes/showcase.css",
     "./dist/gridselect.min.js": "./dist/gridselect.min.js"
   },
   "files": [
     "src/gridselect.js",
+    "src/element.js",
     "src/gridselect.css",
     "themes/showcase.css",
     "dist/gridselect.d.ts",
+    "dist/element.d.ts",
     "dist/gridselect.min.js",
+    "dist/gridselect-element.min.js",
     "CHANGELOG.md"
   ],
   "scripts": {
     "test": "vitest run && npm run test:types",
-    "types": "tsc -p tsconfig.json",
+    "types": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\" && tsc -p tsconfig.json && node scripts/element-types.js",
     "test:types": "npm run types && tsc -p test/tsconfig.json",
     "playground": "npx --yes serve -l 5173 .",
     "test:e2e": "playwright test",
-    "build": "npm run types && esbuild src/gridselect.js --bundle --minify --format=iife --global-name=gridselect --footer:js=\"globalThis.gridselect=gridselect.gridselect;\" --outfile=dist/gridselect.min.js --log-level=warning",
+    "build": "npm run types && esbuild src/gridselect.js --bundle --minify --format=iife --global-name=gridselect --footer:js=\"globalThis.gridselect=gridselect.gridselect;\" --outfile=dist/gridselect.min.js --log-level=warning && esbuild src/element.js --bundle --minify --format=iife --outfile=dist/gridselect-element.min.js --log-level=warning",
     "prepublishOnly": "npm test && npm run build",
     "screenshots": "playwright test --config playwright.screenshots.config.js"
   },

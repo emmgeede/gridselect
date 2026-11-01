@@ -204,6 +204,47 @@
   </section>
 
   <section>
+    <div class="stamp">Element · grid-select</div>
+    <h2>Custom element</h2>
+    <p class="note"><code>&lt;grid-select&gt;</code> builds everything from its <code>&lt;option&gt;</code> children, no JavaScript call needed. Attributes and options can change at any time.</p>
+    <form id="element-form" class="frame">
+      <grid-select id="el-short" name="seat" label="Seat" value="aisle">
+        <option value="window">Window</option>
+        <option value="middle" disabled>Middle</option>
+        <option value="aisle">Aisle</option>
+      </grid-select>
+      <grid-select id="el-long" name="destination" label="Destination" required style="margin-top: 1.5rem">
+        <option value="">Choose a destination…</option>
+        <option value="BER">Berlin (BER)</option>
+        <option value="FRA">Frankfurt (FRA)</option>
+        <option value="MUC">Munich (MUC)</option>
+        <option value="ZRH">Zurich (ZRH)</option>
+        <option value="VIE">Vienna (VIE)</option>
+        <option value="AMS">Amsterdam (AMS)</option>
+        <option value="CDG">Paris (CDG)</option>
+        <option value="LHR">London (LHR)</option>
+        <option value="MAD">Madrid (MAD)</option>
+        <option value="FCO">Rome (FCO)</option>
+        <option value="CPH">Copenhagen (CPH)</option>
+        <option value="OSL">Oslo (OSL)</option>
+        <option value="ARN">Stockholm (ARN)</option>
+        <option value="HEL">Helsinki (HEL)</option>
+      </grid-select>
+      <grid-select id="el-multi" name="meals" label="Meals" multiple value="veg" style="margin-top: 1.5rem">
+        <option value="veg">Vegetarian</option><option value="vgn">Vegan</option><option value="gf">Gluten-free</option>
+        <option value="lf">Lactose-free</option><option value="kos">Kosher</option><option value="hal">Halal</option>
+        <option value="dia">Diabetic</option><option value="chi">Child meal</option><option value="low">Low salt</option>
+        <option value="fru">Fruit plate</option><option value="sea">Seafood</option>
+      </grid-select>
+      <div class="row">
+        <button class="plain" type="submit">Submit element form</button>
+        <button class="plain" type="button" id="el-add">Add an option</button>
+        <button class="plain" type="button" id="el-highlight">search="highlight"</button>
+      </div>
+    </form>
+  </section>
+
+  <section>
     <div class="stamp">Layout · list</div>
     <h2>List layout with long labels</h2>
     <p class="note"><code>data-layout="list"</code>: one column, left/right arrows stay in the search input.</p>
@@ -284,6 +325,7 @@
 
 <script type="module">
   import { gridselect } from "../src/gridselect.js";
+  import "../src/element.js";
 
   const currencies = ["Euro (EUR)", "Swiss franc (CHF)", "US dollar (USD)", "Pound sterling (GBP)", "Japanese yen (JPY)",
     "Danish krone (DKK)", "Norwegian krone (NOK)", "Swedish krona (SEK)", "Polish złoty (PLN)", "Czech koruna (CZK)",
@@ -374,6 +416,29 @@
   document.getElementById("items-long").addEventListener("click", () => {
     fromItems.setItems(airports);
     write(`#from-items  setItems(16)  gs.value=${JSON.stringify(fromItems.value)}`);
+  });
+
+  // Custom element (F10)
+  for (const id of ["el-short", "el-long", "el-multi"]) {
+    const el = document.getElementById(id);
+    el.addEventListener("change", (e) => write(`#${id}  change  target=${e.target.value}  el.value=${JSON.stringify(el.value)}`));
+  }
+  const elementForm = document.getElementById("element-form");
+  elementForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const data = new FormData(elementForm);
+    write(`#element-form  submit  FormData: ${JSON.stringify(Object.fromEntries([...new Set(data.keys())].map((k) => [k, data.getAll(k).length > 1 ? data.getAll(k) : data.get(k)])))}`);
+  });
+  document.getElementById("el-add").addEventListener("click", () => {
+    const option = document.createElement("option");
+    option.value = "LIS";
+    option.textContent = "Lisbon (LIS)";
+    document.getElementById("el-long").append(option);
+    write("#el-long  appended <option> Lisbon (LIS)");
+  });
+  document.getElementById("el-highlight").addEventListener("click", () => {
+    document.getElementById("el-long").setAttribute("search", "highlight");
+    write('#el-long  setAttribute("search", "highlight")');
   });
 
   const selectsForm = document.getElementById("selects");

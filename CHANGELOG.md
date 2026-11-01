@@ -12,6 +12,15 @@ and breaking changes need a new major version.
 
 ## [Unreleased]
 
+### Added
+
+- Custom element `<grid-select>` (`@emmgeede/gridselect/element`, CDN file
+  `dist/gridselect-element.min.js`): builds a named fieldset with native
+  inputs from its `<option>` children or the `items` property, light DOM,
+  attributes for all options, `value` and `items` properties, rebuilds on
+  attribute and option changes while keeping choice and focus.
+- A test guards the size budget: core 6 kB, core plus element 7.5 kB gzip.
+
 ## [0.9.0] - 2026-11-01
 
 ### Added

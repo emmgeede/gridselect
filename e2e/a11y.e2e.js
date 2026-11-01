@@ -68,6 +68,19 @@ for (const scheme of ["light", "dark"]) {
       await check(page, "items long, panel open");
     });
 
+    test("custom elements closed, open and invalid", async ({ page }) => {
+      await check(page, "elements closed");
+      await field(page, "el-long").click();
+      await check(page, "element panel open");
+      await page.keyboard.press("Escape");
+      await field(page, "el-multi").click();
+      await page.keyboard.press("Enter");
+      await check(page, "element multiple");
+      await page.keyboard.press("Escape");
+      await page.getByRole("button", { name: "Submit element form" }).click();
+      await check(page, "element invalid");
+    });
+
     test("invalid required field", async ({ page }) => {
       await page.getByRole("button", { name: "Submit", exact: true }).click();
       await check(page, "invalid");

@@ -35,3 +35,8 @@ const fromItems = gridselect(document.body, { items: ["a", { value: 1, label: "O
 fromItems.setItems(["b"]);
 // @ts-expect-error items are strings, numbers or objects with a value
 gridselect(document.body, { items: [true] });
+
+import "@emmgeede/gridselect/element";
+const el = document.createElement("grid-select");
+const elValue: string | string[] | null = el.value;
+el.items = ["a", { value: "b", label: "B" }];
