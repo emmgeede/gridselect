@@ -4,6 +4,12 @@
  *   Radio group: the checked value, or null. Checkbox group: all checked values in DOM order.
  *   Setting it changes `checked` without firing events, like setting a native input.
  * @property {() => void} destroy Forgets the instance and removes everything GridSelect added.
+ * @property {(items: Item[]) => void} setItems Replaces the entries of an instance created with
+ *   `items`; chosen values that still exist stay chosen, no event fires. Throws for other sources.
+ */
+
+/**
+ * @typedef {string | number | { value: string | number, label?: string, disabled?: boolean }} Item
  */
 
 /**
@@ -22,6 +28,11 @@
  *   matches. Default `n => n === 1 ? "1 result" : n + " results"`.
  * @property {"filter" | "highlight"} [search] "filter" hides non-matches, "highlight" keeps every
  *   item in place and marks matches (data-match) and non-matches (data-dimmed). Default "filter".
+ * @property {Item[]} [items] Entries for an empty wrapper: GridSelect builds native radios (or
+ *   checkboxes with `multiple`) from them. Strings and numbers are value and label at once.
+ * @property {string} [name] Form name of the inputs built from `items`. Without it they are not submitted.
+ * @property {string | number | (string | number)[]} [value] Initial choice for `items`.
+ * @property {boolean} [multiple] Build checkboxes instead of radios from `items`.
  */
 
 const DEFAULT_THRESHOLD = 10;
@@ -117,7 +128,18 @@ export function gridselect(wrapper, options) {
     throw new TypeError("gridselect: expected a DOM element, got " + Object.prototype.toString.call(wrapper));
   const existing = instances.get(wrapper);
   if (existing) return existing;
+  if (options !== null && typeof options === "object" && Array.isArray(options.items))
+    return register(wrapper, fromItems(wrapper, options));
+  return register(wrapper, build(wrapper, options));
+}
 
+/**
+ * Sets up one instance on the native inputs (or select) already in the wrapper.
+ * @param {Element} wrapper
+ * @param {Options} [options]
+ * @returns {GridSelect}
+ */
+function build(wrapper, options) {
   // A <select> is turned into generated radios, which then run through the radio pipeline.
   const selects = wrapper.querySelectorAll("select");
   /** @type {ReturnType<typeof fromSelect> | null} */
@@ -202,6 +224,9 @@ export function gridselect(wrapper, options) {
       for (const i of inputs()) i.checked = i === match;
       ui?.render();
     },
+    setItems() {
+      throw new TypeError("gridselect: setItems() needs an instance created with the items option");
+    },
     destroy() {
       ui?.destroy();
       for (const fn of flatUndo) fn();
@@ -209,7 +234,96 @@ export function gridselect(wrapper, options) {
       instances.delete(wrapper);
     },
   };
-  return register(wrapper, instance);
+  return instance;
+}
+
+/**
+ * Validates `items` into value/label/disabled records; names the position of a bad entry.
+ * @param {unknown} items
+ */
+function normalizeItems(items) {
+  if (!Array.isArray(items)) throw new TypeError("gridselect: items must be an array");
+  return items.map((it, i) => {
+    if (typeof it === "string" || typeof it === "number") return { value: String(it), label: String(it), disabled: false };
+    const v = it !== null && typeof it === "object" ? /** @type {{ value?: unknown }} */ (it).value : undefined;
+    if (typeof v !== "string" && typeof v !== "number")
+      throw new TypeError(`gridselect: item at position ${i} needs a string or number value`);
+    const rec = /** @type {{ label?: unknown, disabled?: unknown }} */ (it);
+    return { value: String(v), label: rec.label === undefined ? String(v) : String(rec.label), disabled: rec.disabled === true };
+  });
+}
+
+/**
+ * An instance whose entries come from a JS array: builds native inputs, then delegates to build().
+ * setItems() rebuilds inside the same instance object.
+ * @param {Element} wrapper
+ * @param {Options} opts
+ * @returns {GridSelect}
+ */
+function fromItems(wrapper, opts) {
+  if (wrapper.querySelector("input[type=radio], input[type=checkbox], select"))
+    throw new TypeError("gridselect: the items option needs a wrapper without inputs or a select");
+  const doc = wrapper.ownerDocument;
+  const multiple = opts.multiple === true;
+  const named = typeof opts.name === "string" && opts.name !== "";
+  // Without a name the radios still need a common one to form a group, but must not be submitted.
+  const name = named ? /** @type {string} */ (opts.name) : uniqueId(doc);
+  const noForm = named ? null : uniqueId(doc);
+  const rest = { ...opts, items: undefined };
+  /** @type {HTMLLabelElement[]} */
+  let labels = [];
+  /** @type {GridSelect} */
+  let inner;
+
+  /**
+   * @param {ReturnType<typeof normalizeItems>} list
+   * @param {string[]} chosen
+   */
+  function render(list, chosen) {
+    labels = list.map((it) => {
+      const label = doc.createElement("label");
+      label.setAttribute("data-gridselect-generated", "");
+      const input = doc.createElement("input");
+      input.type = multiple ? "checkbox" : "radio";
+      input.name = name;
+      input.value = it.value;
+      input.disabled = it.disabled;
+      input.checked = chosen.includes(it.value);
+      if (noForm) input.setAttribute("form", noForm);
+      label.append(input, " ", it.label);
+      wrapper.append(label);
+      return label;
+    });
+    inner = build(wrapper, rest);
+  }
+
+  /** @param {unknown} v */
+  const asList = (v) => (Array.isArray(v) ? v : v == null ? [] : [v]).map(key).filter((k) => k !== undefined);
+  render(normalizeItems(opts.items), asList(opts.value));
+
+  /** @type {GridSelect} */
+  const outer = {
+    get value() {
+      return inner.value;
+    },
+    set value(v) {
+      inner.value = v;
+    },
+    setItems(items) {
+      const list = normalizeItems(items); // throws before anything changes
+      const chosen = asList(inner.value);
+      inner.destroy();
+      for (const l of labels) l.remove();
+      render(list, chosen);
+      instances.set(wrapper, outer);
+    },
+    destroy() {
+      inner.destroy();
+      for (const l of labels) l.remove();
+      instances.delete(wrapper);
+    },
+  };
+  return outer;
 }
 
 /**

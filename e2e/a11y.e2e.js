@@ -61,6 +61,13 @@ for (const scheme of ["light", "dark"]) {
       await check(page, "select multiple");
     });
 
+    test("entries from JS, short and long", async ({ page }) => {
+      await check(page, "items short");
+      await page.locator("#items-long").click();
+      await field(page, "from-items").click();
+      await check(page, "items long, panel open");
+    });
+
     test("invalid required field", async ({ page }) => {
       await page.getByRole("button", { name: "Submit", exact: true }).click();
       await check(page, "invalid");

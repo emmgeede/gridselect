@@ -185,3 +185,20 @@ test("long checkbox group and select multiple: toggling keeps the panel open, fo
   await expect(page.locator("#log")).toContainText('#select-multi  change  target=en  gs.value=["en","da"]');
   expect(await page.locator("#languages").evaluate((el) => [...el.selectedOptions].map((o) => o.value))).toEqual(["en", "da"]);
 });
+
+test("items from JS: setItems switches between flat items and the panel and keeps the choice", async ({ page }) => {
+  const wrapper = page.locator("#from-items");
+  expect(await wrapper.locator("label:visible").count()).toBe(4);
+  await expect(wrapper.locator('input[value="FRA"]')).toBeChecked();
+  await page.locator("#items-long").click();
+  await expect(field(page, "from-items")).toHaveText("Frankfurt (FRA)");
+  expect(await wrapper.locator("label:visible").count()).toBe(0);
+  await field(page, "from-items").click();
+  await search(page, "from-items").fill("osl");
+  await page.keyboard.press("Enter");
+  await expect(field(page, "from-items")).toHaveText("Oslo (OSL)");
+  await expect(page.locator("#log")).toContainText('#from-items  change  target=OSL  gs.value="OSL"');
+  await page.locator("#items-short").click();
+  expect(await wrapper.locator("label:visible").count()).toBe(4);
+  await expect(page.locator("#log")).toContainText('#from-items  setItems(4)  gs.value=null');
+});

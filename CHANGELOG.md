@@ -12,6 +12,13 @@ and breaking changes need a new major version.
 
 ## [Unreleased]
 
+### Added
+
+- Entries from a JS array: options `items`, `name`, `value` and `multiple`
+  build native radios or checkboxes in an empty wrapper.
+  `instance.setItems(items)` swaps them later, keeps chosen values that still
+  exist and switches between visible items and the panel as needed.
+
 ### Changed
 
 - README: installation right after the introduction, screenshots at full

@@ -191,6 +191,19 @@
   </section>
 
   <section>
+    <div class="stamp">JS · items</div>
+    <h2>Entries from JavaScript</h2>
+    <p class="note">An empty wrapper plus <code>items</code>: GridSelect builds the radios. <code>setItems()</code> swaps the entries, keeps the choice where it still exists and switches between visible items and the panel.</p>
+    <div class="frame">
+      <fieldset data-gridselect id="from-items"><legend>Airport</legend></fieldset>
+      <div class="row">
+        <button class="plain" type="button" id="items-short">setItems(4 airports)</button>
+        <button class="plain" type="button" id="items-long">setItems(16 airports)</button>
+      </div>
+    </div>
+  </section>
+
+  <section>
     <div class="stamp">Layout · list</div>
     <h2>List layout with long labels</h2>
     <p class="note"><code>data-layout="list"</code>: one column, left/right arrows stay in the search input.</p>
@@ -345,6 +358,23 @@
       });
     }
   }
+
+  // Entries from JS (F9)
+  const airports = ["Berlin (BER)", "Frankfurt (FRA)", "Munich (MUC)", "Zurich (ZRH)", "Vienna (VIE)", "Amsterdam (AMS)",
+    "Paris (CDG)", "London (LHR)", "Madrid (MAD)", "Rome (FCO)", "Copenhagen (CPH)", "Oslo (OSL)", "Stockholm (ARN)",
+    "Helsinki (HEL)", "Lisbon (LIS)", "Dublin (DUB)"].map((label) => ({ value: label.slice(-4, -1), label }));
+  const fromItems = gridselect(document.getElementById("from-items"), { name: "airport", items: airports.slice(0, 4), value: "FRA" });
+  instances["from-items"] = fromItems;
+  document.getElementById("from-items").addEventListener("change", (e) =>
+    write(`#from-items  change  target=${e.target.value}  gs.value=${JSON.stringify(fromItems.value)}`));
+  document.getElementById("items-short").addEventListener("click", () => {
+    fromItems.setItems(airports.slice(0, 4));
+    write(`#from-items  setItems(4)  gs.value=${JSON.stringify(fromItems.value)}`);
+  });
+  document.getElementById("items-long").addEventListener("click", () => {
+    fromItems.setItems(airports);
+    write(`#from-items  setItems(16)  gs.value=${JSON.stringify(fromItems.value)}`);
+  });
 
   const selectsForm = document.getElementById("selects");
   selectsForm.addEventListener("submit", (e) => {

@@ -86,10 +86,12 @@ Without a bundler, from a CDN (`window.gridselect`):
   - [`gridselect(wrapper, options?)`](#gridselectwrapper-options)
   - [Options](#options)
   - [Above the threshold](#above-the-threshold)
+  - [Entries from JavaScript](#entries-from-javascript)
   - [Multiple choice](#multiple-choice)
   - [`<select>` as source](#select-as-source)
   - [Search](#search)
   - [`instance.value`](#instancevalue)
+  - [`instance.setItems(items)`](#instancesetitemsitems)
   - [`instance.destroy()`](#instancedestroy)
   - [TypeScript](#typescript)
 - [Styling](#styling)
@@ -185,6 +187,10 @@ value wins, for checkboxes all of them are set.
 | `noResultsText` | | `"No matches"` | Hint (filter mode) and announcement when nothing matches |
 | `resultsText` | | `n => n === 1 ? "1 result" : n + " results"` | Screen reader announcement of the match count. A function, so plural rules of any language fit |
 | `selectedText` | | `n => n + " selected"` | Field text of a multiple choice group with more than two entries chosen (one or two show their labels) |
+| `items` | | | Entries for an empty wrapper, see [Entries from JavaScript](#entries-from-javascript) |
+| `name` | | | Form name of the inputs built from `items` |
+| `value` | | | Initial choice for `items` (an array with `multiple`) |
+| `multiple` | | `false` | Build checkboxes instead of radios from `items` |
 | `shortcuts` | `data-shortcuts="off"` | `["", "Shift", "Alt"]` | Digit key tiers, see [Digit shortcuts](#digit-shortcuts). `false` turns them off |
 
 JS options win over data attributes. Invalid values fall back to the default.
@@ -223,6 +229,37 @@ write your own.
 
 Item text is the label's text content. Icons or other markup inside a label
 are not copied into the panel.
+
+### Entries from JavaScript
+
+Instead of writing inputs, pass the entries. The wrapper must be empty (a
+`<legend>` is fine):
+
+```js
+const gs = gridselect(document.querySelector("#airport"), {
+  name: "airport",                       // submitted under this name
+  items: ["BER", { value: "FRA", label: "Frankfurt" }, { value: "MUC", label: "Munich", disabled: true }],
+  value: "FRA",                          // initial choice
+  multiple: false,                       // true builds checkboxes
+});
+
+gs.setItems(await loadAirports());       // swap the entries later
+```
+
+GridSelect builds native radios (or checkboxes) with labels, marked
+`data-gridselect-generated`, so everything else works as with your own
+markup: forms, events, panel, search and digits. Strings and numbers are
+value and label at once; labels are plain text. Without `name` the inputs
+still form a group but are not submitted.
+
+`setItems()` replaces the entries in the same instance. Chosen values that
+still exist stay chosen, the others are dropped, and no event fires (read
+`gs.value` afterwards). Crossing the threshold switches between visible items
+and the panel. Invalid entries throw a `TypeError` that names their position,
+and leave the current entries untouched.
+
+Instances built from your own markup or a select have no `setItems()`. When
+you change their inputs, call `gs.destroy()` and `gridselect(el)` again.
 
 ### Multiple choice
 
@@ -306,6 +343,12 @@ wrapper:
 ```js
 wrapper.addEventListener("change", () => console.log(gs.value));
 ```
+
+### `instance.setItems(items)`
+
+Only for instances created with `items`, see
+[Entries from JavaScript](#entries-from-javascript). Throws a `TypeError`
+otherwise.
 
 ### `instance.destroy()`
 
@@ -486,7 +529,7 @@ come.
 | Optional stylesheet with CSS variables, light and dark | available |
 | npm release and demo page | available |
 | Multiple choice in the grid panel, `<select multiple>` | available |
-| Options from a JS array | later |
+| Entries from a JS array, `setItems()` | available (next release) |
 | `<grid-select>` custom element | later |
 | Fuzzy search, theme gallery, React/Vue wrappers | ideas |
 

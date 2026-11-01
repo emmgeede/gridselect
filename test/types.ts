@@ -30,3 +30,8 @@ gridselect(document.body, { shortcuts: true });
 gridselect(document.body, { selectedText: (n) => n + " gewählt" });
 // @ts-expect-error selectedText is a function
 gridselect(document.body, { selectedText: "x" });
+
+const fromItems = gridselect(document.body, { items: ["a", { value: 1, label: "One", disabled: true }], name: "x", value: "a", multiple: false });
+fromItems.setItems(["b"]);
+// @ts-expect-error items are strings, numbers or objects with a value
+gridselect(document.body, { items: [true] });
