@@ -15,3 +15,9 @@ gridselect(document.body, { threshold: 20, layout: "list", placeholder: "x", sea
 gridselect(document.body, { layout: "table" });
 // @ts-expect-error threshold is a number
 gridselect(document.body, { threshold: "20" });
+
+gridselect(document.body, { search: "highlight", noResultsText: "Nichts", resultsText: (n) => n + " Treffer" });
+// @ts-expect-error unknown search mode
+gridselect(document.body, { search: "fuzzy" });
+// @ts-expect-error resultsText is a function
+gridselect(document.body, { resultsText: "x" });

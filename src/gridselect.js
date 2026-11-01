@@ -12,6 +12,11 @@
  * @property {string} [placeholder] Field text while nothing is selected. Default "Select…".
  * @property {string} [searchPlaceholder] Placeholder of the search input. Default "Search…".
  * @property {"grid" | "list"} [layout] "list" stacks items in one column for long labels. Default "grid".
+ * @property {string} [noResultsText] Hint and announcement when nothing matches. Default "No matches".
+ * @property {(count: number) => string} [resultsText] Screen reader announcement for `count` > 0
+ *   matches. Default `n => n === 1 ? "1 result" : n + " results"`.
+ * @property {"filter" | "highlight"} [search] "filter" hides non-matches, "highlight" keeps every
+ *   item in place and marks matches (data-match) and non-matches (data-dimmed). Default "filter".
  */
 
 const DEFAULT_THRESHOLD = 10;
@@ -116,6 +121,9 @@ function create(doc, tag, part) {
 /** @param {HTMLInputElement} radio */
 const labelText = (radio) => (radio.labels?.[0]?.textContent ?? "").trim() || radio.value;
 
+/** Lowercase without accents, so "zur" finds "Zürich". @param {string} text */
+const fold = (text) => text.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
+
 /**
  * Builds the closed field and the hidden panel next to the (then hidden) native radios.
  *
@@ -169,7 +177,20 @@ function createPanel(wrapper, radios, opts) {
     return item;
   });
   list.append(...items);
-  panel.append(search, list);
+
+  const empty = create(doc, "div", "empty");
+  empty.hidden = true;
+  empty.textContent = typeof opts.noResultsText === "string" ? opts.noResultsText : "No matches";
+  // Announces the match count. Visually hidden by inline style, so it works without our stylesheet.
+  const status = create(doc, "div", "status");
+  status.setAttribute("role", "status");
+  status.style.cssText =
+    "position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap";
+  /** @type {(n: number) => string} */
+  const resultsText = typeof opts.resultsText === "function" ? opts.resultsText : (n) => (n === 1 ? "1 result" : `${n} results`);
+  panel.append(search, list, empty, status);
+  const keys = radios.map((r) => fold(labelText(r)));
+  const highlight = (opts.search ?? wrapper.getAttribute("data-search")) === "highlight";
 
   // Group name: <legend>, else the wrapper's aria-labelledby or aria-label.
   const legend = wrapper.querySelector(":scope > legend");
@@ -198,15 +219,64 @@ function createPanel(wrapper, radios, opts) {
   }
   render();
 
+  /** Indices into `items` the arrow keys walk through, in display order. */
+  let order = items.map((_, i) => i);
+  /** Position of the cursor within `order`, -1 for none. */
   let cursor = -1;
-  /** @param {number} index */
-  function setCursor(index) {
-    items[cursor]?.removeAttribute("data-cursor");
-    cursor = Math.max(0, Math.min(index, items.length - 1));
-    items[cursor].setAttribute("data-cursor", "");
-    search.setAttribute("aria-activedescendant", items[cursor].id);
-    items[cursor].scrollIntoView?.({ block: "nearest" });
+  /** @type {HTMLElement | undefined} The item carrying data-cursor; `order` may change under it. */
+  let marked;
+  /** @param {number} pos */
+  function setCursor(pos) {
+    marked?.removeAttribute("data-cursor");
+    marked = undefined;
+    if (!order.length) {
+      cursor = -1;
+      search.removeAttribute("aria-activedescendant");
+      return;
+    }
+    cursor = Math.max(0, Math.min(pos, order.length - 1));
+    const item = (marked = items[order[cursor]]);
+    item.setAttribute("data-cursor", "");
+    search.setAttribute("aria-activedescendant", item.id);
+    item.scrollIntoView?.({ block: "nearest" });
   }
+
+  /** Cursor on the selected item if it is shown, else on the first one. */
+  const cursorToSelection = () => setCursor(Math.max(0, order.indexOf(radios.findIndex((r) => r.checked))));
+
+  // filter: non-matches hidden, label-start matches first. highlight: everything stays, matches
+  // and non-matches get marked. An empty query restores the plain list in both modes.
+  function applyQuery() {
+    const query = fold(search.value.trim());
+    /** @type {number[]} */ const starts = [];
+    /** @type {number[]} */ const contains = [];
+    keys.forEach((key, i) => {
+      const pos = key.indexOf(query);
+      if (pos === 0) starts.push(i);
+      else if (pos > 0) contains.push(i);
+    });
+    const all = items.map((_, i) => i);
+    const count = starts.length + contains.length;
+    status.textContent = !query ? "" : count ? String(resultsText(count)) : empty.textContent;
+    if (highlight) {
+      const firstMatch = all.find((i) => keys[i].includes(query));
+      items.forEach((item, i) => {
+        item.toggleAttribute("data-match", !!query && keys[i].includes(query));
+        item.toggleAttribute("data-dimmed", !!query && !keys[i].includes(query));
+      });
+      order = all;
+      if (!query) cursorToSelection();
+      else if (firstMatch !== undefined) setCursor(firstMatch);
+      return;
+    }
+    order = query ? [...starts, ...contains] : all;
+    items.forEach((item, i) => (item.hidden = !order.includes(i)));
+    list.append(...order.map((i) => items[i]));
+    empty.hidden = !query || order.length > 0;
+    if (query) setCursor(0);
+    else cursorToSelection();
+  }
+  search.addEventListener("input", applyQuery);
 
   function open() {
     if (!panel.hidden) return;
@@ -219,7 +289,7 @@ function createPanel(wrapper, radios, opts) {
     panel.hidden = false;
     field.setAttribute("aria-expanded", "true");
     search.setAttribute("aria-expanded", "true");
-    setCursor(Math.max(0, radios.findIndex((r) => r.checked)));
+    applyQuery();
     search.focus();
     doc.addEventListener("click", onOutsideClick, true);
   }
@@ -242,6 +312,7 @@ function createPanel(wrapper, radios, opts) {
   /** Checks the radio behind item `index` like a user click would, then closes. */
   function pick(/** @type {number} */ index) {
     const radio = radios[index];
+    if (!radio) return;
     if (radio.matches(":disabled")) return;
     if (!radio.checked) {
       radio.checked = true;
@@ -281,7 +352,7 @@ function createPanel(wrapper, radios, opts) {
       setCursor(cursor + moves[e.key]());
     } else if (e.key === "Enter") {
       e.preventDefault();
-      pick(cursor);
+      pick(order[cursor]);
     } else if (e.key === "Escape") {
       e.preventDefault();
       close();

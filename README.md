@@ -5,7 +5,7 @@ You write a plain radio or checkbox group (or, later, a `<select>`), wrap it,
 and GridSelect does the rest. Short lists stay visible as plain inputs. Radio
 groups with more than 10 entries switch to a compact field that opens a panel
 with a search input and a multi-column grid of items, fully keyboard
-accessible. Filtering as you type follows in the next release.
+accessible. Typing filters the items, or highlights matches in place.
 
 Your markup stays native, so forms submit, reset and validate as usual, and
 everything still works without JavaScript.
@@ -67,6 +67,9 @@ value wins, for checkboxes all of them are set.
 | `layout` | `data-layout` | `"grid"` | `"list"` stacks the items in one column, for long labels |
 | `placeholder` | | `"Select…"` | Field text while nothing is selected |
 | `searchPlaceholder` | | `"Search…"` | Placeholder of the search input |
+| `search` | `data-search` | `"filter"` | `"filter"` hides non-matches, `"highlight"` keeps every item in place and marks matches |
+| `noResultsText` | | `"No matches"` | Hint (filter mode) and announcement when nothing matches |
+| `resultsText` | | `n => n === 1 ? "1 result" : n + " results"` | Screen reader announcement of the match count. A function, so plural rules of any language fit |
 
 JS options win over data attributes. Invalid values fall back to the default.
 
@@ -99,6 +102,23 @@ your own CSS to look like a grid.
 
 Item text is the label's text content. Icons or other markup inside a label
 are not copied into the panel.
+
+### Search
+
+Typing matches the label text (not the value), ignoring case, surrounding
+spaces and accents: `zur` finds `Zürich`. Want `CHF` to be searchable? Put
+it in the label, e.g. `Swiss franc (CHF)`.
+
+- `filter` (default): non-matches get `hidden`, matches that start with the
+  query come first. The cursor jumps to the first match, arrow keys walk the
+  visible items only. With no match, `[data-gridselect-empty]` shows the
+  `noResultsText` and Enter does nothing.
+- `highlight`: items never move. Matches get `data-match`, the rest
+  `data-dimmed`, the cursor jumps to the first match and arrow keys still
+  reach every item, so frequent users can rely on positions.
+
+A visually hidden `[data-gridselect-status]` (`role="status"`) announces the
+number of matches to screen readers. The search starts empty on every open.
 
 The field, the search input and the listbox take their accessible name from
 the wrapper's `<legend>`, `aria-labelledby` or `aria-label`. Keys pressed
@@ -154,7 +174,7 @@ Above the threshold:
 |---|---|
 | Radio and checkbox groups, `value`, `destroy()`, TypeScript types | available |
 | Grid panel above a configurable threshold (default 10), grid or list layout | available |
-| Search modes `filter` (default) and `highlight` | planned |
+| Search modes `filter` (default) and `highlight` | available |
 | Digit shortcuts with configurable modifier tiers | planned |
 | `<select>` as source | planned |
 | Optional stylesheet with CSS variables, light and dark | planned |
