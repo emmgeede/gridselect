@@ -1,6 +1,6 @@
 {
   "name": "@emmgeede/gridselect",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "description": "Dependency-free select component: chips for short lists, a searchable grid for long ones.",
   "license": "MIT",
   "author": "Michael Grossklos",
@@ -38,7 +38,7 @@
     "types": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\" && tsc -p tsconfig.json && node scripts/element-types.js",
     "test:types": "npm run types && tsc -p test/tsconfig.json",
     "playground": "npx --yes serve -l 5173 .",
-    "test:e2e": "playwright test",
+    "test:e2e": "npm run build && playwright test",
     "build": "npm run types && esbuild src/gridselect.js --bundle --minify --format=iife --global-name=gridselect --footer:js=\"globalThis.gridselect=gridselect.gridselect;\" --outfile=dist/gridselect.min.js --log-level=warning && esbuild src/element.js --bundle --minify --format=iife --outfile=dist/gridselect-element.min.js --log-level=warning",
     "prepublishOnly": "npm test && npm run build",
     "screenshots": "playwright test --config playwright.screenshots.config.js"

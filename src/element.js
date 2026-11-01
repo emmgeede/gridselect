@@ -43,6 +43,8 @@ export class GridSelectElement extends Base {
   /** @type {MutationObserver | null} */
   #observer = null;
   #queued = false;
+  /** @type {unknown} Value set before the element is built (frameworks do that); applied on build. */
+  #pendingValue = undefined;
 
   connectedCallback() {
     // Frameworks may set properties before the element is defined; take them over now.
@@ -72,11 +74,13 @@ export class GridSelectElement extends Base {
 
   /** The selection, like `gridselect().value`. Setting it fires no event. */
   get value() {
-    return this.#gs ? this.#gs.value : null;
+    if (this.#gs) return this.#gs.value;
+    return /** @type {string | string[] | null} */ (this.#pendingValue ?? null);
   }
 
   set value(v) {
     if (this.#gs) this.#gs.value = v;
+    else this.#pendingValue = v;
   }
 
   /** Entries as in the `items` option; when set they replace the <option> children as source. */
@@ -120,6 +124,8 @@ export class GridSelectElement extends Base {
     const placeholderOption = fromOptions ? options.find((o) => o.value === "") : undefined;
 
     let value = chosen;
+    if (value === undefined && this.#pendingValue !== undefined) value = asList(this.#pendingValue);
+    this.#pendingValue = undefined;
     if (value === undefined) {
       const fromAttr = attr("value");
       value = fromAttr !== null ? (multiple ? fromAttr.split(",").map((s) => s.trim()) : [fromAttr])

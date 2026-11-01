@@ -151,3 +151,26 @@ describe("<grid-select>", () => {
     expect(field(el).textContent).toBe("Choose…");
   });
 });
+
+describe("QA F10 fixes", () => {
+  it("keeps a value set before the element is connected", () => {
+    const el = document.createElement("grid-select");
+    el.setAttribute("label", "X");
+    el.innerHTML = '<option value="a">A</option><option value="b">B</option>';
+    el.value = "b";
+    expect(el.value).toBe("b");
+    document.body.append(el);
+    expect(el.value).toBe("b");
+    expect(inputs(el)[1].checked).toBe(true);
+  });
+
+  it("keeps value and items set together before connecting, in either order", () => {
+    const el = document.createElement("grid-select");
+    el.setAttribute("label", "X");
+    el.setAttribute("multiple", "");
+    el.value = ["y"];
+    el.items = ["x", "y", "z"];
+    document.body.append(el);
+    expect(el.value).toEqual(["y"]);
+  });
+});
