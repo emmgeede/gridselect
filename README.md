@@ -65,8 +65,9 @@ value wins, for checkboxes all of them are set.
 | Radios | checked value, or `null` | a value checks that radio. `null` or an unknown value clears the selection |
 | Checkboxes | array of checked values in DOM order, `[]` if none | an array checks exactly those values, unknown ones are ignored. Anything else throws a `TypeError` |
 
-Values are compared as strings, so `gs.value = 2` checks the input with
-`value="2"`. Setting the value fires no event, just like setting `checked` on a native
+Numbers match their string form, so `gs.value = 2` checks the input with
+`value="2"`. Any other type (arrays on a radio group, booleans, objects)
+matches nothing. Setting the value fires no event, just like setting `checked` on a native
 input. User changes fire the native `change` event, which bubbles up to the
 wrapper:
 

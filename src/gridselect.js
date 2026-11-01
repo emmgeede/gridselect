@@ -40,6 +40,10 @@ export function gridselect(wrapper) {
   const dupes = [...new Set(values.filter((v, n) => values.indexOf(v) !== n))];
   if (dupes.length) console.warn("gridselect: duplicate values:", dupes.join(", "));
 
+  // Input values are always strings: numbers match their string form, anything else matches nothing.
+  /** @param {unknown} x */
+  const key = (x) => (typeof x === "string" || typeof x === "number" ? String(x) : undefined);
+
   /** @type {GridSelect} */
   const instance = {
     get value() {
@@ -48,12 +52,11 @@ export function gridselect(wrapper) {
     set value(v) {
       if (multiple) {
         if (!Array.isArray(v)) throw new TypeError("gridselect: value of a checkbox group must be an array");
-        const wanted = v.map(String);
+        const wanted = v.map(key);
         for (const i of inputs()) i.checked = wanted.includes(i.value);
         return;
       }
-      // Input values are always strings, so 2 matches "2". null clears.
-      const match = v == null ? undefined : inputs().find((i) => i.value === String(v));
+      const match = inputs().find((i) => i.value === key(v));
       for (const i of inputs()) i.checked = i === match;
     },
     destroy() {

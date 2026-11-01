@@ -204,6 +204,18 @@ describe("QA F1 fixes", () => {
     expect(boxes.value).toEqual(["1"]);
   });
 
+  it.each([[["2"]], [true], [{ toString: () => "2" }]])("treats %j as an unknown radio value and clears", (v) => {
+    const gs = gridselect(mount(`<input type="radio" name="n" value="1" checked><input type="radio" name="n" value="2">`));
+    gs.value = v;
+    expect(gs.value).toBeNull();
+  });
+
+  it("ignores non-string, non-number entries in a checkbox array", () => {
+    const gs = gridselect(mount(`<input type="checkbox" value="1"><input type="checkbox" value="2">`));
+    gs.value = [["1"], true, 2];
+    expect(gs.value).toEqual(["2"]);
+  });
+
   it("does not claim the first input wins for duplicate checkbox values", () => {
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
     gridselect(mount(`<input type="checkbox" value="d"><input type="checkbox" value="d">`));
