@@ -73,7 +73,7 @@ test("Escape and outside clicks close without a change", async ({ page }) => {
 });
 
 test("a required group flags and focuses the field on submit", async ({ page }) => {
-  await page.getByRole("button", { name: "Submit" }).click();
+  await page.getByRole("button", { name: "Submit", exact: true }).click();
   await expect(field(page, "required")).toBeFocused();
   await expect(field(page, "required")).toHaveAttribute("aria-invalid", "true");
 });
@@ -116,4 +116,29 @@ test("tiers show readable modifier letters before the digit", async ({ page }) =
   await expect(key).toHaveText("1");
   const before = await key.evaluate((el) => getComputedStyle(el, "::before").content);
   expect(before).toBe('"S"');
+});
+
+test("a short select shows generated items instead of the native select", async ({ page }) => {
+  await expect(page.locator("#size")).toBeHidden();
+  expect(await page.locator("#select-short > label[data-gridselect-generated]:visible").count()).toBe(4);
+  await page.locator("#select-short label", { hasText: "Medium" }).click();
+  await expect(page.locator("#log")).toContainText("#select-short  change  target=m");
+});
+
+test("a long select shows only the field, and a panel pick ends up in the form data", async ({ page }) => {
+  await expect(page.locator("#country")).toBeHidden();
+  await expect(field(page, "select-long")).toHaveText("Choose a country…");
+  expect(await page.locator("#select-long > label:visible").count()).toBe(0);
+  await field(page, "select-long").click();
+  await search(page, "select-long").fill("swi");
+  await page.keyboard.press("Enter");
+  await expect(field(page, "select-long")).toHaveText("Switzerland");
+  await page.getByRole("button", { name: "Submit selects" }).click();
+  await expect(page.locator("#log")).toContainText('#selects  submit  FormData: {"size":"","country":"ch"}');
+});
+
+test("a required select flags the field on submit", async ({ page }) => {
+  await page.getByRole("button", { name: "Submit selects" }).click();
+  await expect(field(page, "select-long")).toBeFocused();
+  await expect(field(page, "select-long")).toHaveAttribute("aria-invalid", "true");
 });

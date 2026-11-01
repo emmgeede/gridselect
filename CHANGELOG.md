@@ -41,6 +41,13 @@ All notable changes to GridSelect. The format follows
   existing one in the label is used. Inputs and items get `aria-keyshortcuts`, badges of modifier tiers get
   readable letters in `data-prefix` (`S1`, `A3`, `CS2`).
 
+- `<select>` as source: GridSelect hides the select and builds radios for
+  its options (not submitted), so selects get the same items, panel, search
+  and digits. Picks set `select.value` and fire `input` and `change` on the
+  select. An option with an empty value is the placeholder. `required`,
+  `disabled`, reset and the select's `<label>` are respected.
+  `<select multiple>` stays native with a warning, `value` works as an array.
+
 ### Changed
 
 - Entries are called "items" (was "chips" during development).

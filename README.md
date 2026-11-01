@@ -14,6 +14,28 @@ everything still works without JavaScript.
 [Features](#features) for what works today and [CHANGELOG.md](CHANGELOG.md)
 for what changed.
 
+## Contents
+
+- [Usage](#usage)
+  - [Reacting to changes](#reacting-to-changes)
+  - [Several at once](#several-at-once)
+- [API](#api)
+  - [`gridselect(wrapper, options?)`](#gridselectwrapper-options)
+  - [Options](#options)
+  - [Above the threshold](#above-the-threshold)
+  - [`<select>` as source](#select-as-source)
+  - [Search](#search)
+  - [`instance.value`](#instancevalue)
+  - [`instance.destroy()`](#instancedestroy)
+  - [TypeScript](#typescript)
+- [Keyboard](#keyboard)
+  - [Digit shortcuts](#digit-shortcuts)
+- [Accessibility](#accessibility)
+- [Features](#features)
+- [Browser support](#browser-support)
+- [Development](#development)
+- [License](#license)
+
 ## Usage
 
 ```html
@@ -129,6 +151,40 @@ your own CSS to look like a grid.
 
 Item text is the label's text content. Icons or other markup inside a label
 are not copied into the panel.
+
+### `<select>` as source
+
+A wrapper may hold one `<select>` instead of radios:
+
+```html
+<div data-gridselect>
+  <label for="size">Size</label>
+  <select id="size" name="size" required>
+    <option value="">Choose a size…</option>
+    <option value="s">Small</option>
+    <option value="m">Medium</option>
+  </select>
+</div>
+```
+
+GridSelect hides the select and builds one radio per option (attribute
+`data-gridselect-generated` on its label), so short selects become visible
+items and long ones get the field and panel, with search and digits. The
+generated radios point to no form, only the select is submitted. Picking
+sets `select.value` and fires `input` and `change` on the select, so
+`event.target` is the select and your existing listeners keep working.
+
+- An option with an empty value is the placeholder: it is not an item, its
+  text becomes the field text, and `gs.value` is `null` while it is chosen.
+- Options inside `<optgroup>` are listed in order, the group labels are not
+  shown yet. `disabled` on options, groups and the select is respected, the
+  text comes from `option.label`.
+- Without a `<legend>` or `aria-label` on the wrapper, the select's own
+  `<label>` names the field.
+- Changes made by your code show up after a `change` event on the select or
+  a form reset. `gs.value = "m"` updates everything without events.
+- `<select multiple>` is left native for now (a console warning tells you),
+  `gs.value` already reads and writes it as an array.
 
 ### Search
 
@@ -270,7 +326,7 @@ browser tests. An automated axe-core check and a manual screen reader pass
 | Grid panel above a configurable threshold (default 10), grid or list layout | available |
 | Search modes `filter` (default) and `highlight` | available |
 | Digit shortcuts with configurable modifier tiers | available |
-| `<select>` as source | planned |
+| `<select>` as source | available |
 | Optional stylesheet with CSS variables, light and dark | planned |
 | npm release and demo page | planned |
 | Multiple choice in the grid panel, `<select multiple>` | later |

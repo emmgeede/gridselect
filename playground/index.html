@@ -150,6 +150,37 @@
   </section>
 
   <section>
+    <h2>Select as source</h2>
+    <p class="note">Plain <code>&lt;select&gt;</code> elements: the short one becomes visible items, the long one the field and panel. The first option with an empty value is the placeholder.</p>
+    <form id="selects">
+      <div data-gridselect id="select-short">
+        <label for="size">Size</label>
+        <select id="size" name="size">
+          <option value="">Choose a size…</option>
+          <option value="s">Small</option>
+          <option value="m">Medium</option>
+          <option value="l">Large</option>
+          <option value="xl" disabled>Extra large (sold out)</option>
+        </select>
+      </div>
+      <div data-gridselect id="select-long" style="margin-top: 1rem">
+        <label for="country">Country</label>
+        <select id="country" name="country" required>
+          <option value="">Choose a country…</option>
+          <optgroup label="DACH"><option value="at">Austria</option><option value="de">Germany</option><option value="ch">Switzerland</option></optgroup>
+          <optgroup label="Other"><option value="be">Belgium</option><option value="dk">Denmark</option><option value="fi">Finland</option>
+            <option value="fr">France</option><option value="it">Italy</option><option value="nl">Netherlands</option>
+            <option value="pt">Portugal</option><option value="es">Spain</option><option value="se">Sweden</option></optgroup>
+        </select>
+      </div>
+      <div class="row">
+        <button class="plain" type="submit">Submit selects</button>
+        <button class="plain" type="reset">Reset selects</button>
+      </div>
+    </form>
+  </section>
+
+  <section>
     <h2>Form: required, disabled, submit and reset</h2>
     <p class="note">Submit with nothing chosen: the field gets focus and is flagged. Item 3 is disabled.</p>
     <form id="form">
@@ -239,7 +270,7 @@
   fill("list", modules);
   fill("required", countries, { required: true, disabled: [2] });
 
-  for (const id of ["short", "checks", "filter", "highlight", "list", "required"]) {
+  for (const id of ["short", "checks", "filter", "highlight", "list", "required", "select-short", "select-long"]) {
     init(id);
     const wrapper = document.getElementById(id);
     for (const type of ["input", "change"]) {
@@ -248,6 +279,12 @@
       });
     }
   }
+
+  const selectsForm = document.getElementById("selects");
+  selectsForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    write(`#selects  submit  FormData: ${JSON.stringify(Object.fromEntries(new FormData(selectsForm)))}`);
+  });
 
   const form = document.getElementById("form");
   form.addEventListener("submit", (e) => {

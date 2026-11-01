@@ -88,6 +88,18 @@ const isCount = (n) => Number.isInteger(n) && /** @type {number} */ (n) >= 0;
 /** @type {WeakMap<Element, GridSelect>} */
 const instances = new WeakMap();
 
+/** Input values are always strings: numbers match their string form, anything else matches nothing. @param {unknown} x */
+const key = (x) => (typeof x === "string" || typeof x === "number" ? String(x) : undefined);
+
+/**
+ * @param {Element} wrapper
+ * @param {GridSelect} instance
+ */
+function register(wrapper, instance) {
+  instances.set(wrapper, instance);
+  return instance;
+}
+
 /**
  * Turns a wrapper around a native radio or checkbox group into a GridSelect instance.
  * Calling it again on the same wrapper returns the existing instance.
@@ -103,6 +115,17 @@ export function gridselect(wrapper, options) {
     throw new TypeError("gridselect: expected a DOM element, got " + Object.prototype.toString.call(wrapper));
   const existing = instances.get(wrapper);
   if (existing) return existing;
+
+  // A <select> is turned into generated radios, which then run through the radio pipeline.
+  const selects = wrapper.querySelectorAll("select");
+  /** @type {ReturnType<typeof fromSelect> | null} */
+  let source = null;
+  if (selects.length) {
+    if (selects.length > 1 || wrapper.querySelector("input[type=radio], input[type=checkbox]"))
+      throw new TypeError("gridselect: wrapper holds a select plus other inputs, use one source");
+    if (selects[0].multiple) return register(wrapper, multiSelect(wrapper, selects[0]));
+    source = fromSelect(wrapper, selects[0]);
+  }
 
   /** @param {string} type */
   const find = (type) => /** @type {NodeListOf<HTMLInputElement>} */ (wrapper.querySelectorAll(`input[type=${type}]`));
@@ -122,7 +145,9 @@ export function gridselect(wrapper, options) {
   const fromAttr = attr !== null && /^\d+$/.test(attr) ? Number(attr) : undefined;
   const threshold = isCount(opts.threshold) ? opts.threshold : (fromAttr ?? DEFAULT_THRESHOLD);
   const tiers = parseTiers(opts.shortcuts, wrapper.getAttribute("data-shortcuts"));
-  const ui = !multiple && radios.length > /** @type {number} */ (threshold) ? createPanel(wrapper, [...radios], opts, tiers) : null;
+  const panelOpts = source?.placeholder !== undefined && opts.placeholder === undefined ? { ...opts, placeholder: source.placeholder } : opts;
+  const ui = !multiple && radios.length > /** @type {number} */ (threshold)
+    ? createPanel(wrapper, [...radios], panelOpts, tiers, source?.label) : null;
   const flatUndo = ui || !tiers.length ? [] : addKeyElements(inputs(), tiers);
   if (!ui && tiers.length) {
     /** Digit keys while the focus is on one of the group's inputs. @param {KeyboardEvent} e */
@@ -147,20 +172,23 @@ export function gridselect(wrapper, options) {
     flatUndo.push(() => wrapper.removeEventListener("keydown", /** @type {EventListener} */ (onKey)));
   }
 
+  if (source) source.connect(inputs(), ui, flatUndo);
+
   const values = inputs().map((i) => i.value);
   const dupes = [...new Set(values.filter((v, n) => values.indexOf(v) !== n))];
   if (dupes.length) console.warn("gridselect: duplicate values:", dupes.join(", "));
 
-  // Input values are always strings: numbers match their string form, anything else matches nothing.
-  /** @param {unknown} x */
-  const key = (x) => (typeof x === "string" || typeof x === "number" ? String(x) : undefined);
-
   /** @type {GridSelect} */
   const instance = {
     get value() {
+      if (source) return source.select.value || null;
       return multiple ? checked() : (checked()[0] ?? null);
     },
     set value(v) {
+      if (source) {
+        source.set(v);
+        return;
+      }
       if (multiple) {
         if (!Array.isArray(v)) throw new TypeError("gridselect: value of a checkbox group must be an array");
         const wanted = v.map(key);
@@ -174,11 +202,154 @@ export function gridselect(wrapper, options) {
     destroy() {
       ui?.destroy();
       for (const fn of flatUndo) fn();
+      for (const fn of source?.undo ?? []) fn();
       instances.delete(wrapper);
     },
   };
-  instances.set(wrapper, instance);
-  return instance;
+  return register(wrapper, instance);
+}
+
+/**
+ * Hides an element of the page so its CSS cannot bring it back, and records how to undo it.
+ * @param {HTMLElement} el
+ * @param {(() => void)[]} undo
+ */
+function hideHard(el, undo) {
+  if (el.hidden) return;
+  const style = el.getAttribute("style");
+  el.hidden = true;
+  el.style.setProperty("display", "none", "important");
+  undo.push(() => {
+    el.hidden = false;
+    // Restore the attribute verbatim, the browser would otherwise reformat it.
+    if (style === null) el.removeAttribute("style");
+    else el.setAttribute("style", style);
+  });
+}
+
+/**
+ * `<select multiple>` stays native until the panel supports multiple choice; value works already.
+ * @param {Element} wrapper
+ * @param {HTMLSelectElement} select
+ * @returns {GridSelect}
+ */
+function multiSelect(wrapper, select) {
+  console.warn("gridselect: <select multiple> is left native for now, only instance.value is available");
+  return {
+    get value() {
+      return [...select.selectedOptions].map((o) => o.value);
+    },
+    set value(v) {
+      if (!Array.isArray(v)) throw new TypeError("gridselect: value of a multiple select must be an array");
+      const wanted = v.map(key);
+      for (const o of select.options) o.selected = wanted.includes(o.value);
+    },
+    destroy() {
+      instances.delete(wrapper);
+    },
+  };
+}
+
+/**
+ * Builds one generated radio per selectable option and hides the select. The radios carry a
+ * form attribute pointing nowhere, so only the select is submitted. connect() keeps both in sync.
+ * @param {Element} wrapper
+ * @param {HTMLSelectElement} select
+ */
+function fromSelect(wrapper, select) {
+  const doc = wrapper.ownerDocument;
+  /** @type {(() => void)[]} */
+  const undo = [];
+  const options = [...select.options];
+  const placeholderOption = options.find((o) => o.value === "");
+  const name = uniqueId(doc);
+  const noForm = uniqueId(doc);
+  for (const o of options) {
+    if (o.value === "") continue;
+    const label = doc.createElement("label");
+    label.setAttribute("data-gridselect-generated", "");
+    const input = doc.createElement("input");
+    input.type = "radio";
+    input.name = name;
+    input.value = o.value;
+    input.setAttribute("form", noForm);
+    input.disabled = select.disabled || o.matches(":disabled");
+    input.checked = o.selected;
+    label.append(input, " ", o.label);
+    wrapper.append(label);
+    undo.push(() => label.remove());
+  }
+  const label = select.labels?.[0];
+  for (const el of [select, ...(select.labels ?? [])]) hideHard(el, undo);
+
+  /** @type {HTMLInputElement[]} */
+  let radios = [];
+  /** @type {{ render(): void, invalid(): void } | null} */
+  let ui = null;
+
+  // Radios follow the select, e.g. after outside code changed it or a form reset.
+  function sync() {
+    for (const r of radios) r.checked = r.value === select.value;
+    ui?.render();
+  }
+
+  return {
+    select,
+    placeholder: placeholderOption?.label,
+    label,
+    undo,
+    /** @param {unknown} v */
+    set(v) {
+      const k = key(v);
+      if (k && options.some((o) => o.value === k)) select.value = k;
+      else if (placeholderOption) select.value = "";
+      else select.selectedIndex = -1;
+      sync();
+    },
+    /**
+     * @param {HTMLInputElement[]} list the generated radios
+     * @param {{ render(): void, invalid(): void } | null} panel
+     * @param {(() => void)[]} more undo list of the instance
+     */
+    connect(list, panel, more) {
+      radios = list;
+      ui = panel;
+      /** @param {Event} e */
+      const stop = (e) => e.stopPropagation();
+      /** @param {Event} e */
+      const onRadioChange = (e) => {
+        e.stopPropagation();
+        for (const r of radios) r.removeAttribute("aria-invalid");
+        select.value = /** @type {HTMLInputElement} */ (e.target).value;
+        select.dispatchEvent(new Event("input", { bubbles: true }));
+        select.dispatchEvent(new Event("change", { bubbles: true }));
+      };
+      /** @param {Event} e */
+      const onInvalid = (e) => {
+        e.preventDefault(); // the select is hidden, the browser could not point at it
+        if (ui) return ui.invalid();
+        for (const r of radios) r.setAttribute("aria-invalid", "true");
+        radios.find((r) => !r.disabled)?.focus();
+      };
+      const onReset = () => setTimeout(sync, 0);
+      for (const r of radios) {
+        r.addEventListener("input", stop);
+        r.addEventListener("change", onRadioChange);
+      }
+      select.addEventListener("change", sync);
+      select.addEventListener("invalid", onInvalid);
+      select.form?.addEventListener("reset", onReset);
+      more.push(() => {
+        for (const r of radios) {
+          r.removeEventListener("input", stop);
+          r.removeEventListener("change", onRadioChange);
+        }
+        select.removeEventListener("change", sync);
+        select.removeEventListener("invalid", onInvalid);
+        select.form?.removeEventListener("reset", onReset);
+      });
+    },
+  };
 }
 
 let lastId = 0;
@@ -287,29 +458,16 @@ const fold = (text) => text.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase(
  * @param {HTMLInputElement[]} radios
  * @param {Options} opts
  * @param {Tier[]} tiers digit shortcut tiers, empty when off
+ * @param {HTMLElement} [fallbackLabel] names the field when the wrapper has no name (e.g. a select's label)
  */
-function createPanel(wrapper, radios, opts, tiers) {
+function createPanel(wrapper, radios, opts, tiers, fallbackLabel) {
   const doc = wrapper.ownerDocument;
   const placeholder = typeof opts.placeholder === "string" ? opts.placeholder : "Select…";
 
   // Everything we change on existing elements is recorded here, so destroy() undoes only that.
   /** @type {(() => void)[]} */
   const undo = [];
-  for (const el of radios.flatMap((r) => [r, ...(r.labels ?? [])])) {
-    if (el.hidden) continue;
-    // Page CSS must not bring the native inputs back, so the inline rule is !important.
-    const hadStyle = el.hasAttribute("style");
-    const prev = el.style.getPropertyValue("display");
-    const prio = el.style.getPropertyPriority("display");
-    el.hidden = true;
-    el.style.setProperty("display", "none", "important");
-    undo.push(() => {
-      el.hidden = false;
-      if (prev) el.style.setProperty("display", prev, prio);
-      else el.style.removeProperty("display");
-      if (!hadStyle && !el.style.length) el.removeAttribute("style");
-    });
-  }
+  for (const el of radios.flatMap((r) => [r, ...(r.labels ?? [])])) hideHard(el, undo);
 
   const field = create(doc, "button", "field");
   field.type = "button";
@@ -370,12 +528,13 @@ function createPanel(wrapper, radios, opts, tiers) {
   const legend = wrapper.querySelector(":scope > legend");
   const ariaLabel = wrapper.getAttribute("aria-label");
   let labelledBy = wrapper.getAttribute("aria-labelledby");
-  if (legend) {
-    if (!legend.id) {
-      legend.id = uniqueId(doc);
-      undo.push(() => legend.removeAttribute("id"));
+  const nameEl = legend ?? (!labelledBy && !ariaLabel ? fallbackLabel : null);
+  if (nameEl) {
+    if (!nameEl.id) {
+      nameEl.id = uniqueId(doc);
+      undo.push(() => nameEl.removeAttribute("id"));
     }
-    labelledBy = legend.id;
+    labelledBy = nameEl.id;
   }
   if (labelledBy) field.setAttribute("aria-labelledby", `${labelledBy} ${field.id}`);
   // Search input and listbox carry the group name too, not just the placeholder.
@@ -578,6 +737,7 @@ function createPanel(wrapper, radios, opts, tiers) {
 
   return {
     render,
+    invalid: onInvalid,
     destroy() {
       close(false);
       field.remove();
