@@ -149,6 +149,7 @@ function createPanel(wrapper, radios, opts) {
   search.type = "text";
   search.setAttribute("role", "combobox");
   search.setAttribute("aria-autocomplete", "list");
+  search.setAttribute("aria-expanded", "false");
   search.placeholder = typeof opts.searchPlaceholder === "string" ? opts.searchPlaceholder : "Search…";
 
   const list = create(doc, "div", "items");
@@ -182,6 +183,11 @@ function createPanel(wrapper, radios, opts) {
     labelledBy = legend.id;
   }
   if (labelledBy) field.setAttribute("aria-labelledby", `${labelledBy} ${field.id}`);
+  // Search input and listbox carry the group name too, not just the placeholder.
+  for (const el of [search, list]) {
+    if (labelledBy) el.setAttribute("aria-labelledby", labelledBy);
+    else if (ariaLabel) el.setAttribute("aria-label", ariaLabel);
+  }
 
   function render() {
     const current = radios.find((r) => r.checked);
@@ -212,6 +218,7 @@ function createPanel(wrapper, radios, opts) {
     });
     panel.hidden = false;
     field.setAttribute("aria-expanded", "true");
+    search.setAttribute("aria-expanded", "true");
     setCursor(Math.max(0, radios.findIndex((r) => r.checked)));
     search.focus();
     doc.addEventListener("click", onOutsideClick, true);
@@ -222,6 +229,7 @@ function createPanel(wrapper, radios, opts) {
     if (panel.hidden) return;
     panel.hidden = true;
     field.setAttribute("aria-expanded", "false");
+    search.setAttribute("aria-expanded", "false");
     doc.removeEventListener("click", onOutsideClick, true);
     if (refocus) field.focus();
   }
@@ -249,7 +257,7 @@ function createPanel(wrapper, radios, opts) {
     if (item) pick(items.indexOf(/** @type {HTMLDivElement} */ (item)));
   });
 
-  field.addEventListener("click", open);
+  field.addEventListener("click", () => (panel.hidden ? open() : close()));
   field.addEventListener("keydown", (e) => {
     if (e.key !== "Enter" && e.key !== " " && e.key !== "ArrowDown") return;
     e.preventDefault();
@@ -262,6 +270,8 @@ function createPanel(wrapper, radios, opts) {
   }
 
   search.addEventListener("keydown", (e) => {
+    // Keys during an IME composition belong to the input method, not to us.
+    if (e.isComposing) return;
     /** @type {Record<string, () => number>} */
     const moves = isList
       ? { ArrowDown: () => 1, ArrowUp: () => -1 }

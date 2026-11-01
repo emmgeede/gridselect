@@ -100,8 +100,9 @@ your own CSS to look like a grid.
 Item text is the label's text content. Icons or other markup inside a label
 are not copied into the panel.
 
-The field takes its accessible name from the wrapper's `<legend>`,
-`aria-labelledby` or `aria-label`. If a required group is empty on submit,
+The field, the search input and the listbox take their accessible name from
+the wrapper's `<legend>`, `aria-labelledby` or `aria-label`. Keys pressed
+during an IME composition are left to the input method. If a required group is empty on submit,
 the field gets focus and `aria-invalid="true"`.
 
 ### `instance.value`
@@ -140,7 +141,7 @@ Above the threshold:
 
 | Where | Key | Action |
 |---|---|---|
-| Field | Enter, Space, Arrow down, click | Open the panel, focus the search input |
+| Field | Enter, Space, Arrow down, click | Open the panel, focus the search input. A second click closes it |
 | Panel | Arrow left / right | Previous / next item (grid layout only) |
 | Panel | Arrow up / down | One row up / down (one item in list layout). Stops at the edges |
 | Panel | Enter, click on an item | Pick it and close |

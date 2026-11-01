@@ -21,7 +21,8 @@ All notable changes to GridSelect. The format follows
   `data-threshold`, default 10): a closed field, a panel with a search input
   and one item per radio, following the WAI-ARIA combobox and listbox
   pattern. Arrow keys move through the grid using the column count from the
-  CSS. Enter or click picks, Escape, Tab and outside clicks close.
+  CSS. Enter or click picks, Escape, Tab, outside clicks and a second click
+  on the field close. Keys during IME composition are not intercepted.
 - Option `layout` / `data-layout`: `"list"` for one column with long labels.
 - Options `placeholder` and `searchPlaceholder`.
 - Picking in the panel checks the native radio and fires `input` and
