@@ -3,8 +3,21 @@
  * @property {string | string[] | null} value
  *   Radio group: the checked value, or null. Checkbox group: all checked values in DOM order.
  *   Setting it changes `checked` without firing events, like setting a native input.
- * @property {() => void} destroy Forgets the instance. The markup stays as it was.
+ * @property {() => void} destroy Forgets the instance and removes everything GridSelect added.
  */
+
+/**
+ * @typedef {object} Options
+ * @property {number} [threshold] Radio groups with more inputs than this get the grid panel. Default 10.
+ * @property {string} [placeholder] Field text while nothing is selected. Default "Select…".
+ * @property {string} [searchPlaceholder] Placeholder of the search input. Default "Search…".
+ * @property {"grid" | "list"} [layout] "list" stacks items in one column for long labels. Default "grid".
+ */
+
+const DEFAULT_THRESHOLD = 10;
+
+/** @param {unknown} n */
+const isCount = (n) => Number.isInteger(n) && /** @type {number} */ (n) >= 0;
 
 /** @type {WeakMap<Element, GridSelect>} */
 const instances = new WeakMap();
@@ -14,9 +27,10 @@ const instances = new WeakMap();
  * Calling it again on the same wrapper returns the existing instance.
  *
  * @param {Element} wrapper
+ * @param {Options} [options]
  * @returns {GridSelect}
  */
-export function gridselect(wrapper) {
+export function gridselect(wrapper, options) {
   // nodeType instead of instanceof: works for elements from other frames too.
   // Object.prototype.toString never throws, unlike String() on prototype-less objects.
   if (wrapper?.nodeType !== 1 || typeof wrapper.querySelectorAll !== "function")
@@ -35,6 +49,13 @@ export function gridselect(wrapper) {
   // Read live on every access, so reset, clicks and outside changes are always reflected.
   const inputs = () => [...find(multiple ? "checkbox" : "radio")];
   const checked = () => inputs().filter((i) => i.checked).map((i) => i.value);
+
+  // Non-objects (e.g. the index from forEach(gridselect)) and invalid values fall back to defaults.
+  const opts = options !== null && typeof options === "object" ? options : {};
+  const attr = wrapper.getAttribute("data-threshold");
+  const fromAttr = attr !== null && /^\d+$/.test(attr) ? Number(attr) : undefined;
+  const threshold = isCount(opts.threshold) ? opts.threshold : (fromAttr ?? DEFAULT_THRESHOLD);
+  const ui = !multiple && radios.length > /** @type {number} */ (threshold) ? createPanel(wrapper, [...radios], opts) : null;
 
   const values = inputs().map((i) => i.value);
   const dupes = [...new Set(values.filter((v, n) => values.indexOf(v) !== n))];
@@ -58,11 +79,231 @@ export function gridselect(wrapper) {
       }
       const match = inputs().find((i) => i.value === key(v));
       for (const i of inputs()) i.checked = i === match;
+      ui?.render();
     },
     destroy() {
+      ui?.destroy();
       instances.delete(wrapper);
     },
   };
   instances.set(wrapper, instance);
   return instance;
+}
+
+let lastId = 0;
+/** @param {Document} doc */
+function uniqueId(doc) {
+  let id;
+  do id = `gridselect-${++lastId}`;
+  while (doc.getElementById(id));
+  return id;
+}
+
+/**
+ * @template {keyof HTMLElementTagNameMap} K
+ * @param {Document} doc
+ * @param {K} tag
+ * @param {string} part BEM element name, also used for the data-gridselect-* hook
+ * @returns {HTMLElementTagNameMap[K]}
+ */
+function create(doc, tag, part) {
+  const el = doc.createElement(tag);
+  el.className = `gridselect__${part}`;
+  el.setAttribute(`data-gridselect-${part}`, "");
+  return el;
+}
+
+/** @param {HTMLInputElement} radio */
+const labelText = (radio) => (radio.labels?.[0]?.textContent ?? "").trim() || radio.value;
+
+/**
+ * Builds the closed field and the hidden panel next to the (then hidden) native radios.
+ *
+ * @param {Element} wrapper
+ * @param {HTMLInputElement[]} radios
+ * @param {Options} opts
+ */
+function createPanel(wrapper, radios, opts) {
+  const doc = wrapper.ownerDocument;
+  const placeholder = typeof opts.placeholder === "string" ? opts.placeholder : "Select…";
+
+  // Everything we change on existing elements is recorded here, so destroy() undoes only that.
+  /** @type {(() => void)[]} */
+  const undo = [];
+  for (const el of radios.flatMap((r) => [r, ...(r.labels ?? [])])) {
+    if (el.hidden) continue;
+    el.hidden = true;
+    undo.push(() => (el.hidden = false));
+  }
+
+  const field = create(doc, "button", "field");
+  field.type = "button";
+  field.id = uniqueId(doc);
+  field.setAttribute("aria-haspopup", "listbox");
+  field.setAttribute("aria-expanded", "false");
+
+  const panel = create(doc, "div", "panel");
+  panel.hidden = true;
+
+  const search = create(doc, "input", "search");
+  search.type = "text";
+  search.setAttribute("role", "combobox");
+  search.setAttribute("aria-autocomplete", "list");
+  search.placeholder = typeof opts.searchPlaceholder === "string" ? opts.searchPlaceholder : "Search…";
+
+  const list = create(doc, "div", "items");
+  list.id = uniqueId(doc);
+  list.setAttribute("role", "listbox");
+  const layout = opts.layout ?? wrapper.getAttribute("data-layout");
+  const isList = layout === "list";
+  if (isList) list.classList.add("gridselect__items--list");
+  search.setAttribute("aria-controls", list.id);
+
+  const items = radios.map((radio) => {
+    const item = create(doc, "div", "item");
+    item.id = uniqueId(doc);
+    item.setAttribute("role", "option");
+    item.dataset.value = radio.value;
+    item.textContent = labelText(radio);
+    return item;
+  });
+  list.append(...items);
+  panel.append(search, list);
+
+  // Group name: <legend>, else the wrapper's aria-labelledby or aria-label.
+  const legend = wrapper.querySelector(":scope > legend");
+  const ariaLabel = wrapper.getAttribute("aria-label");
+  let labelledBy = wrapper.getAttribute("aria-labelledby");
+  if (legend) {
+    if (!legend.id) {
+      legend.id = uniqueId(doc);
+      undo.push(() => legend.removeAttribute("id"));
+    }
+    labelledBy = legend.id;
+  }
+  if (labelledBy) field.setAttribute("aria-labelledby", `${labelledBy} ${field.id}`);
+
+  function render() {
+    const current = radios.find((r) => r.checked);
+    field.textContent = current ? labelText(current) : placeholder;
+    field.disabled = radios.every((r) => r.matches(":disabled"));
+    if (current) field.removeAttribute("aria-invalid");
+    if (!labelledBy && ariaLabel) field.setAttribute("aria-label", `${ariaLabel}, ${field.textContent}`);
+  }
+  render();
+
+  let cursor = -1;
+  /** @param {number} index */
+  function setCursor(index) {
+    items[cursor]?.removeAttribute("data-cursor");
+    cursor = Math.max(0, Math.min(index, items.length - 1));
+    items[cursor].setAttribute("data-cursor", "");
+    search.setAttribute("aria-activedescendant", items[cursor].id);
+    items[cursor].scrollIntoView?.({ block: "nearest" });
+  }
+
+  function open() {
+    if (!panel.hidden) return;
+    search.value = "";
+    items.forEach((item, i) => {
+      item.setAttribute("aria-selected", String(radios[i].checked));
+      if (radios[i].matches(":disabled")) item.setAttribute("aria-disabled", "true");
+      else item.removeAttribute("aria-disabled");
+    });
+    panel.hidden = false;
+    field.setAttribute("aria-expanded", "true");
+    setCursor(Math.max(0, radios.findIndex((r) => r.checked)));
+    search.focus();
+    doc.addEventListener("click", onOutsideClick, true);
+  }
+
+  /** @param {boolean} [refocus] Move focus back to the field (not wanted on Tab or outside clicks). */
+  function close(refocus = true) {
+    if (panel.hidden) return;
+    panel.hidden = true;
+    field.setAttribute("aria-expanded", "false");
+    doc.removeEventListener("click", onOutsideClick, true);
+    if (refocus) field.focus();
+  }
+
+  /** @param {MouseEvent} e */
+  function onOutsideClick(e) {
+    if (!wrapper.contains(/** @type {Node} */ (e.target))) close(false);
+  }
+
+  /** Checks the radio behind item `index` like a user click would, then closes. */
+  function pick(/** @type {number} */ index) {
+    const radio = radios[index];
+    if (radio.matches(":disabled")) return;
+    if (!radio.checked) {
+      radio.checked = true;
+      radio.dispatchEvent(new Event("input", { bubbles: true }));
+      radio.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+    render();
+    close();
+  }
+
+  list.addEventListener("click", (e) => {
+    const item = /** @type {Element} */ (e.target).closest("[data-gridselect-item]");
+    if (item) pick(items.indexOf(/** @type {HTMLDivElement} */ (item)));
+  });
+
+  field.addEventListener("click", open);
+  field.addEventListener("keydown", (e) => {
+    if (e.key !== "Enter" && e.key !== " " && e.key !== "ArrowDown") return;
+    e.preventDefault();
+    open();
+  });
+  // Column count as laid out by CSS (auto-fill), never hardcoded.
+  function columns() {
+    const tracks = (doc.defaultView ?? window).getComputedStyle(list).gridTemplateColumns.split(" ").filter((t) => t && t !== "none");
+    return Math.max(1, tracks.length);
+  }
+
+  search.addEventListener("keydown", (e) => {
+    /** @type {Record<string, () => number>} */
+    const moves = isList
+      ? { ArrowDown: () => 1, ArrowUp: () => -1 }
+      : { ArrowRight: () => 1, ArrowLeft: () => -1, ArrowDown: columns, ArrowUp: () => -columns() };
+    if (moves[e.key]) {
+      e.preventDefault();
+      setCursor(cursor + moves[e.key]());
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      pick(cursor);
+    } else if (e.key === "Escape") {
+      e.preventDefault();
+      close();
+    } else if (e.key === "Tab") {
+      close(false);
+    }
+  });
+
+  // A hidden required radio cannot show the browser's hint, so the field takes focus instead.
+  function onInvalid() {
+    field.setAttribute("aria-invalid", "true");
+    field.focus();
+  }
+  // reset fires before the inputs change, so render on the next task.
+  const onReset = () => setTimeout(render, 0);
+  const form = radios[0].form;
+  for (const r of radios) r.addEventListener("invalid", onInvalid);
+  form?.addEventListener("reset", onReset);
+  undo.push(() => {
+    for (const r of radios) r.removeEventListener("invalid", onInvalid);
+    form?.removeEventListener("reset", onReset);
+  });
+
+  wrapper.append(field, panel);
+
+  return {
+    render,
+    destroy() {
+      close(false);
+      field.remove();
+      panel.remove();
+      for (const fn of undo) fn();
+    },
+  };
 }
