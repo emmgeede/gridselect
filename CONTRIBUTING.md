@@ -41,8 +41,8 @@ its markup or behaviour.
 
 - no axe violations (WCAG 2.2 AA);
 - text contrast of at least 4.5:1 (7:1 with `@contrast AAA`) for the field,
-  dimmed, matching and selected entries, digit badges, the search input and
-  group headings;
+  dimmed, matching and selected entries, descriptions, digit badges, the
+  search input and group headings;
 - at least 3:1 for the field's chevron, the focused search input's border and
   the cursor indicator;
 - the header comment and the layer;

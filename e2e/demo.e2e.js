@@ -7,7 +7,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 test("shows every variant with the real stylesheet and no test tools", async ({ page }) => {
-  for (const id of ["short", "checks", "filter", "highlight", "layout-grid", "layout-flow", "grouped", "pinned", "watch", "langs", "list", "select"]) await expect(page.locator(`#${id}`)).toBeVisible();
+  for (const id of ["short", "checks", "filter", "highlight", "layout-grid", "layout-flow", "grouped", "pinned", "described", "watch", "langs", "list", "select"]) await expect(page.locator(`#${id}`)).toBeVisible();
   await expect(page.locator("#filter [data-gridselect-field]")).toBeVisible();
   await expect(page.locator("#select [data-gridselect-field]")).toHaveText("Choose a country…");
   await expect(page.locator("#log")).toHaveCount(0);

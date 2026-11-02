@@ -196,6 +196,11 @@ const shots = {
       await page.locator("#pinned [data-gridselect-field]").click();
       await page.locator("#pinned [data-gridselect-scroller]").evaluate((el) => (el.style.maxHeight = "19rem"));
     }),
+  described: (page, scheme) =>
+    shoot(page, scheme, "described", async () => {
+      await page.locator("#described [data-gridselect-field]").click();
+      await page.locator("#described [data-gridselect-scroller]").evaluate((el) => (el.style.maxHeight = "15rem"));
+    }),
   groups: (page, scheme) =>
     shoot(page, scheme, "grouped", async () => {
       await page.locator("#grouped [data-gridselect-field]").click();

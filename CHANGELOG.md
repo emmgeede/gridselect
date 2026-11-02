@@ -12,6 +12,16 @@ and breaking changes need a new major version.
 
 ## [Unreleased]
 
+### Added
+
+- Descriptions: a second line per entry from `description` in `items`,
+  `data-description` on an `<option>` or an element with
+  `data-gridselect-description` in your own label. Shown small and muted
+  under the label, read by screen readers as the description
+  (`aria-describedby`), never in the closed field. `searchDescription`
+  (`data-search-description`, `search-description`, React and Vue prop)
+  makes the search find them, label matches first.
+
 ## [0.17.0] - 2026-11-02
 
 ### Added

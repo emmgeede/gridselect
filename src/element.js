@@ -4,7 +4,7 @@
 import { gridselect } from "./gridselect.js";
 
 const ATTRIBUTES = ["name", "label", "aria-label", "multiple", "value", "threshold", "layout", "search", "match",
-  "shortcuts", "placeholder", "search-placeholder", "required", "disabled", "pinned", "recent", "recent-max", "pinned-text", "recent-text", "max"];
+  "shortcuts", "placeholder", "search-placeholder", "required", "disabled", "pinned", "recent", "recent-max", "pinned-text", "recent-text", "max", "search-description"];
 
 const SOURCE = ["OPTION", "OPTGROUP"];
 
@@ -122,7 +122,7 @@ export class GridSelectElement extends Base {
 
     const fromOptions = !this.#items;
     /** @param {HTMLOptionElement} o */
-    const entry = (o) => ({ value: o.value, label: o.label, disabled: o.matches(":disabled") });
+    const entry = (o) => ({ value: o.value, label: o.label, description: o.dataset.description, disabled: o.matches(":disabled") });
     /** @type {import("./gridselect.js").Item[]} */
     /** @param {Element} el */
     const entries = (el) => /** @type {HTMLOptionElement[]} */ ([...el.querySelectorAll(":scope > option")]).filter((o) => o.value !== "").map(entry);
@@ -172,6 +172,7 @@ export class GridSelectElement extends Base {
       recent: attr("recent") ?? undefined,
       recentMax: /^\d+$/.test(attr("recent-max") ?? "") ? Number(attr("recent-max")) : undefined,
       max: /^\d+$/.test(attr("max") ?? "") ? Number(attr("max")) : undefined,
+      searchDescription: this.hasAttribute("search-description") || undefined,
       pinnedText: attr("pinned-text") ?? undefined,
       recentText: attr("recent-text") ?? undefined,
     });

@@ -233,6 +233,15 @@ gridselect(document.querySelector("[data-gridselect]"));</code></pre>
   </section>
 
   <section>
+    <div class="stamp">Descriptions</div>
+    <h2>A second line</h2>
+    <p class="note">Entries can carry a description under the label (<code>description</code> in <code>items</code>, <code>data-description</code> on an option). Screen readers hear it after the name. With <code>data-search-description</code> the search finds capitals too: try <code>paris</code>.</p>
+    <div class="frame">
+      <fieldset data-gridselect data-search-description id="described"><legend>Country</legend></fieldset>
+    </div>
+  </section>
+
+  <section>
     <div class="stamp">Multiple · long</div>
     <h2>Pick several</h2>
     <p class="note">Checkbox groups and <code>&lt;select multiple&gt;</code> get the same panel. Items toggle, the panel stays open, so you can filter and pick several in a row. <code>data-max="3"</code> stops at three: the rest is locked until you untick one.</p>
@@ -377,7 +386,8 @@ import "@emmgeede/gridselect/element";</code></pre>
     for (const code of codes) group.append(new Option(currencies.find((c) => c.endsWith(`(${code})`)), code));
     regionSelect.append(group);
   }
-  document.querySelectorAll("[data-gridselect]:not(grid-select [data-gridselect]):not(#theme-picker)").forEach((el) => gridselect(el));
+  document.querySelectorAll("[data-gridselect]:not(grid-select [data-gridselect]):not(#theme-picker):not(#described)").forEach((el) => gridselect(el));
+  gridselect(document.getElementById("described"), { name: "described", items: [{ value: "AU0", label: "Austria", description: "Capital: Vienna" }, { value: "BE1", label: "Belgium", description: "Capital: Brussels" }, { value: "CR2", label: "Croatia", description: "Capital: Zagreb" }, { value: "DE3", label: "Denmark", description: "Capital: Copenhagen" }, { value: "ES4", label: "Estonia", description: "Capital: Tallinn" }, { value: "FI5", label: "Finland", description: "Capital: Helsinki" }, { value: "FR6", label: "France", description: "Capital: Paris" }, { value: "GE7", label: "Germany", description: "Capital: Berlin" }, { value: "GR8", label: "Greece", description: "Capital: Athens" }, { value: "IR9", label: "Ireland", description: "Capital: Dublin" }, { value: "IT10", label: "Italy", description: "Capital: Rome" }, { value: "LA11", label: "Latvia", description: "Capital: Riga" }, { value: "LI12", label: "Lithuania", description: "Capital: Vilnius" }, { value: "NE13", label: "Netherlands", description: "Capital: Amsterdam" }, { value: "PO14", label: "Portugal", description: "Capital: Lisbon" }, { value: "SP15", label: "Spain", description: "Capital: Madrid" }] });
 
 
   const modes = ["auto", "light", "dark"];

@@ -75,3 +75,10 @@ gridselect(document.body, { max: 3, maxText: (n) => `max ${n}` });
 gridselect(document.body, { max: "3" });
 createElement(ReactGridSelect, { multiple: true, max: 2 });
 const vueMax: VueProps = { multiple: true, max: 2 };
+
+// F18: descriptions
+gridselect(document.body, { items: [{ value: "a", description: "d" }], searchDescription: true });
+// @ts-expect-error description is a string
+gridselect(document.body, { items: [{ value: "a", description: 1 }] });
+createElement(ReactGridSelect, { searchDescription: true });
+const vueDesc: VueProps = { searchDescription: true };

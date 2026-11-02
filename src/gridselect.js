@@ -9,7 +9,7 @@
  */
 
 /**
- * @typedef {string | number | { value: string | number, label?: string, disabled?: boolean }} Entry
+ * @typedef {string | number | { value: string | number, label?: string, description?: string, disabled?: boolean }} Entry
  * @typedef {{ label: string, items: Entry[] }} Group A heading in the panel above its entries.
  * @typedef {Entry | Group} Item
  */
@@ -49,6 +49,7 @@ const groupOf = new WeakMap();
  * @property {string} [pinnedText] Heading of the pinned entries. Default "Pinned".
  * @property {string} [recentText] Heading of the recent entries. Default "Recent".
  * @property {number} [max] Multiple choice: at most this many entries. 0 or unset for no limit.
+ * @property {boolean} [searchDescription] Search the entries' descriptions too (label matches first).
  * @property {(max: number) => string} [maxText] Announcement when the limit is reached or hit.
  *   Default `n => "Maximum of " + n + " reached"`.
  */
@@ -208,6 +209,7 @@ function build(wrapper, options) {
   const ui = all.length > /** @type {number} */ (threshold)
     ? createPanel(wrapper, all, panelOpts, tiers, source?.label, () => source?.pull(), multiple) : null;
   const flatUndo = ui || !tiers.length ? [] : addKeyElements(inputs(), tiers);
+  for (const i of inputs()) describe(i, i.labels?.[0]?.querySelector("[data-gridselect-description]"), flatUndo);
   // Limit below the threshold: lock the unchecked boxes, block ticking more, announce.
   const max = multiple && !ui ? maxOf(opts, wrapper) : 0;
   const flatStatus = max ? statusRegion(wrapper.ownerDocument) : null;
@@ -314,7 +316,7 @@ function build(wrapper, options) {
  */
 function normalizeItems(items) {
   if (!Array.isArray(items)) throw new TypeError("gridselect: items must be an array");
-  /** @type {{ value: string, label: string, disabled: boolean, group?: GroupInfo }[]} */
+  /** @type {{ value: string, label: string, description?: string, disabled: boolean, group?: GroupInfo }[]} */
   const out = [];
   /**
    * @param {unknown} it
@@ -323,7 +325,7 @@ function normalizeItems(items) {
    */
   const add = (it, at, group) => {
     if (typeof it === "string" || typeof it === "number") return out.push({ value: String(it), label: String(it), disabled: false, group });
-    const rec = /** @type {{ value?: unknown, label?: unknown, disabled?: unknown, items?: unknown }} */ (it ?? {});
+    const rec = /** @type {{ value?: unknown, label?: unknown, description?: unknown, disabled?: unknown, items?: unknown }} */ (it ?? {});
     const v = rec.value;
     if (typeof it === "object" && v === undefined && "items" in rec && !group) {
       if (typeof rec.label !== "string" || !Array.isArray(rec.items))
@@ -333,7 +335,8 @@ function normalizeItems(items) {
     }
     if (typeof v !== "string" && typeof v !== "number")
       throw new TypeError(`gridselect: item at ${at} needs a string or number value`);
-    out.push({ value: String(v), label: rec.label === undefined ? String(v) : String(rec.label), disabled: rec.disabled === true, group });
+    out.push({ value: String(v), label: rec.label === undefined ? String(v) : String(rec.label),
+      description: typeof rec.description === "string" ? rec.description : undefined, disabled: rec.disabled === true, group });
   };
   items.forEach((it, i) => add(it, `items[${i}]`));
   return out;
@@ -378,6 +381,7 @@ function fromItems(wrapper, opts) {
       if (noForm) input.setAttribute("form", noForm);
       if (it.group) groupOf.set(input, it.group);
       label.append(input, " ", it.label);
+      addDescription(label, it.description);
       wrapper.append(label);
       return label;
     });
@@ -486,6 +490,7 @@ function fromSelect(wrapper, select) {
       groupOf.set(input, /** @type {GroupInfo} */ (groups.get(og)));
     }
     label.append(input, " ", o.label);
+    addDescription(label, o.dataset.description);
     wrapper.append(label);
     undo.push(() => label.remove());
   }
@@ -608,13 +613,43 @@ function create(doc, tag, part) {
   return el;
 }
 
-/** Label text without digit elements, else the value. @param {HTMLInputElement} radio */
+/** Label text without digit and description elements, else the value. @param {HTMLInputElement} radio */
 function labelText(radio) {
   const label = radio.labels?.[0];
   if (!label) return radio.value;
   const copy = /** @type {Element} */ (label.cloneNode(true));
-  for (const key of copy.querySelectorAll("[data-gridselect-key]")) key.remove();
+  for (const key of copy.querySelectorAll("[data-gridselect-key], [data-gridselect-description]")) key.remove();
   return (copy.textContent ?? "").trim() || radio.value;
+}
+
+/** Second line of an entry, "" for none. @param {HTMLInputElement} radio */
+const descText = (radio) => radio.labels?.[0]?.querySelector("[data-gridselect-description]")?.textContent?.trim() ?? "";
+
+/** Appends a description element to a generated label. @param {Element} label @param {string} [text] */
+function addDescription(label, text) {
+  if (!text) return;
+  const d = create(label.ownerDocument, "span", "description");
+  d.textContent = text;
+  label.append(d);
+}
+
+/**
+ * Makes `el` described by a description element (`d`), kept out of el's name: hidden content
+ * does not count for the name, a direct aria-describedby reference still reads it.
+ * @param {Element} el @param {Element | null | undefined} d @param {(() => void)[]} [undo]
+ */
+function describe(el, d, undo) {
+  if (!d?.textContent?.trim()) return el.removeAttribute("aria-describedby");
+  const doc = el.ownerDocument;
+  const hadId = d.id;
+  if (!d.id) d.id = uniqueId(doc);
+  d.setAttribute("aria-hidden", "true");
+  el.setAttribute("aria-describedby", d.id);
+  undo?.push(() => {
+    el.removeAttribute("aria-describedby");
+    d.removeAttribute("aria-hidden");
+    if (!hadId) d.removeAttribute("id");
+  });
 }
 
 /**
@@ -772,7 +807,10 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
   /** Points item `item` at radio `r`: value and text. */
   const fill = (/** @type {HTMLElement} */ item, /** @type {number} */ r) => {
     item.dataset.value = radios[r].value;
-    /** @type {HTMLElement} */ (item.lastChild).textContent = labelText(radios[r]);
+    const label = /** @type {HTMLElement} */ (item.lastChild);
+    label.textContent = labelText(radios[r]);
+    addDescription(label, descText(radios[r]));
+    describe(item, label.lastElementChild);
   };
   const makeItem = (/** @type {number} */ r) => {
     const item = create(doc, "div", "item");
@@ -906,6 +944,7 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
   const resultsText = typeof opts.resultsText === "function" ? opts.resultsText : (n) => (n === 1 ? "1 result" : `${n} results`);
   panel.append(search, scroller, empty, status);
   const keys = radios.map((r) => fold(labelText(r)));
+  const descKeys = (opts.searchDescription ?? wrapper.hasAttribute("data-search-description")) ? radios.map((r) => fold(descText(r))) : null;
   const highlight = (opts.search ?? wrapper.getAttribute("data-search")) === "highlight";
   const fuzzy = (opts.match ?? wrapper.getAttribute("data-match-mode")) === "fuzzy";
 
@@ -981,17 +1020,25 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
     /** @type {number[]} matching items, best first */
     let matched;
     if (fuzzy) {
-      const scored = keys.map((key, i) => ({ i, s: fuzzyScore(key, query) })).filter((x) => x.s >= 0);
-      matched = scored.sort((a, b) => b.s - a.s || a.i - b.i).map((x) => x.i);
+      // d: 1 for a match in the description only, sorted after label matches
+      const scored = keys.map((key, i) => {
+        let s = fuzzyScore(key, query);
+        const d = s < 0 && descKeys ? 1 : 0;
+        if (d) s = fuzzyScore(/** @type {string[]} */ (descKeys)[i], query);
+        return { i, s, d };
+      }).filter((x) => x.s >= 0);
+      matched = scored.sort((a, b) => a.d - b.d || b.s - a.s || a.i - b.i).map((x) => x.i);
     } else {
       /** @type {number[]} */ const starts = [];
       /** @type {number[]} */ const contains = [];
+      /** @type {number[]} */ const described = [];
       keys.forEach((key, i) => {
         const pos = key.indexOf(query);
         if (pos === 0) starts.push(i);
         else if (pos > 0) contains.push(i);
+        else if (descKeys?.[i].includes(query)) described.push(i);
       });
-      matched = [...starts, ...contains];
+      matched = [...starts, ...contains, ...described];
     }
     const isMatch = new Set(matched);
     const all = radios.map((_, i) => i);

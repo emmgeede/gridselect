@@ -80,6 +80,7 @@ for what changed.
   - [Multiple choice](#multiple-choice)
   - [Groups](#groups)
   - [Pinned and recent entries](#pinned-and-recent-entries)
+  - [Descriptions](#descriptions)
   - [`<select>` as source](#select-as-source)
   - [Search](#search)
   - [`instance.value`](#instancevalue)
@@ -211,7 +212,7 @@ from the element.
 | `multiple` | Checkboxes instead of radios |
 | `value` | Initial choice, comma-separated with `multiple`. Without it, `selected` options count |
 | `threshold`, `layout`, `search`, `match`, `placeholder`, `search-placeholder` | As the options of the same name |
-| `max` | As the `max` option |
+| `max`, `search-description` | As the options `max` and `searchDescription` |
 | `pinned`, `recent`, `recent-max`, `pinned-text`, `recent-text` | As `pinned` (comma-separated), `recent`, `recentMax`, `pinnedText`, `recentText` |
 | `shortcuts` | `off`, or tiers separated by commas, e.g. `,Shift,Alt` |
 | `required`, `disabled` | As on native inputs |
@@ -254,7 +255,8 @@ function CurrencyField() {
   groups included. `<option>` and `<optgroup>` children work too.
 - The other attributes of `<grid-select>` are props in camelCase:
   `ariaLabel`, `multiple`, `threshold`, `layout`, `search`, `match`,
-  `placeholder`, `searchPlaceholder`, `required`, `disabled`, `max`, `pinned`,
+  `placeholder`, `searchPlaceholder`, `required`, `disabled`, `max`,
+  `searchDescription`, `pinned`,
   `recent`, `recentMax`, `pinnedText`, `recentText`, and `shortcuts` as an
   array or `false`.
 - `ref` points to the `<grid-select>` element.
@@ -337,6 +339,7 @@ value wins, for checkboxes all of them are set.
 | `value` | | | Initial choice for `items` (an array with `multiple`) |
 | `multiple` | | `false` | Build checkboxes instead of radios from `items` |
 | `shortcuts` | `data-shortcuts="off"` | `["", "Shift", "Alt"]` | Digit key tiers, see [Digit shortcuts](#digit-shortcuts). `false` turns them off |
+| `searchDescription` | `data-search-description` | `false` | Search the entries' descriptions too, see [Descriptions](#descriptions) |
 | `max` | `data-max="3"` | | Multiple choice: at most this many, see [Multiple choice](#multiple-choice) |
 | `maxText` | | `n => "Maximum of " + n + " reached"` | Announcement at the limit |
 | `pinned` | `data-pinned="EUR,USD"` | | Values shown again on top of the panel, see [Pinned and recent entries](#pinned-and-recent-entries) |
@@ -546,6 +549,38 @@ gridselect(el, { pinned: ["EUR", "USD"], recent: "currency" });
   simply stays empty. The values are stored in the visitor's browser and can
   be personal (a city, a name): mention it in your privacy notice if so.
 - Only above the threshold; short lists show everything anyway.
+
+### Descriptions
+
+An entry can carry a second line under its label:
+
+```js
+gridselect(el, { items: [{ value: "FR", label: "France", description: "Capital: Paris" }] });
+```
+
+```html
+<option value="FR" data-description="Capital: Paris">France</option>
+<label><input type="radio" name="c" value="FR"> France <small data-gridselect-description>Capital: Paris</small></label>
+```
+
+<a href="https://gridselect.im/demo/">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/described-dark.png?v=1">
+  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/described-light.png?v=1" width="100%" alt="A country panel: each entry shows the country name and, below it in smaller grey text, its capital.">
+</picture>
+</a>
+
+<sub><b>Descriptions.</b> The capital under each country. With <code>data-search-description</code>, typing "paris" finds France.</sub>
+
+- It shows in the visible entries and in the panel (also in groups and in
+  pinned and recent copies), small and muted, never in the closed field.
+- Screen readers hear the label as the name and the description after it
+  (`aria-describedby`); the name stays short.
+- The search ignores descriptions unless you set `searchDescription`
+  (`data-search-description`). Then label matches still come first.
+- The grid's columns follow the widest entry, descriptions included, at most
+  half the list; longer descriptions wrap, and rows keep one height.
+- Descriptions are plain text.
 
 ### `<select>` as source
 
@@ -898,6 +933,7 @@ been done.
 | Group headings (`<optgroup>`, groups in `items`) | available |
 | Pinned and recent entries | available |
 | Upper limit for multiple choice (`max`) | available |
+| Descriptions (a second line per entry) | available |
 | Themes: showcase, high contrast, compact, open for contributions | available |
 | React and Vue wrappers | available |
 

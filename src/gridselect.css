@@ -359,6 +359,31 @@
     cursor: not-allowed;
   }
 
+  /* Second line of an entry */
+  [data-gridselect-description] {
+    display: block;
+    color: var(--gs-muted);
+    font-size: 0.8125em;
+    font-weight: 400;
+  }
+
+  [data-gridselect] > label:has(> [data-gridselect-description]) {
+    flex-wrap: wrap;
+  }
+
+  .gridselect__item:has([data-gridselect-description]) {
+    align-items: flex-start;
+  }
+
+  [data-gridselect] > label > [data-gridselect-description] {
+    flex-basis: 100%;
+  }
+
+  [data-gridselect] > label:has(:checked) > [data-gridselect-description],
+  .gridselect__item[aria-selected="true"] [data-gridselect-description] {
+    color: inherit;
+  }
+
   .gridselect__empty {
     padding: 0.5rem 0.25rem 0;
     color: var(--gs-muted);

@@ -71,6 +71,10 @@ for (const theme of themeList("themes")) {
       expect.soft(await contrast(page.locator('#filter [aria-selected="true"] [data-gridselect-key]')), "selected badge").toBeGreaterThanOrEqual(minText);
       await page.keyboard.press("Escape");
 
+      await field(page, "described").click();
+      expect.soft(await contrast(page.locator("#described [data-gridselect-description]").first()), "description").toBeGreaterThanOrEqual(minText);
+      await page.keyboard.press("Escape");
+
       await field(page, "grouped").click();
       expect.soft(await contrast(page.locator("#grouped [data-gridselect-group-label]").first()), "group heading").toBeGreaterThanOrEqual(minText);
       await check(page, "grouped open");
