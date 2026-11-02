@@ -1,6 +1,6 @@
 {
   "name": "@emmgeede/gridselect",
-  "version": "0.12.2",
+  "version": "0.13.0",
   "description": "Dependency-free select component: chips for short lists, a searchable grid for long ones.",
   "license": "MIT",
   "author": "Michael Grossklos",

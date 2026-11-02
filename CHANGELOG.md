@@ -12,6 +12,8 @@ and breaking changes need a new major version.
 
 ## [Unreleased]
 
+## [0.13.0] - 2026-11-02
+
 ### Added
 
 - Group headings in the panel: options inside `<optgroup>` (in a `<select>`
@@ -25,6 +27,8 @@ and breaking changes need a new major version.
 ### Changed
 
 - Size budget: core 7 kB, core plus element 8.5 kB (min+gzip).
+- Errors for invalid `items` name the path, e.g. `items[1].items[0]`,
+  instead of `position 1`.
 
 ## [0.12.2] - 2026-11-02
 
@@ -265,7 +269,8 @@ and breaking changes need a new major version.
   radios with different names. Warning for duplicate values.
 - TypeScript declarations generated from JSDoc.
 
-[Unreleased]: https://github.com/emmgeede/gridselect/compare/v0.12.2...HEAD
+[Unreleased]: https://github.com/emmgeede/gridselect/compare/v0.13.0...HEAD
+[0.13.0]: https://github.com/emmgeede/gridselect/compare/v0.12.2...v0.13.0
 [0.12.2]: https://github.com/emmgeede/gridselect/compare/v0.12.1...v0.12.2
 [0.12.1]: https://github.com/emmgeede/gridselect/compare/v0.12.0...v0.12.1
 [0.12.0]: https://github.com/emmgeede/gridselect/compare/v0.11.0...v0.12.0
