@@ -4,7 +4,7 @@
 import { gridselect } from "./gridselect.js";
 
 const ATTRIBUTES = ["name", "label", "aria-label", "multiple", "value", "threshold", "layout", "search", "match",
-  "shortcuts", "placeholder", "search-placeholder", "required", "disabled", "pinned", "recent", "recent-max", "pinned-text", "recent-text", "max", "search-description", "panel-height", "panel-width", "min-query-length", "loading-text", "error-text"];
+  "shortcuts", "placeholder", "search-placeholder", "required", "disabled", "pinned", "recent", "recent-max", "pinned-text", "recent-text", "max", "search-description", "panel-height", "panel-width", "panel-container", "min-query-length", "loading-text", "error-text"];
 
 const SOURCE = ["OPTION", "OPTGROUP"];
 
@@ -296,6 +296,7 @@ export class GridSelectElement extends Base {
       searchDescription: this.hasAttribute("search-description") || undefined,
       panelHeight: /** @type {any} */ (attr("panel-height") ?? undefined),
       panelWidth: /** @type {any} */ (attr("panel-width") ?? undefined),
+      panelContainer: attr("panel-container") ?? undefined,
       pinnedText: attr("pinned-text") ?? undefined,
       recentText: attr("recent-text") ?? undefined,
     });

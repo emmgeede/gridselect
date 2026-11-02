@@ -16,7 +16,7 @@ These attributes configure the [custom element](/guide/frameworks.md). Most of t
 | `required`, `disabled` | Work as on native form fields. |
 | `threshold`, `layout`, `search`, `match`, `placeholder`, `search-placeholder` | The options of the same name. |
 | `shortcuts` | `off`, or the tiers separated by commas, for example `,Shift,Alt`. |
-| `max`, `search-description`, `panel-height`, `panel-width` | The options `max`, `searchDescription`, `panelHeight` and `panelWidth`. |
+| `max`, `search-description`, `panel-height`, `panel-width`, `panel-container` | The options `max`, `searchDescription`, `panelHeight`, `panelWidth` and `panelContainer`. |
 | `pinned`, `recent`, `recent-max`, `pinned-text`, `recent-text` | Pinned and recent entries; `pinned` is a comma-separated list. |
 | `min-query-length`, `loading-text`, `error-text` | Settings for entries from a server. The function itself is set as the property `el.load`. |
 
@@ -36,7 +36,9 @@ When you use `gridselect()`, you can write most options as `data-` attributes on
 | `data-max` | `max` |
 | `data-pinned`, `data-recent`, `data-recent-max` | `pinned`, `recent`, `recentMax` |
 | `data-search-description` | `searchDescription` |
-| `data-panel-width`, `data-panel-height` | `panelWidth`, `panelHeight` |
+| `data-panel-width`, `data-panel-height`, `data-panel-container` | `panelWidth`, `panelHeight`, `panelContainer` |
+
+The container that `data-panel-container` names is marked with `data-gridselect-container="<name>"`. This attribute goes on an element around the wrapper, such as a page column or a `<form>`, not on the wrapper itself; [The panel](/guide/panel.md#limiting-the-panel-to-a-container) explains how it works.
 
 ## Structure hooks
 

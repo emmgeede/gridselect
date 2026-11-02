@@ -95,7 +95,11 @@ gridselect(document.body, { panelWidth: "fixed" });
 // @ts-expect-error unknown panel width
 gridselect(document.body, { panelWidth: "wide" });
 createElement(ReactGridSelect, { panelWidth: "full" });
-const vueWidth: VueProps = { panelWidth: "fixed" };
+const vueWidth: VueProps = { panelWidth: "fixed", panelContainer: "page" };
+gridselect(document.body, { panelContainer: "page" });
+createElement(ReactGridSelect, { panelContainer: "page" });
+// @ts-expect-error a container is named by a string
+gridselect(document.body, { panelContainer: true });
 
 // F19: form control
 const gsEl = document.createElement("grid-select");

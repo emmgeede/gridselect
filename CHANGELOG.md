@@ -12,6 +12,13 @@ new major version.
 
 ## [Unreleased]
 
+### Added
+
+- Panel within a container: `panelContainer: "<name>"` (`data-panel-container`,
+  `panel-container`, React and Vue prop) keeps the full-width panel inside
+  the nearest ancestor marked `data-gridselect-container="<name>"`, between
+  its inner edges and still 10 px inside the window.
+
 ### Changed
 
 - Documentation rewritten in full, explanatory prose for people new to

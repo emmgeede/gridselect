@@ -56,6 +56,8 @@ const groupOf = new WeakMap();
  * @property {"full" | "fixed"} [panelWidth] "full" (default): the panel spans the window, 10 px from
  *   each edge (at most --gs-panel-max-width), and only as wide as needed when everything fits in
  *   one row; "fixed": --gs-panel-width from the field's edge.
+ * @property {string} [panelContainer] With panelWidth "full": the panel stays within the content box of
+ *   the closest ancestor with data-gridselect-container="<this name>" (and 10 px inside the window).
  * @property {"auto" | "fixed"} [panelHeight] "auto" (default) opens the panel towards the room it
  *   needs and lets it grow up to the window edge; "fixed" always opens below, the list as high as
  *   --gs-list-max-height.
@@ -1241,16 +1243,28 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
     const f = field.getBoundingClientRect();
     if (!view || !f.height) return;
     if ((opts.panelWidth ?? wrapper.getAttribute("data-panel-width")) !== "fixed") {
-      const vw = doc.documentElement.clientWidth;
+      let lo = 10;
+      let hi = doc.documentElement.clientWidth - 10;
+      // The named container's content box narrows the room (compared by value, never a selector).
+      const name = opts.panelContainer ?? wrapper.getAttribute("data-panel-container");
+      let c = name == null ? null : wrapper;
+      while (c && c.getAttribute("data-gridselect-container") !== name) c = c.parentElement;
+      if (c) {
+        const r = c.getBoundingClientRect();
+        const s = getComputedStyle(c);
+        const left = r.left + c.clientLeft + parseFloat(s.paddingLeft);
+        lo = Math.max(lo, left);
+        hi = Math.min(hi, left + c.clientWidth - parseFloat(s.paddingLeft) - parseFloat(s.paddingRight));
+      }
       const box = /** @type {HTMLElement} */ (panel.offsetParent ?? doc.body);
       const origin = box.getBoundingClientRect().left + box.clientLeft;
-      /** Width as a CSS value; left edge under the field, kept 10 px inside the window. @param {string} width */
+      /** Width as a CSS value; left edge under the field, kept within lo..hi. @param {string} width */
       const size = (width) => {
         Object.assign(panel.style, { width, maxWidth: "none", right: "auto" });
         const w = panel.getBoundingClientRect().width;
-        panel.style.left = `${Math.min(Math.max(f.left, 10), vw - 10 - w) - origin}px`;
+        panel.style.left = `${Math.min(Math.max(f.left, lo), hi - w) - origin}px`;
       };
-      size(`min(${vw - 20}px, var(--gs-panel-max-width, ${vw - 20}px))`);
+      size(`min(${hi - lo}px, var(--gs-panel-max-width, ${hi - lo}px))`);
       // Everything in one row: only as wide as the entries (plus the list's padding).
       const shown = items.filter((i) => i.getClientRects().length).map((i) => i.getBoundingClientRect());
       if (shown.length && shown.every((r) => Math.abs(r.top - shown[0].top) < 2)) {

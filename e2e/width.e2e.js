@@ -74,3 +74,98 @@ test("panelWidth fixed: --gs-panel-width from the field edge, no inline width", 
   expect(Math.abs(p.left - f.left)).toBeLessThan(1.5);
   expect(p.width).toBeLessThanOrEqual(640 + 1);
 });
+
+// F24: the panel stays within a named ancestor's content box.
+/** Wraps #filter in two marked containers: an outer "page" (padded, 900 px) and an inner "other". */
+async function contain(page, attr = "data-panel-container") {
+  await page.evaluate((attr) => {
+    const w = document.querySelector("#filter");
+    const outer = document.createElement("div");
+    outer.setAttribute("data-gridselect-container", "page");
+    outer.style.cssText = "position:absolute;top:0;left:200px;z-index:9;width:900px;padding:0 30px;border:5px solid;box-sizing:border-box;background:Canvas";
+    const inner = document.createElement("div");
+    inner.setAttribute("data-gridselect-container", "other");
+    inner.style.width = "300px";
+    document.body.append(outer);
+    outer.append(inner);
+    inner.append(w);
+    w.setAttribute(attr, "page");
+  }, attr);
+}
+const content = (page) => page.locator('[data-gridselect-container="page"]').evaluate((el) => {
+  const r = el.getBoundingClientRect();
+  return { left: r.left + 5 + 30, right: r.right - 5 - 30 };
+});
+
+for (const dir of ["ltr", "rtl"]) {
+  test(`panelContainer: spans the named ancestor's content box, not the nearer one (${dir})`, async ({ page }) => {
+    await page.evaluate((dir) => (document.documentElement.dir = dir), dir);
+    await contain(page);
+    await field(page, "filter").click();
+    const p = await panelBox(page, "filter");
+    const c = await content(page);
+    expect(Math.abs(p.left - c.left)).toBeLessThan(1.5);
+    expect(Math.abs(p.right - c.right)).toBeLessThan(1.5);
+  });
+}
+
+test("panelContainer: a container wider than the window keeps the 10 px margin", async ({ page }) => {
+  await contain(page);
+  await page.setViewportSize({ width: 800, height: 900 });
+  await field(page, "filter").click();
+  const p = await panelBox(page, "filter");
+  const c = await content(page);
+  expect(Math.abs(p.left - c.left)).toBeLessThan(1.5);
+  expect(Math.abs(p.right - ((await viewWidth(page)) - MARGIN))).toBeLessThan(1.5);
+});
+
+test("panelContainer: an unknown name falls back to the window, fixed ignores it", async ({ page }) => {
+  await contain(page);
+  await page.locator("#filter").evaluate((el) => el.setAttribute("data-panel-container", "nope"));
+  await field(page, "filter").click();
+  const p = await panelBox(page, "filter");
+  expect(Math.abs(p.left - MARGIN)).toBeLessThan(1.5);
+  await page.keyboard.press("Escape");
+  await page.locator("#filter").evaluate((el) => el.setAttribute("data-panel-container", "page"));
+  await page.locator("#filter").evaluate((el) => el.setAttribute("data-panel-width", "fixed"));
+  await field(page, "filter").click();
+  expect(await page.locator("#filter [data-gridselect-panel]").evaluate((el) => el.style.width + el.style.left)).toBe("");
+});
+
+test("panelContainer: --gs-panel-max-width still caps, inside the container", async ({ page }) => {
+  await contain(page);
+  await page.locator("#filter").evaluate((el) => el.style.setProperty("--gs-panel-max-width", "400px"));
+  await field(page, "filter").click();
+  const p = await panelBox(page, "filter");
+  const c = await content(page);
+  expect(Math.round(p.width)).toBe(400);
+  expect(p.left).toBeGreaterThanOrEqual(c.left - 1);
+  expect(p.right).toBeLessThanOrEqual(c.right + 1);
+});
+
+test("<grid-select panel-container> works like the option", async ({ page }) => {
+  await page.evaluate(async () => {
+    await import("/src/element.js");
+    const outer = document.createElement("div");
+    outer.setAttribute("data-gridselect-container", "page");
+    outer.style.cssText = "position:absolute;top:0;left:300px;z-index:9;width:700px;background:Canvas";
+    outer.innerHTML = `<grid-select id="ce" label="CE" threshold="2" panel-container="page">${Array.from({ length: 30 }, (_, i) => `<option>Entry ${i}</option>`).join("")}</grid-select>`;
+    document.body.append(outer);
+  });
+  await page.locator("#ce [data-gridselect-field]").click();
+  const p = await page.locator("#ce [data-gridselect-panel]").evaluate((el) => el.getBoundingClientRect().toJSON());
+  const c = await page.locator('[data-gridselect-container="page"]').evaluate((el) => el.getBoundingClientRect().toJSON());
+  expect(Math.abs(p.left - c.left)).toBeLessThan(1.5);
+  expect(Math.abs(p.right - c.right)).toBeLessThan(1.5);
+});
+
+test("playground: the contained variant stays within its frame", async ({ page }) => {
+  await field(page, "contained").click();
+  const p = await panelBox(page, "contained");
+  const c = await page.locator('[data-gridselect-container="narrow"]').evaluate((el) => {
+    const r = el.getBoundingClientRect(); const s = getComputedStyle(el);
+    return { left: r.left + el.clientLeft + parseFloat(s.paddingLeft), right: r.right - el.clientLeft - parseFloat(s.paddingRight) };
+  });
+  expect(Math.abs(p.left - c.left)).toBeLessThan(1.5);
+  expect(p.right).toBeLessThanOrEqual(c.right + 1.5);
+});

@@ -279,6 +279,17 @@
   </section>
 
   <section>
+    <div class="stamp">Width · container</div>
+    <h2>Panel within a container</h2>
+    <p class="note"><code>data-panel-container="narrow"</code>: the panel is only as wide as the ancestor marked <code>data-gridselect-container="narrow"</code> (dashed, 30rem), not the window.</p>
+    <div class="frame" data-gridselect-container="narrow" style="max-width:30rem;border:1px dashed">
+      <fieldset data-gridselect data-panel-container="narrow" id="contained">
+        <legend>Currency</legend>
+      </fieldset>
+    </div>
+  </section>
+
+  <section>
     <div class="stamp">Layout · list</div>
     <h2>List layout with long labels</h2>
     <p class="note"><code>data-layout="list"</code>: one column, left/right arrows stay in the search input.</p>
@@ -465,6 +476,7 @@
   fill("highlight", currencies);
   fill("fuzzy", currencies);
   fill("flow", currencies);
+  fill("contained", currencies);
   fill("list", modules);
   fill("required", countries, { required: true, disabled: [2] });
   fill("checks-long", currencies.slice(0, 24), { type: "checkbox" });
@@ -472,7 +484,7 @@
   fill("limited", ["Cheese", "Olives", "Mushrooms", "Peppers", "Onions"], { type: "checkbox" });
   fill("limited-long", currencies.slice(0, 20), { type: "checkbox" });
 
-  for (const id of ["short", "checks", "filter", "highlight", "fuzzy", "flow", "checks-long", "list", "required", "pinned", "limited", "limited-long", "select-short", "select-long", "select-multi"]) {
+  for (const id of ["short", "checks", "filter", "highlight", "fuzzy", "flow", "contained", "checks-long", "list", "required", "pinned", "limited", "limited-long", "select-short", "select-long", "select-multi"]) {
     init(id);
     const wrapper = document.getElementById(id);
     for (const type of ["input", "change"]) {

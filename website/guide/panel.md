@@ -63,6 +63,27 @@ If the full width is too much for your page, you have two choices. You can keep 
   <fieldset data-gridselect><legend>Currency (narrow, panelWidth: "fixed")</legend></fieldset>
 </Example>
 
+### Limiting the panel to a container
+
+Sometimes the window is the wrong measure. On a page whose content sits in a centred column, or in a form that is narrower than the page, a panel across the whole window looks out of place. You can therefore tell GridSelect to keep the panel inside an element around it, called the **container**. The container does not have to be the direct parent of the group: it can be any element further up, for example the page's main column or the `<form>` that holds several groups.
+
+You mark the container with the attribute `data-gridselect-container` and give it a name, and you pass the same name to GridSelect with the option `panelContainer` (attribute `data-panel-container`). GridSelect then walks up from the group to the nearest element with that exact name and keeps the panel between the container's inner edges, that is, inside its padding, so the panel lines up with the fields in it. The name lets you choose among nested containers: a group inside a form inside a page column can pick either of them. The panel still keeps 10 pixels away from the window's edges if the container reaches beyond them, it still becomes narrower when all items fit in one row, and `--gs-panel-max-width` still caps it. If no element with that name is found, the panel uses the window's width as usual. With `panelWidth: "fixed"` the container has no effect.
+
+```html
+<form data-gridselect-container="checkout">
+  <fieldset data-gridselect data-panel-container="checkout">
+    <legend>Currency</legend>
+    …
+  </fieldset>
+</form>
+```
+
+<Example :options="{ items: currencies, panelContainer: 'demo' }">
+  <div data-gridselect-container="demo" style="max-width: 24rem">
+    <fieldset data-gridselect><legend>Currency (panelContainer: "demo", 24rem wide)</legend></fieldset>
+  </div>
+</Example>
+
 ## Height and direction
 
 By default (`panelHeight: "auto"`) GridSelect decides each time the panel opens where it should appear. It measures the room between the field and the bottom of the window, and the room between the field and the top. If the whole list fits below the field, the panel opens below. If it does not fit, the panel opens towards the side with more room; when it opens upwards it carries the attribute `data-placement="top"`, which you can use in your own CSS.
@@ -75,6 +96,7 @@ If you prefer a predictable panel, set `panelHeight: "fixed"` (attribute `data-p
 |---|---|---|
 | `layout` | `data-layout` | `"grid"` (default), `"list"`, `"flow"` |
 | `panelWidth` | `data-panel-width` | `"full"` (default), `"fixed"` |
+| `panelContainer` | `data-panel-container` | the name of an ancestor's `data-gridselect-container`, none by default |
 | `panelHeight` | `data-panel-height` | `"auto"` (default), `"fixed"` |
 
 ## What GridSelect adds to the page

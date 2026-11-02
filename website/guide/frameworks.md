@@ -45,7 +45,7 @@ Inside, the element builds exactly what you would write by hand: a `<fieldset>` 
 | `required`, `disabled` | Work as on native form fields. |
 | `threshold`, `layout`, `search`, `match`, `placeholder`, `search-placeholder` | The options of the same name, see the [options reference](/reference/README.md). |
 | `shortcuts` | `off`, or the tiers separated by commas, for example `,Shift,Alt`. |
-| `max`, `search-description`, `panel-height`, `panel-width` | The options `max`, `searchDescription`, `panelHeight` and `panelWidth`. |
+| `max`, `search-description`, `panel-height`, `panel-width`, `panel-container` | The options `max`, `searchDescription`, `panelHeight`, `panelWidth` and `panelContainer`. |
 | `pinned`, `recent`, `recent-max`, `pinned-text`, `recent-text` | Pinned and recent entries; `pinned` as a comma-separated list. |
 | `min-query-length`, `loading-text`, `error-text` | Settings for entries from a server; the function itself is a property, see below. |
 
