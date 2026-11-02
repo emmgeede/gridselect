@@ -12,6 +12,8 @@ and breaking changes need a new major version.
 
 ## [Unreleased]
 
+## [0.12.2] - 2026-11-02
+
 ### Added
 
 - README images for the grid and flow layouts, and animations for search,
@@ -249,7 +251,8 @@ and breaking changes need a new major version.
   radios with different names. Warning for duplicate values.
 - TypeScript declarations generated from JSDoc.
 
-[Unreleased]: https://github.com/emmgeede/gridselect/compare/v0.12.1...HEAD
+[Unreleased]: https://github.com/emmgeede/gridselect/compare/v0.12.2...HEAD
+[0.12.2]: https://github.com/emmgeede/gridselect/compare/v0.12.1...v0.12.2
 [0.12.1]: https://github.com/emmgeede/gridselect/compare/v0.12.0...v0.12.1
 [0.12.0]: https://github.com/emmgeede/gridselect/compare/v0.11.0...v0.12.0
 [0.11.0]: https://github.com/emmgeede/gridselect/compare/v0.10.0...v0.11.0
