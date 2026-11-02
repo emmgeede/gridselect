@@ -44,6 +44,20 @@ describe("npm package", () => {
   });
 });
 
+describe("numbers in the docs stay true", () => {
+  it("the demo states the core size, rounded to whole kB, min+gzip", () => {
+    const size = gzipSync(readFileSync("dist/gridselect.min.js"), { level: 9 }).length;
+    const claim = /about (\d+) kB/.exec(readFileSync("demo/index.html", "utf8"));
+    expect(claim, "demo mentions the size").not.toBeNull();
+    expect(Number(claim[1])).toBe(Math.round(size / 1024));
+  });
+
+  it("the README status names the current version", () => {
+    const { version } = JSON.parse(readFileSync("package.json", "utf8"));
+    expect(readFileSync("README.md", "utf8")).toContain(`**Status:** version ${version},`);
+  });
+});
+
 describe("README on npm (QA F7)", () => {
   it("uses absolute URLs for images, since assets/ is not in the package", () => {
     const readme = readFileSync("README.md", "utf8");

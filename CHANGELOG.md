@@ -12,6 +12,12 @@ and breaking changes need a new major version.
 
 ## [Unreleased]
 
+### Fixed
+
+- Demo: the size note says about 8 kB instead of the outdated 5 kB; a test
+  now keeps it in line with the build. The package description speaks of
+  items instead of chips.
+
 ## [0.19.0] - 2026-11-02
 
 ### Added
