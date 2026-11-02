@@ -114,8 +114,8 @@ Prefer HTML only? Use the custom element, see [`<grid-select>`](https://gridsele
 import { gridselect } from "@emmgeede/gridselect";
 
 const gs = gridselect(document.querySelector("[data-gridselect]"));
-gs.value;           // "EUR"
-gs.value = "CHF";   // checks the CHF radio, fires no event
+gs.value; // "EUR"
+gs.value = "CHF"; // checks the CHF radio, fires no event
 ```
 
 ### Reacting to changes
@@ -132,7 +132,8 @@ const gs = gridselect(wrapper);
 
 wrapper.addEventListener("change", (event) => {
   console.log(event.target.value); // the input that changed, e.g. "CHF"
-  console.log(gs.value);           // the whole selection: "CHF", or ["a", "c"] for checkboxes
+  // the whole selection: "CHF", or ["a", "c"] for checkboxes
+  console.log(gs.value);
 });
 ```
 

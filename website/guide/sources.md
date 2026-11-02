@@ -45,15 +45,15 @@ When the entries come from data, for example from an API response, you do not ne
 
 ```js
 const gs = gridselect(document.querySelector("#airport"), {
-  name: "airport",                       // the form submits the choice under this name
+  name: "airport", // the form submits the choice under this name
   items: [
-    "BER",                               // a string (or number) is value and label at once
+    "BER", // a string (or number) is value and label at once
     { value: "FRA", label: "Frankfurt" },
     { value: "MUC", label: "Munich", disabled: true },
     { value: "ZRH", label: "Zurich", description: "Switzerland" },
   ],
-  value: "FRA",                          // the initial choice (an array with multiple)
-  multiple: false,                       // true creates checkboxes instead of radios
+  value: "FRA", // the initial choice (an array with multiple)
+  multiple: false, // true creates checkboxes instead of radios
 });
 ```
 

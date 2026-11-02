@@ -71,9 +71,10 @@ GridSelect counts the position of the key, not the character it produces. Shift 
 The option `shortcuts` is a list of tiers. Each tier is a modifier name or several names joined with `+`, and an empty string stands for the plain digits. The names are `Shift`, `Alt`, `Control` and `Meta` (the Command key on a Mac).
 
 ```js
-gridselect(el, { shortcuts: ["", "Shift", "Alt"] });      // the default
-gridselect(el, { shortcuts: ["Alt", "Control+Shift"] });  // plain digits stay free for typing
-gridselect(el, { shortcuts: false });                     // no digit shortcuts at all
+gridselect(el, { shortcuts: ["", "Shift", "Alt"] }); // the default
+// plain digits stay free for typing
+gridselect(el, { shortcuts: ["Alt", "Control+Shift"] });
+gridselect(el, { shortcuts: false }); // no digit shortcuts at all
 ```
 
 ```html

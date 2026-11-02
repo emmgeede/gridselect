@@ -27,8 +27,10 @@ GridSelect shows a group in one of two ways, depending on how many items it has.
 The **threshold** is the number of items at which GridSelect switches. It is 10 by default, which means that a group with ten items stays visible and a group with eleven or more gets the field and the panel. You can set it per group with the option `threshold` or the attribute `data-threshold`:
 
 ```js
-gridselect(el, { threshold: 5 });   // more than five items: field and panel
-gridselect(el, { threshold: 100 }); // stays visible up to a hundred items
+// more than five items: field and panel
+gridselect(el, { threshold: 5 });
+// stays visible up to a hundred items
+gridselect(el, { threshold: 100 });
 ```
 
 ```html

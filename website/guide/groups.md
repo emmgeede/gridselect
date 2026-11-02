@@ -32,7 +32,7 @@ With the `items` option, write a group as an object with a `label` for the headi
 gridselect(el, {
   name: "currency",
   items: [
-    "USD",                                                   // no group, no heading
+    "USD", // no group, no heading
     { label: "Europe", items: ["EUR", { value: "CHF", label: "Swiss franc" }] },
     { label: "Asia", items: ["JPY", "CNY"] },
   ],

@@ -68,7 +68,7 @@ The call returns an instance. Its `value` property tells you what is selected, a
 
 ```js
 console.log(gs.value); // "std"
-gs.value = "exp";      // selects Express, without firing an event
+gs.value = "exp"; // selects Express, without firing an event
 ```
 
 That is all. The native inputs stay in the page, stay in your form and keep their names and values, so submitting the form, resetting it and the `required` attribute work exactly as before. If JavaScript is not available, people simply see and use the original radio group.
@@ -88,7 +88,8 @@ GridSelect does not invent its own events. When someone picks an entry, the nati
 ```js
 const wrapper = document.querySelector("[data-gridselect]");
 wrapper.addEventListener("change", (event) => {
-  console.log("picked", event.target.value);      // the radio or checkbox that changed
+  // the radio or checkbox that changed
+  console.log("picked", event.target.value);
   console.log("selection", gridselect(wrapper).value);
 });
 ```

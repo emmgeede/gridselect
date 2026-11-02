@@ -45,8 +45,10 @@ const wrapper = document.querySelector("#currency");
 const gs = gridselect(wrapper);
 
 wrapper.addEventListener("change", (event) => {
-  console.log(event.target.value); // the input that changed, for example "CHF"
-  console.log(gs.value);           // the whole selection: "CHF", or ["a", "c"] for checkboxes
+  // the input that changed, for example "CHF"
+  console.log(event.target.value);
+  // the whole selection: "CHF", or ["a", "c"] for checkboxes
+  console.log(gs.value);
 });
 ```
 
