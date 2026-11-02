@@ -35,6 +35,7 @@ async function stage(page, scheme, id) {
     });
     // README images keep the compact CSS height instead of growing to the window edge.
     document.getElementById(id).setAttribute("data-panel-height", "fixed");
+    document.getElementById(id).setAttribute("data-panel-width", "fixed");
     card.append(document.getElementById(id));
     // Shows the key of the current animation step in the bottom right corner.
     const key = document.createElement("kbd");

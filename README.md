@@ -212,7 +212,7 @@ from the element.
 | `multiple` | Checkboxes instead of radios |
 | `value` | Initial choice, comma-separated with `multiple`. Without it, `selected` options count |
 | `threshold`, `layout`, `search`, `match`, `placeholder`, `search-placeholder` | As the options of the same name |
-| `max`, `search-description`, `panel-height` | As the options `max`, `searchDescription` and `panelHeight` |
+| `max`, `search-description`, `panel-height`, `panel-width` | As the options `max`, `searchDescription`, `panelHeight` and `panelWidth` |
 | `pinned`, `recent`, `recent-max`, `pinned-text`, `recent-text` | As `pinned` (comma-separated), `recent`, `recentMax`, `pinnedText`, `recentText` |
 | `shortcuts` | `off`, or tiers separated by commas, e.g. `,Shift,Alt` |
 | `required`, `disabled` | As on native inputs |
@@ -256,7 +256,7 @@ function CurrencyField() {
 - The other attributes of `<grid-select>` are props in camelCase:
   `ariaLabel`, `multiple`, `threshold`, `layout`, `search`, `match`,
   `placeholder`, `searchPlaceholder`, `required`, `disabled`, `max`,
-  `searchDescription`, `panelHeight`, `pinned`,
+  `searchDescription`, `panelHeight`, `panelWidth`, `pinned`,
   `recent`, `recentMax`, `pinnedText`, `recentText`, and `shortcuts` as an
   array or `false`.
 - `ref` points to the `<grid-select>` element.
@@ -339,6 +339,7 @@ value wins, for checkboxes all of them are set.
 | `value` | | | Initial choice for `items` (an array with `multiple`) |
 | `multiple` | | `false` | Build checkboxes instead of radios from `items` |
 | `shortcuts` | `data-shortcuts="off"` | `["", "Shift", "Alt"]` | Digit key tiers, see [Digit shortcuts](#digit-shortcuts). `false` turns them off |
+| `panelWidth` | `data-panel-width` | `"full"` | `"full"`: the panel spans the window, 10 px from each edge, narrower when everything fits in one row. `"fixed"`: `--gs-panel-width` from the field's edge |
 | `panelHeight` | `data-panel-height` | `"auto"` | `"auto"`: the panel opens where it has room and grows up to the window edge. `"fixed"`: always below, list as high as `--gs-list-max-height`. See [Above the threshold](#above-the-threshold) |
 | `searchDescription` | `data-search-description` | `false` | Search the entries' descriptions too, see [Descriptions](#descriptions) |
 | `max` | `data-max="3"` | | Multiple choice: at most this many, see [Multiple choice](#multiple-choice) |
@@ -372,6 +373,15 @@ It adds two elements to the wrapper:
 
 The scroller scrolls, the item list inside grows freely, so the stylesheet
 can give every grid row the height of the tallest one.
+
+How wide the panel gets depends on `panelWidth`:
+
+- `"full"` (default): the panel spans the window, 10 px from each edge, so
+  as many columns as possible fit. When all entries fit in one row it is
+  only as wide as they need and starts under the field. Cap it with the
+  CSS variable `--gs-panel-max-width` (e.g. `60rem`).
+- `"fixed"` (`data-panel-width="fixed"`): `--gs-panel-width` (40rem in the
+  default stylesheet), from the field's edge.
 
 Where the panel opens and how tall it gets depends on `panelHeight`:
 
@@ -949,6 +959,7 @@ been done.
 | Upper limit for multiple choice (`max`) | available |
 | Descriptions (a second line per entry) | available |
 | Panel opens where there is room, up to the window edge | available |
+| Panel in the full window width | available |
 | Themes: showcase, high contrast, compact, open for contributions | available |
 | React and Vue wrappers | available |
 

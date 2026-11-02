@@ -25,6 +25,7 @@ test("long labels fit on one line when there is room (currencies: at least 2 col
 
 test("a narrow panel keeps two columns and lets only long labels wrap", async ({ page }) => {
   await page.setViewportSize({ width: 1100, height: 1000 });
+  await page.locator("#filter").evaluate((el) => el.setAttribute("data-panel-width", "fixed")); // F23: the old width
   await page.locator("#filter [data-gridselect-field]").click();
   expect(await columns(page, "filter")).toBe(2);
   const heights = await page.locator("#filter [data-gridselect-item]").evaluateAll((els) => new Set(els.map((e) => Math.round(e.getBoundingClientRect().height))).size);

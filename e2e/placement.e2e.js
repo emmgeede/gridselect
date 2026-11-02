@@ -22,7 +22,10 @@ test("near the top: opens down, as tall as the content allows up to the window e
   expect(await panel(page, "filter").getAttribute("data-placement")).toBeNull();
   expect(p.top).toBeGreaterThanOrEqual(f.bottom);
   expect(p.bottom).toBeLessThanOrEqual(900 - MARGIN + 1);
-  expect(p.bottom).toBeGreaterThan(900 - MARGIN - 40); // uses the room (40 entries do not fit)
+  // Uses the room: either it reaches the window edge or the whole list shows without scrolling.
+  const scroller = page.locator("#filter [data-gridselect-scroller]");
+  const fits = await scroller.evaluate((el) => el.scrollHeight - el.clientHeight <= 1);
+  expect(fits || p.bottom > 900 - MARGIN - 40).toBe(true);
 });
 
 test("near the bottom: opens up and stays inside the window", async ({ page }) => {

@@ -89,3 +89,10 @@ gridselect(document.body, { panelHeight: "fixed" });
 gridselect(document.body, { panelHeight: "tall" });
 createElement(ReactGridSelect, { panelHeight: "auto" });
 const vuePanel: VueProps = { panelHeight: "fixed" };
+
+// F23: panel width
+gridselect(document.body, { panelWidth: "fixed" });
+// @ts-expect-error unknown panel width
+gridselect(document.body, { panelWidth: "wide" });
+createElement(ReactGridSelect, { panelWidth: "full" });
+const vueWidth: VueProps = { panelWidth: "fixed" };

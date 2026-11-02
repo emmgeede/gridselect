@@ -104,8 +104,11 @@ test("the field has a caret, a red border when invalid and looks disabled when d
   expect(Number(await field(page, "filter").evaluate((el) => getComputedStyle(el).opacity))).toBeLessThan(1);
 });
 
-test("the panel sits under the field, is sized and scrolls (panelHeight fixed, F22)", async ({ page }) => {
-  await page.locator("#filter").evaluate((el) => el.setAttribute("data-panel-height", "fixed"));
+test("the panel sits under the field, is sized and scrolls (panelHeight and panelWidth fixed)", async ({ page }) => {
+  await page.locator("#filter").evaluate((el) => {
+    el.setAttribute("data-panel-height", "fixed");
+    el.setAttribute("data-panel-width", "fixed");
+  });
   await field(page, "filter").click();
   const panel = page.locator("#filter [data-gridselect-panel]");
   await expect(panel).toHaveCSS("position", "absolute");
@@ -190,8 +193,9 @@ test("no transitions or animations, items at least 24 px and 32 px high", async 
   expect(flat.height).toBeGreaterThanOrEqual(32);
 });
 
-test("right-to-left: the panel opens under the field (QA F6)", async ({ page }) => {
+test("right-to-left: the panel opens under the field (QA F6, fixed width)", async ({ page }) => {
   await page.evaluate(() => (document.documentElement.dir = "rtl"));
+  await page.locator("#filter").evaluate((el) => el.setAttribute("data-panel-width", "fixed"));
   await field(page, "filter").click();
   const f = await field(page, "filter").boundingBox();
   const p = await page.locator("#filter [data-gridselect-panel]").boundingBox();

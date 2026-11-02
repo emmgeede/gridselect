@@ -68,7 +68,7 @@ test("Escape and outside clicks close without a change", async ({ page }) => {
   await expect(page.locator("#filter [data-gridselect-panel]")).toBeHidden();
   await expect(field(page, "filter")).toHaveText("Swiss franc (CHF)");
   await field(page, "filter").click();
-  await page.locator("h1").click();
+  await page.mouse.click(4, 4); // the full-width panel keeps 10 px free at the window edges (F23)
   await expect(page.locator("#filter [data-gridselect-panel]")).toBeHidden();
 });
 

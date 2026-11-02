@@ -49,6 +49,9 @@ const groupOf = new WeakMap();
  * @property {string} [pinnedText] Heading of the pinned entries. Default "Pinned".
  * @property {string} [recentText] Heading of the recent entries. Default "Recent".
  * @property {number} [max] Multiple choice: at most this many entries. 0 or unset for no limit.
+ * @property {"full" | "fixed"} [panelWidth] "full" (default): the panel spans the window, 10 px from
+ *   each edge (at most --gs-panel-max-width), and only as wide as needed when everything fits in
+ *   one row; "fixed": --gs-panel-width from the field's edge.
  * @property {"auto" | "fixed"} [panelHeight] "auto" (default) opens the panel towards the room it
  *   needs and lets it grow up to the window edge; "fixed" always opens below, the list as high as
  *   --gs-list-max-height.
@@ -1134,8 +1137,29 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
   function place() {
     scroller.style.maxHeight = "";
     panel.removeAttribute("data-placement");
+    Object.assign(panel.style, { width: "", maxWidth: "", left: "", right: "" });
     const f = field.getBoundingClientRect();
-    if ((opts.panelHeight ?? wrapper.getAttribute("data-panel-height")) === "fixed" || !view || !f.height) return;
+    if (!view || !f.height) return;
+    if ((opts.panelWidth ?? wrapper.getAttribute("data-panel-width")) !== "fixed") {
+      const vw = doc.documentElement.clientWidth;
+      const box = /** @type {HTMLElement} */ (panel.offsetParent ?? doc.body);
+      const origin = box.getBoundingClientRect().left + box.clientLeft;
+      /** Width as a CSS value; left edge under the field, kept 10 px inside the window. @param {string} width */
+      const size = (width) => {
+        Object.assign(panel.style, { width, maxWidth: "none", right: "auto" });
+        const w = panel.getBoundingClientRect().width;
+        panel.style.left = `${Math.min(Math.max(f.left, 10), vw - 10 - w) - origin}px`;
+      };
+      size(`min(${vw - 20}px, var(--gs-panel-max-width, ${vw - 20}px))`);
+      // Everything in one row: only as wide as the entries (plus the list's padding).
+      const shown = items.filter((i) => i.getClientRects().length).map((i) => i.getBoundingClientRect());
+      if (shown.length && shown.every((r) => Math.abs(r.top - shown[0].top) < 2)) {
+        const l = list.getBoundingClientRect();
+        const spare = l.right - parseFloat(getComputedStyle(list).paddingRight) - Math.max(...shown.map((r) => r.right));
+        size(`${panel.getBoundingClientRect().width - spare + 1}px`);
+      }
+    }
+    if ((opts.panelHeight ?? wrapper.getAttribute("data-panel-height")) === "fixed") return;
     scroller.style.maxHeight = "none";
     const p = panel.getBoundingClientRect();
     const chrome = p.height - scroller.getBoundingClientRect().height;

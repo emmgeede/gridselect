@@ -12,6 +12,19 @@ and breaking changes need a new major version.
 
 ## [Unreleased]
 
+### Added
+
+- Panel width: by default (`panelWidth: "full"`) the panel spans the window,
+  10 px from each edge, and is only as wide as needed when all entries fit
+  in one row; `--gs-panel-max-width` caps it. It follows resizing.
+  `panelWidth: "fixed"` (`data-panel-width`, `panel-width`, React and Vue
+  prop) keeps `--gs-panel-width` from the field's edge.
+
+### Changed
+
+- The panel's default width is now the window width; use
+  `panelWidth: "fixed"` for the previous width.
+
 ### Fixed
 
 - Demo: the size note says about 8 kB instead of the outdated 5 kB; a test
