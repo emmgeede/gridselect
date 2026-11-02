@@ -54,7 +54,7 @@ daily can rely on positions. The matches (Danish and Norwegian krone) are marked
 cursor jumps to the first match, all other entries are dimmed. Entries 11 to 20 are picked with
 Shift and a digit (S1 to S0).</sub>
 
-**Status:** version 0.18.1, early development. Published on npm as
+**Status:** version 0.19.0, early development. Published on npm as
 `@emmgeede/gridselect`, because npm treats the plain name `gridselect` as too
 similar to an older package. Versions
 follow [Semantic Versioning](https://semver.org/). See
