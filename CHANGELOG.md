@@ -12,6 +12,8 @@ and breaking changes need a new major version.
 
 ## [Unreleased]
 
+## [0.17.0] - 2026-11-02
+
 ### Added
 
 - Upper limit for multiple choice: `max` (`data-max`, `max` on the element,
@@ -328,7 +330,8 @@ and breaking changes need a new major version.
   radios with different names. Warning for duplicate values.
 - TypeScript declarations generated from JSDoc.
 
-[Unreleased]: https://github.com/emmgeede/gridselect/compare/v0.16.0...HEAD
+[Unreleased]: https://github.com/emmgeede/gridselect/compare/v0.17.0...HEAD
+[0.17.0]: https://github.com/emmgeede/gridselect/compare/v0.16.0...v0.17.0
 [0.16.0]: https://github.com/emmgeede/gridselect/compare/v0.15.0...v0.16.0
 [0.15.0]: https://github.com/emmgeede/gridselect/compare/v0.14.0...v0.15.0
 [0.14.0]: https://github.com/emmgeede/gridselect/compare/v0.13.0...v0.14.0
