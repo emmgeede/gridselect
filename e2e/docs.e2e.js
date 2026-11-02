@@ -56,7 +56,7 @@ test("the live examples run, styled by the showcase theme", async ({ page }) => 
     try { return [...s.cssRules].some((r) => r instanceof CSSLayerBlockRule && r.name === "gridselect-showcase"); } catch { return false; }
   }))).toBe(true);
   const examples = page.locator(".gs-example");
-  await expect(examples).toHaveCount(2);
+  await expect(examples).toHaveCount(3);
   await examples.first().locator("[data-gridselect-field]").click();
   await page.keyboard.type("dollar");
   await expect(examples.first().locator('[role="status"]')).toHaveText("6 results");

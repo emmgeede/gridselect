@@ -1,6 +1,8 @@
 # CSS variables
 
-The default stylesheet sits in `@layer gridselect`, themes in their own layers after it, so any rule of yours wins without `!important`. Set the variables on `:root`, on a wrapper or any ancestor. Dark mode follows `prefers-color-scheme`; force it with `data-theme="light"` or `data-theme="dark"` on any ancestor.
+The default stylesheet takes its colours and sizes from CSS custom properties, also called CSS variables, whose names start with `--gs-`. Changing a variable is the easiest way to adapt GridSelect to your design, because you do not need to know or override any of the stylesheet's rules.
+
+Set a variable on `:root` to change every GridSelect on the page, or on one wrapper or any of its ancestors to change only the groups inside it. The stylesheet sits in the cascade layer `gridselect`, and themes sit in their own layers after it, so any rule you write outside a layer wins without `!important`. Light and dark mode follow the operating system through `prefers-color-scheme`; set `data-theme="light"` or `data-theme="dark"` on any ancestor to force one. The colour defaults below are those of the light mode; the dark mode uses its own values with the same contrast. See [Styling and themes](/guide/styling.md) for more.
 
 | Variable | What | Default (light) |
 |---|---|---|
@@ -29,4 +31,4 @@ The default stylesheet sits in `@layer gridselect`, themes in their own layers a
 | `--gs-list-max-height` | List height with `panelHeight: "fixed"` | `18rem` |
 | `--gs-auto-width` | Set by GridSelect: width of the widest item | `measured` |
 
-Themes set the same variables (and a few own rules). See [Styling and themes](/guide/styling.md).
+Themes set the same variables, plus a few rules of their own. If you change colours, keep the contrast that WCAG 2.2 AA requires: 4.5:1 for text against its background, and 3:1 for borders, focus outlines and the cursor.

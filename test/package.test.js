@@ -1,7 +1,7 @@
 // F7: what goes into the npm package. Builds first, so it takes a moment.
 import { describe, it, expect, beforeAll } from "vitest";
 import { execSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { runInNewContext } from "node:vm";
 import { gzipSync } from "node:zlib";
 
@@ -60,6 +60,20 @@ describe("numbers in the docs stay true", () => {
     const listed = [...after.slice(0, after.indexOf("\n## ", 5)).matchAll(/\]\(#([a-z0-9-]+)\)/g)].map((m) => m[1]);
     expect(listed).toEqual(headings);
     for (const [, anchor] of readme.matchAll(/\]\(#([a-z0-9-]+)\)/g)) expect(headings, anchor).toContain(anchor);
+  });
+
+  it("CDN links in the README and the docs point to the current major version", () => {
+    const major = JSON.parse(readFileSync("package.json", "utf8")).version.split(".")[0];
+    const files = ["README.md", ...readdirSync("website/guide").map((f) => `website/guide/${f}`)];
+    for (const file of files)
+      for (const [, v] of readFileSync(file, "utf8").matchAll(/@emmgeede\/gridselect@(\d+)/g)) expect(v, file).toBe(major);
+  });
+
+  it("the installation guide states the core and element sizes, rounded to whole kB", () => {
+    const kb = (f) => Math.round(gzipSync(readFileSync(f), { level: 9 }).length / 1024);
+    const text = readFileSync("website/guide/installation.md", "utf8");
+    expect(Number(/core script weighs about (\d+) kB/.exec(text)?.[1])).toBe(kb("dist/gridselect.min.js"));
+    expect(Number(/custom element about (\d+) kB/.exec(text)?.[1])).toBe(kb("dist/gridselect-element.min.js"));
   });
 
   it("the README status names the current version", () => {

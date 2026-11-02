@@ -14,10 +14,18 @@ new major version.
 
 ### Changed
 
+- Documentation rewritten in full, explanatory prose for people new to
+  GridSelect, with a new page "How GridSelect works" that explains the
+  threshold, items, the panel, the cursor and digit tiers.
 - Documentation: the whole site takes the look of the demo and the
   showcase theme (slate, sky blue, near-black dark mode, dark code blocks),
   and the live examples use the showcase theme; checked with axe in light
   and dark mode.
+
+### Fixed
+
+- README and documentation: the CDN links pointed to version 0 (`@0`)
+  instead of the current major version `@1`; a test now keeps them in line.
 
 ## [1.0.0] - 2026-11-02
 

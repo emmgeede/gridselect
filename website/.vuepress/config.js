@@ -7,7 +7,7 @@ import { getDirname, path } from "vuepress/utils";
 
 const __dirname = getDirname(import.meta.url);
 
-const guide = ["", "installation", "sources", "server", "panel", "search", "keyboard", "groups", "pinned", "descriptions",
+const guide = ["", "concepts", "installation", "sources", "server", "panel", "search", "keyboard", "groups", "pinned", "descriptions",
   "multiple", "forms", "styling", "accessibility", "frameworks"].map((p) => `/guide/${p}`);
 
 export default defineUserConfig({

@@ -87,8 +87,8 @@ import "@emmgeede/gridselect/gridselect.css"; // optional
 Without a bundler, from a CDN (`window.gridselect`):
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@emmgeede/gridselect@0/src/gridselect.css">
-<script src="https://cdn.jsdelivr.net/npm/@emmgeede/gridselect@0/dist/gridselect.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@emmgeede/gridselect@1/src/gridselect.css">
+<script src="https://cdn.jsdelivr.net/npm/@emmgeede/gridselect@1/dist/gridselect.min.js"></script>
 <script>
   document.querySelectorAll("[data-gridselect]").forEach((el) => gridselect(el));
 </script>
@@ -97,7 +97,7 @@ Without a bundler, from a CDN (`window.gridselect`):
 Prefer HTML only? Use the custom element, see [`<grid-select>`](https://gridselect.im/docs/guide/frameworks.html):
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/@emmgeede/gridselect@0/dist/gridselect-element.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emmgeede/gridselect@1/dist/gridselect-element.min.js"></script>
 ```
 
 ## Usage

@@ -1,29 +1,48 @@
 # Multiple choice
 
+When people may choose several entries, use a group of checkboxes or a `<select multiple>` as the [source](/guide/sources.md), or pass `multiple: true` together with `items`. GridSelect then works with checkboxes underneath, and everything on this page applies.
+
 <script setup>
-import { currencies, regions, countries, airports, fakeLoad } from "../.vuepress/data.js";
+import { currencies } from "../.vuepress/data.js";
 </script>
 
-At most three:
+The example allows at most three currencies. Open it, type `dollar`, and tick several entries in a row.
 
 <Example :options="{ items: currencies, multiple: true, max: 3 }">
   <fieldset data-gridselect><legend>Watchlist</legend></fieldset>
 </Example>
 
-Checkbox groups and `<select multiple>` above the threshold get the same
-field and panel. The list carries `aria-multiselectable="true"`, picking an
-item toggles it, fires `input` and `change` right away (like clicking a
-checkbox) and keeps the panel open with the search as it was, so you can
-filter for "dollar" and tick several in a row. The field shows one or two
-labels, or `selectedText(n)` for more. `gs.value` is always an array.
+## How picking works
 
-`max` (or `data-max`) sets an upper limit, below and above the threshold.
-At the limit the remaining entries get `aria-disabled="true"` and
-`data-limit`: they stay focusable and readable, look muted but are not struck
-through (that stays for real `disabled` entries), and cannot be ticked. A
-`role="status"` region announces "Maximum of 3 reached" (`maxText(n)`) when
-the limit is reached and on every blocked attempt. A start value above the
-limit is kept as it is; untick entries to get below it again.
+Below the [threshold](/guide/concepts.md#the-threshold-visible-items-or-a-field-with-a-panel) the items are ordinary checkboxes: each one can be ticked and unticked on its own, with a click, with Space, or with its digit.
+
+Above the threshold the panel behaves differently from a single choice. Picking an item ticks it, or unticks it if it was ticked already, and the panel stays open. The search text stays as well, so people can type "dollar" once and then tick several dollar currencies in a row. Each tick fires the native `input` and `change` events right away, exactly as clicking a checkbox would. The list announces itself to screen readers as a list in which several entries can be selected.
+
+The field shows the labels of up to two chosen entries. From three on it shows a count, "3 selected" by default; the option `selectedText` lets you change that text, for example `selectedText: (n) => n + " ausgewählt"`.
+
+The instance's `value` is always an array of the chosen values, in the order of the list, and an empty array when nothing is chosen. Setting it replaces the whole selection:
+
+```js
+gs.value = ["EUR", "USD"];
+```
+
+## An upper limit
+
+With the option `max` (attribute `data-max`) you can limit how many entries may be chosen. It works in both forms, below and above the threshold.
+
+```js
+gridselect(el, { multiple: true, items, max: 3 });
+```
+
+When the limit is reached, the remaining entries are locked. They look muted, show a "not allowed" mouse pointer and cannot be ticked, neither by click, nor by Space, nor by a digit. They are not crossed out, which distinguishes them from entries that are disabled for good, and they stay reachable with the keyboard and readable for screen readers, so people can still see what is available. Unticking any entry lifts the lock at once.
+
+When the limit is reached, and again on every attempt to tick one more entry, the status region tells screen readers "Maximum of 3 reached". Change the text with `maxText`, a function that receives the limit:
+
+```js
+gridselect(el, { multiple: true, items, max: 3, maxText: (n) => `Höchstens ${n} auswählbar` });
+```
+
+If the initial selection already exceeds the limit, GridSelect keeps it unchanged and locks the remaining entries until the number of chosen entries falls below the limit. `max` has no effect on a single-choice group.
 
 <a href="https://gridselect.im/demo/">
 <picture>
@@ -34,4 +53,4 @@ limit is kept as it is; untick entries to get below it again.
 </picture>
 </a>
 
-<sub><b>Multiple choice.</b> Enter, a click or a digit ticks an item and the panel stays open with the search as it was. The field shows the labels, from three on "3 selected". With <code>data-max="3"</code> the other entries are locked after the third tick.</sub>
+<sub>Ticking three dollar currencies: Enter, an arrow and Enter, then a digit. After the third tick the other entries are locked, and the field reads "3 selected".</sub>

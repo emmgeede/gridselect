@@ -1,30 +1,38 @@
 # Keyboard and digits
 
+GridSelect can be used completely without a mouse. This matters for people who cannot use a mouse, for screen reader users, and for everyone who enters data all day and wants to be fast. This page describes which keys do what in both forms of a group, and how the digit shortcuts work and can be configured.
+
 <script setup>
-import { currencies, regions, countries, airports, fakeLoad } from "../.vuepress/data.js";
+import { currencies } from "../.vuepress/data.js";
 </script>
 
-Tab to the field, Enter, arrows, a digit or Shift and a digit:
+Try it below: press Tab until the field has the focus, press Enter to open the panel, move with the arrow keys and press Enter to pick. Or press a digit, or Shift together with a digit, to pick an item directly.
 
 <Example :options="{ items: currencies }">
   <fieldset data-gridselect><legend>Currency</legend></fieldset>
 </Example>
 
-Up to the threshold the keys are native, GridSelect only adds digits (see
-below). Radios: Tab enters and leaves the group, arrow keys move and select.
-Checkboxes: each checkbox is a Tab stop, Space toggles.
+## Below the threshold: the keys you already know
 
-Above the threshold:
+As long as a group has no more items than the [threshold](/guide/concepts.md#the-threshold-visible-items-or-a-field-with-a-panel), the items are your own radio buttons or checkboxes, and they keep their native keyboard behaviour. GridSelect does not change it; it only adds the digit shortcuts described below.
 
-| Where | Key | Action |
-|---|---|---|
-| Field | Enter, Space, Arrow down, click | Open the panel, focus the search input. A second click closes it |
-| Panel | Arrow left / right | Previous / next item (grid layout only) |
-| Panel | Arrow up / down | One row up / down (one item in list layout), across group borders. Stops at the edges |
-| Panel | Enter, click on an item | Pick it and close. In multiple choice: toggle it, the panel and the search stay |
-| Panel | Escape | Close without change, focus back on the field |
-| Panel | Tab, Shift+Tab, click outside | Close without change, focus moves on as usual |
-| Panel | Digit (per tier) | Pick that item and close (toggle it in multiple choice) |
+In a group of radio buttons, Tab moves the focus into the group, onto the chosen item (or the first one if nothing is chosen), and the next Tab leaves the group. Inside the group, the arrow keys move to the previous or next item and select it at the same time. In a group of checkboxes, every checkbox is a separate stop for Tab, and Space ticks or unticks the one that has the focus.
+
+## Above the threshold: field and panel
+
+Above the threshold the group consists of the field and the panel. While the field has the focus, Enter, Space or the down arrow opens the panel; a click does the same. The focus then moves into the search input, and the following keys apply:
+
+| Key | What happens |
+|---|---|
+| Typing | Narrows or highlights the items, see [Search](/guide/search.md). |
+| Left and right arrows | Move the cursor to the previous or next item. In the list layout they stay in the search input for editing the text. |
+| Up and down arrows | Move the cursor one row up or down. In the grid, rows are the visible rows of the grid; in the list layout one item; in the flow layout the nearest item in the row above or below. The cursor stops at the first and last row. |
+| Enter | Picks the item under the cursor and closes the panel. In a multiple-choice group it ticks or unticks the item, and the panel stays open. |
+| A digit, or a modifier and a digit | Picks the item with that badge, see below. |
+| Escape | Closes the panel without changing anything and puts the focus back on the field. |
+| Tab or Shift+Tab | Closes the panel without changing anything; the focus moves on as usual. |
+
+The arrow keys follow what people see: in the grid, "down" means the item directly below, however many columns the window allows. Group headings and the pinned and recent groups are skipped; the cursor only lands on items.
 
 <a href="https://gridselect.im/demo/">
 <picture>
@@ -35,16 +43,13 @@ Above the threshold:
 </picture>
 </a>
 
-<sub><b>Keyboard.</b> Arrow keys move the outlined cursor through the grid, Enter picks the entry and closes the panel. The red badge in the bottom right corner shows the key just pressed.</sub>
+<sub>The arrow keys move the outlined cursor through the grid, and Enter picks the item and closes the panel. The red badge in the corner shows the key that was just pressed.</sub>
 
 ## Digit shortcuts
 
-Every entry gets a digit: 1 to 9 and 0 pick the first ten, the next tier
-(Shift by default) the next ten, then Alt. Below the threshold the digits
-work while the focus is in the group (a radio gets checked and focused, a
-checkbox toggles). In the panel they always pick and are never typed into
-the search; in `filter` mode the visible matches are renumbered from 1, in
-`highlight` mode the numbers stay put.
+Moving the cursor step by step is slow when a list has forty entries. GridSelect therefore gives every item a small badge with a digit, and pressing that digit picks the item at once. People who use the same list every day quickly learn that, say, 3 is "US dollar", and from then on choose it with a single key.
+
+Because there are only ten digits, items beyond the tenth are reached with a modifier key. Each group of ten items that shares one modifier is called a **tier**. By default the first tier uses the plain digits 1 to 9 and 0 for items 1 to 10, the second tier uses Shift with a digit for items 11 to 20, and the third tier uses Alt with a digit for items 21 to 30. The badge shows the modifier as a letter before the digit: `S1` means Shift and 1, `A1` means Alt and 1. Letters are used instead of symbols such as ⇧ because many people find those symbols hard to recognise.
 
 <a href="https://gridselect.im/demo/">
 <picture>
@@ -55,31 +60,30 @@ the search; in `filter` mode the visible matches are renumbered from 1, in
 </picture>
 </a>
 
-<sub><b>Digit shortcuts.</b> The badge shows the key: 4 picks the fourth entry, Shift+3 (badge S3) the thirteenth. The panel closes right away.</sub>
+<sub>Pressing 4 picks the fourth entry; Shift and 3 (badge S3) picks the thirteenth. The panel closes right away.</sub>
+
+The digits work in both forms. Below the threshold they work while the focus is anywhere in the group: a radio button is checked and focused, a checkbox is ticked or unticked. In the panel a digit always picks an item and is never typed into the search input. In filter mode the visible matches are numbered from 1 after each keystroke, so the first match is always 1. In highlight mode the numbers never change.
+
+GridSelect counts the position of the key, not the character it produces. Shift and 1 therefore works on every keyboard layout, even where Shift and 1 types `!` or `+`, and the digits on the number pad work too.
+
+### Choosing other modifiers or turning digits off
+
+The option `shortcuts` is a list of tiers. Each tier is a modifier name or several names joined with `+`, and an empty string stands for the plain digits. The names are `Shift`, `Alt`, `Control` and `Meta` (the Command key on a Mac).
 
 ```js
-gridselect(el, { shortcuts: ["", "Shift", "Alt"] });      // default
-gridselect(el, { shortcuts: ["Alt", "Control+Shift"] });  // plain digits stay free
-gridselect(el, { shortcuts: false });                     // off
+gridselect(el, { shortcuts: ["", "Shift", "Alt"] });      // the default
+gridselect(el, { shortcuts: ["Alt", "Control+Shift"] });  // plain digits stay free for typing
+gridselect(el, { shortcuts: false });                     // no digit shortcuts at all
 ```
 
-Tiers use `Shift`, `Alt`, `Control` and `Meta`, joined with `+`, and must
-match exactly. The key's position counts, not the character, so Shift+1
-works on every keyboard layout, and the number pad works too. Careful:
-Ctrl+digit and Cmd+digit switch browser tabs, Alt opens menus on Windows,
-and on many European layouts AltGr reports Control+Alt, so a `Control+Alt`
-tier swallows characters like `{` (AltGr+7) in the search.
-Labels with numbers (postcodes, years)? Use tiers without `""` or turn the
-digits off, so numbers can be typed into the search.
+```html
+<fieldset data-gridselect data-shortcuts="off"> … </fieldset>
+```
 
-GridSelect puts a `<span data-gridselect-key class="gridselect__key">` with
-the digit at the start of each label (and of each panel item), marked
-`aria-hidden` because the input gets `aria-keyshortcuts` instead. The tier is
-in `data-modifiers`, and `data-prefix` holds readable letters for it (`S`
-Shift, `A` Alt, `C` Control, `M` Meta, e.g. `CS` for Control+Shift), shown
-before the digit with `.gridselect__key[data-prefix]::before { content:
-attr(data-prefix) }`. Letters rather than symbols like ⇧, which are hard to
-make out for many people. Want the digit
-somewhere else or in your own form? Put an element with `data-gridselect-key`
-into the label yourself: GridSelect fills it when it is empty and leaves it
-alone when it has content. `destroy()` removes everything it added.
+Turn the plain digits off, or turn shortcuts off entirely, when the labels themselves contain numbers that people want to type into the search, such as postcodes or years. When you choose modifiers, keep the browser and the operating system in mind: Control or Command with a digit switches browser tabs, Alt opens menus on Windows, and on many European keyboards the AltGr key reports itself as Control and Alt together, so a `Control+Alt` tier would swallow characters such as `{` (AltGr and 7) in the search.
+
+### The badge in the markup
+
+GridSelect puts the digit into an element `<span data-gridselect-key class="gridselect__key">` at the start of each label and of each panel item. The badge is hidden from screen readers, because the input itself announces the shortcut through the attribute `aria-keyshortcuts`. The tier's modifiers are stored in `data-modifiers`, and `data-prefix` holds the letters shown before the digit (`S` for Shift, `A` for Alt, `C` for Control, `M` for Meta).
+
+If you want the badge somewhere else in your own markup, place an empty element with `data-gridselect-key` inside the label yourself. GridSelect fills it with the digit instead of adding its own badge, and it leaves an element alone that already has content. `destroy()` removes everything GridSelect added.

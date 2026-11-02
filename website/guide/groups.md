@@ -1,52 +1,58 @@
 # Groups
 
+Long lists are easier to scan when related entries stand together under a heading: currencies by region, products by category, team members by department. GridSelect supports such groups. In the panel each group gets a heading and starts on a new row, and the heading stays visible at the top while you scroll through a long group.
+
 <script setup>
-import { currencies, regions, countries, airports, fakeLoad } from "../.vuepress/data.js";
+import { regions } from "../.vuepress/data.js";
 </script>
 
 <Example :options="{ items: regions }">
   <fieldset data-gridselect><legend>Currency by region</legend></fieldset>
 </Example>
 
-Above the threshold, entries in groups get a heading in the panel. Each group
-starts a new row, and its heading stays at the top while the group scrolls
-by. Groups come from `<optgroup>` in a `<select>` or a `<grid-select>`, or
-from group objects in `items`:
+## Defining groups
+
+Groups can come from three sources. In a `<select>` or in the `<grid-select>` element, use the native `<optgroup>` element; its `label` attribute becomes the heading.
+
+```html
+<select name="currency">
+  <optgroup label="Europe">
+    <option value="EUR">Euro</option>
+    <option value="CHF">Swiss franc</option>
+  </optgroup>
+  <optgroup label="Asia">
+    <option value="JPY">Japanese yen</option>
+  </optgroup>
+</select>
+```
+
+With the `items` option, write a group as an object with a `label` for the heading and an `items` array for its entries. Entries outside any group can stand before, between or after the groups; they appear in their place without a heading.
 
 ```js
 gridselect(el, {
   name: "currency",
   items: [
-    "USD",                                            // without a group
+    "USD",                                                   // no group, no heading
     { label: "Europe", items: ["EUR", { value: "CHF", label: "Swiss franc" }] },
     { label: "Asia", items: ["JPY", "CNY"] },
   ],
 });
 ```
 
-<a href="https://gridselect.im/demo/">
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/groups-dark.png?v=1">
-  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/groups-light.png?v=1" width="100%" alt="A currency panel with the heading Europe above sixteen currencies, followed by the heading Americas above five more, each group starting in a new row.">
-</picture>
-</a>
+Groups are one level deep: a group cannot contain another group, and GridSelect throws an error that names the position if it does. Empty groups are left out. A group of radio buttons or checkboxes written by hand cannot be grouped; use `items` or a `<select>` for that.
 
-<sub><b>Groups.</b> Each region has its own heading. The digits run on across the groups.</sub>
+## How groups behave
 
-- Groups are one level deep. Entries without a group stay where they are,
-  without a heading. Empty groups are left out.
-- Arrow keys cross group borders, up and down go to the nearest entry in the
-  row above or below. The cursor never lands on a heading.
-- Digits run on across groups, they do not restart per group.
-- In `filter` mode the groups keep their order and only the entries inside a
-  group are sorted. A group without matches is hidden with its heading. The
-  group name itself is not searched.
-- Each group is a `role="group"` named by its heading
-  (`[data-gridselect-group-label]`), so screen readers announce the group
-  name when the cursor enters it. Entries of a `<optgroup disabled>` are
-  disabled.
-- At or below the threshold there are no headings, the entries keep their
-  order.
+Headings are shown only in the panel, that is above the [threshold](/guide/concepts.md#the-threshold-visible-items-or-a-field-with-a-panel). A short list shows its entries in their order without headings, because all entries are visible anyway.
 
-Style hooks: `.gridselect__group` (a section of the item list, it uses the
-list's columns through `subgrid`) and `.gridselect__group-label`.
+In the panel the keyboard moves freely across groups. The left and right arrows continue from the last entry of one group to the first entry of the next, and the up and down arrows jump to the nearest entry in the row above or below, even if that row belongs to another group. The cursor never lands on a heading. The digit badges run on across groups instead of starting again at 1, so every entry keeps a unique shortcut.
+
+When people search in filter mode, the groups keep their order and only the entries within each group are sorted by how well they match. A group without any matching entry is hidden together with its heading. The heading text itself is not searched: typing "Europe" does not show all European currencies, it finds entries whose label contains "Europe". In highlight mode every group stays visible.
+
+## Accessibility
+
+Each group is marked with `role="group"` and named by its heading, so screen readers announce the group name when the cursor enters a new group. All entries of an `<optgroup disabled>` are disabled.
+
+## Styling
+
+A group is an element with the class `gridselect__group` (attribute `data-gridselect-group`); it shares the columns of the whole list, so items of different groups line up. The heading has the class `gridselect__group-label`. The default stylesheet keeps the heading at the top of the scrolling area while its group scrolls by, and it reserves room so that the heading never covers the item under the cursor.
