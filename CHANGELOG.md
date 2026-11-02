@@ -12,6 +12,8 @@ and breaking changes need a new major version.
 
 ## [Unreleased]
 
+## [0.22.0] - 2026-11-02
+
 ### Added
 
 - Entries from a server: `load(query, signal)` is called on open and 250 ms
@@ -428,7 +430,8 @@ and breaking changes need a new major version.
   radios with different names. Warning for duplicate values.
 - TypeScript declarations generated from JSDoc.
 
-[Unreleased]: https://github.com/emmgeede/gridselect/compare/v0.21.0...HEAD
+[Unreleased]: https://github.com/emmgeede/gridselect/compare/v0.22.0...HEAD
+[0.22.0]: https://github.com/emmgeede/gridselect/compare/v0.21.0...v0.22.0
 [0.21.0]: https://github.com/emmgeede/gridselect/compare/v0.20.0...v0.21.0
 [0.20.0]: https://github.com/emmgeede/gridselect/compare/v0.19.0...v0.20.0
 [0.19.0]: https://github.com/emmgeede/gridselect/compare/v0.18.1...v0.19.0
