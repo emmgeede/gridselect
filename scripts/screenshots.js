@@ -33,6 +33,8 @@ async function stage(page, scheme, id) {
       background: "var(--page-card)", borderRadius: "18px", padding: "28px 32px",
       boxShadow: "0 1px 2px rgb(0 0 0 / .06), 0 20px 50px -20px rgb(0 0 0 / .35)",
     });
+    // README images keep the compact CSS height instead of growing to the window edge.
+    document.getElementById(id).setAttribute("data-panel-height", "fixed");
     card.append(document.getElementById(id));
     // Shows the key of the current animation step in the bottom right corner.
     const key = document.createElement("kbd");

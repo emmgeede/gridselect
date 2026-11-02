@@ -104,7 +104,8 @@ test("the field has a caret, a red border when invalid and looks disabled when d
   expect(Number(await field(page, "filter").evaluate((el) => getComputedStyle(el).opacity))).toBeLessThan(1);
 });
 
-test("the panel sits under the field, is sized and scrolls", async ({ page }) => {
+test("the panel sits under the field, is sized and scrolls (panelHeight fixed, F22)", async ({ page }) => {
+  await page.locator("#filter").evaluate((el) => el.setAttribute("data-panel-height", "fixed"));
   await field(page, "filter").click();
   const panel = page.locator("#filter [data-gridselect-panel]");
   await expect(panel).toHaveCSS("position", "absolute");

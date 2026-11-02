@@ -27,6 +27,7 @@ import "./element.js";
  * @property {boolean} [disabled]
  * @property {number} [max]
  * @property {boolean} [searchDescription]
+ * @property {"auto" | "fixed"} [panelHeight]
  * @property {string[]} [pinned]
  * @property {string} [recent]
  * @property {number} [recentMax]
@@ -45,7 +46,7 @@ const attributes = (p) => ({
   shortcuts: p.shortcuts === false ? "off" : p.shortcuts?.join(","),
   max: p.max === undefined ? undefined : String(p.max), pinned: p.pinned?.join(","), recent: p.recent, "recent-max": p.recentMax === undefined ? undefined : String(p.recentMax),
   "pinned-text": p.pinnedText, "recent-text": p.recentText,
-  multiple: p.multiple ? "" : undefined, "search-description": p.searchDescription ? "" : undefined, required: p.required ? "" : undefined, disabled: p.disabled ? "" : undefined,
+  multiple: p.multiple ? "" : undefined, "search-description": p.searchDescription ? "" : undefined, "panel-height": p.panelHeight, required: p.required ? "" : undefined, disabled: p.disabled ? "" : undefined,
 });
 
 export const GridSelect = /** @type {import("react").ForwardRefExoticComponent<GridSelectProps & import("react").RefAttributes<import("./element.js").GridSelectElement>>} */ (

@@ -82,3 +82,10 @@ gridselect(document.body, { items: [{ value: "a", description: "d" }], searchDes
 gridselect(document.body, { items: [{ value: "a", description: 1 }] });
 createElement(ReactGridSelect, { searchDescription: true });
 const vueDesc: VueProps = { searchDescription: true };
+
+// F22: panel height
+gridselect(document.body, { panelHeight: "fixed" });
+// @ts-expect-error unknown panel height
+gridselect(document.body, { panelHeight: "tall" });
+createElement(ReactGridSelect, { panelHeight: "auto" });
+const vuePanel: VueProps = { panelHeight: "fixed" };

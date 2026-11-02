@@ -12,6 +12,22 @@ and breaking changes need a new major version.
 
 ## [Unreleased]
 
+### Added
+
+- Panel placement: by default (`panelHeight: "auto"`) the panel opens below
+  when everything fits, otherwise towards the side with more room
+  (`data-placement="top"`), and its list grows up to 8 px before the window
+  edge, never beyond the content, at least 10rem. It follows scrolling and
+  resizing while open. `panelHeight: "fixed"` (`data-panel-height`,
+  `panel-height`, React and Vue prop) keeps the previous behaviour: always
+  below, list height from `--gs-list-max-height`.
+
+### Changed
+
+- Size budget: core 8.5 kB, core plus element 10 kB (min+gzip).
+- The panel's default height is now "as much as fits" instead of
+  `--gs-list-max-height`; use `panelHeight: "fixed"` for the old behaviour.
+
 ## [0.18.1] - 2026-11-02
 
 ### Changed

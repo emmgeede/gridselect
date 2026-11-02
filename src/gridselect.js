@@ -49,6 +49,9 @@ const groupOf = new WeakMap();
  * @property {string} [pinnedText] Heading of the pinned entries. Default "Pinned".
  * @property {string} [recentText] Heading of the recent entries. Default "Recent".
  * @property {number} [max] Multiple choice: at most this many entries. 0 or unset for no limit.
+ * @property {"auto" | "fixed"} [panelHeight] "auto" (default) opens the panel towards the room it
+ *   needs and lets it grow up to the window edge; "fixed" always opens below, the list as high as
+ *   --gs-list-max-height.
  * @property {boolean} [searchDescription] Search the entries' descriptions too (label matches first).
  * @property {(max: number) => string} [maxText] Announcement when the limit is reached or hit.
  *   Default `n => "Maximum of " + n + " reached"`.
@@ -1116,8 +1119,34 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
     search.setAttribute("aria-expanded", "true");
     applyQuery();
     if (!isList && !isFlow) measure();
+    place();
     search.focus();
     doc.addEventListener("click", onOutsideClick, true);
+    view?.addEventListener("scroll", place, { passive: true });
+    view?.addEventListener("resize", place);
+  }
+
+  const view = doc.defaultView;
+  /**
+   * "auto": below when everything fits there, else towards the larger room; the list grows up to
+   * 8 px before the window edge, never beyond its content, at least 10rem. "fixed": CSS decides.
+   */
+  function place() {
+    scroller.style.maxHeight = "";
+    panel.removeAttribute("data-placement");
+    const f = field.getBoundingClientRect();
+    if ((opts.panelHeight ?? wrapper.getAttribute("data-panel-height")) === "fixed" || !view || !f.height) return;
+    scroller.style.maxHeight = "none";
+    const p = panel.getBoundingClientRect();
+    const chrome = p.height - scroller.getBoundingClientRect().height;
+    const offset = p.top - f.bottom; // the gap CSS puts between field and panel
+    const below = view.innerHeight - f.bottom - offset - 8;
+    const above = f.top - offset - 8;
+    const min = 10 * parseFloat(getComputedStyle(doc.documentElement).fontSize);
+    const up = p.height > below && above > below && above - chrome >= min;
+    const room = Math.max(up ? above : below, min + chrome);
+    scroller.style.maxHeight = `${room - chrome}px`;
+    if (up) panel.setAttribute("data-placement", "top");
   }
 
   /** @param {boolean} [refocus] Move focus back to the field (not wanted on Tab or outside clicks). */
@@ -1127,6 +1156,8 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
     field.setAttribute("aria-expanded", "false");
     search.setAttribute("aria-expanded", "false");
     doc.removeEventListener("click", onOutsideClick, true);
+    view?.removeEventListener("scroll", place);
+    view?.removeEventListener("resize", place);
     if (refocus) field.focus();
   }
 

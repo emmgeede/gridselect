@@ -194,6 +194,12 @@
     box-shadow: var(--gs-shadow);
   }
 
+  /* Opened upwards when there is more room above (panelHeight "auto") */
+  .gridselect__panel[data-placement="top"] {
+    top: auto;
+    bottom: calc(100% + 0.25rem);
+  }
+
   .gridselect__search {
     display: block;
     box-sizing: border-box;

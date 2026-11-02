@@ -26,6 +26,7 @@ export const GridSelect = defineComponent({
     disabled: Boolean,
     max: Number,
     searchDescription: Boolean,
+    panelHeight: /** @type {import("vue").PropType<"auto" | "fixed">} */ (String),
     pinned: /** @type {import("vue").PropType<string[]>} */ (Array),
     recent: String,
     recentMax: Number,
@@ -67,7 +68,7 @@ export const GridSelect = defineComponent({
       "^max": props.max === undefined ? undefined : String(props.max), "^pinned": props.pinned?.join(","), "^recent": props.recent,
       "^recent-max": props.recentMax === undefined ? undefined : String(props.recentMax),
       "^pinned-text": props.pinnedText, "^recent-text": props.recentText,
-      "^multiple": flag(props.multiple), "^search-description": flag(props.searchDescription), "^required": flag(props.required), "^disabled": flag(props.disabled),
+      "^multiple": flag(props.multiple), "^search-description": flag(props.searchDescription), "^panel-height": props.panelHeight, "^required": flag(props.required), "^disabled": flag(props.disabled),
     }, slots.default?.());
   },
 });
