@@ -146,3 +146,21 @@ for (const scheme of ["light", "dark"]) {
     }
   });
 }
+
+// QA F12 B1: the sidebar is always dark, so the picker's focus ring must stand out against it in every theme.
+for (const scheme of ["light", "dark"]) {
+  test(`the theme picker's focus indicator keeps 3:1 on the dark sidebar in every theme (${scheme})`, async ({ page }) => {
+    const { contrast } = await import("./contrast.js");
+    await page.emulateMedia({ colorScheme: scheme });
+    const values = await picker(page).locator("input").evaluateAll((els) => els.map((e) => e.value));
+    for (const [i, value] of values.entries()) {
+      await picker(page).locator("label").nth(i).click();
+      await picker(page).locator(`input[value="${value}"]`).focus();
+      await page.keyboard.press("ArrowRight");
+      await page.keyboard.press("ArrowLeft");
+      const label = picker(page).locator("label").nth(i);
+      const ring = await label.evaluate((el) => (getComputedStyle(el).outlineStyle === "none" ? "border" : "outline"));
+      expect.soft(await contrast(label, ring), `${value} focus`).toBeGreaterThanOrEqual(3);
+    }
+  });
+}
