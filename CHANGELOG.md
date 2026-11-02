@@ -12,6 +12,8 @@ and breaking changes need a new major version.
 
 ## [Unreleased]
 
+## [0.14.0] - 2026-11-02
+
 ### Added
 
 - Themes `high-contrast` (black and white, 2 px borders, 7:1 text, WCAG
@@ -286,7 +288,8 @@ and breaking changes need a new major version.
   radios with different names. Warning for duplicate values.
 - TypeScript declarations generated from JSDoc.
 
-[Unreleased]: https://github.com/emmgeede/gridselect/compare/v0.13.0...HEAD
+[Unreleased]: https://github.com/emmgeede/gridselect/compare/v0.14.0...HEAD
+[0.14.0]: https://github.com/emmgeede/gridselect/compare/v0.13.0...v0.14.0
 [0.13.0]: https://github.com/emmgeede/gridselect/compare/v0.12.2...v0.13.0
 [0.12.2]: https://github.com/emmgeede/gridselect/compare/v0.12.1...v0.12.2
 [0.12.1]: https://github.com/emmgeede/gridselect/compare/v0.12.0...v0.12.1
