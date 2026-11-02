@@ -48,6 +48,9 @@ const groupOf = new WeakMap();
  * @property {number} [recentMax] How many recent entries to keep and show. Default 5, 0 turns it off.
  * @property {string} [pinnedText] Heading of the pinned entries. Default "Pinned".
  * @property {string} [recentText] Heading of the recent entries. Default "Recent".
+ * @property {number} [max] Multiple choice: at most this many entries. 0 or unset for no limit.
+ * @property {(max: number) => string} [maxText] Announcement when the limit is reached or hit.
+ *   Default `n => "Maximum of " + n + " reached"`.
  */
 
 const DEFAULT_THRESHOLD = 10;
@@ -112,6 +115,23 @@ function positionOf(tiers, e) {
 
 /** @param {unknown} n */
 const isCount = (n) => Number.isInteger(n) && /** @type {number} */ (n) >= 0;
+
+/** Limit of a multiple choice group (`max`, `data-max`), 0 for none. @param {Options} opts @param {Element} wrapper */
+function maxOf(opts, wrapper) {
+  if (isCount(opts.max)) return /** @type {number} */ (opts.max);
+  const a = wrapper.getAttribute("data-max");
+  return a !== null && /^\d+$/.test(a) ? Number(a) : 0;
+}
+/** @param {Options} opts @param {number} n */
+const maxMessage = (opts, n) => (typeof opts.maxText === "function" ? String(opts.maxText(n)) : `Maximum of ${n} reached`);
+/** Says `text` in a live region, again even when it equals the last announcement. @param {Element} region @param {string} text */
+const announce = (region, text) => (region.textContent = region.textContent === text ? text + "\u00a0" : text);
+/** Locks (or unlocks) an entry at the limit: aria-disabled on `target`, data-limit on `mark`. */
+function setLimit(/** @type {Element} */ target, /** @type {Element | null | undefined} */ mark, /** @type {boolean} */ on, /** @type {boolean} */ disabled = false) {
+  if (on || disabled) target.setAttribute("aria-disabled", "true");
+  else target.removeAttribute("aria-disabled");
+  mark?.toggleAttribute("data-limit", on && !disabled);
+}
 
 /** @type {WeakMap<Element, GridSelect>} */
 const instances = new WeakMap();
@@ -188,6 +208,39 @@ function build(wrapper, options) {
   const ui = all.length > /** @type {number} */ (threshold)
     ? createPanel(wrapper, all, panelOpts, tiers, source?.label, () => source?.pull(), multiple) : null;
   const flatUndo = ui || !tiers.length ? [] : addKeyElements(inputs(), tiers);
+  // Limit below the threshold: lock the unchecked boxes, block ticking more, announce.
+  const max = multiple && !ui ? maxOf(opts, wrapper) : 0;
+  const flatStatus = max ? statusRegion(wrapper.ownerDocument) : null;
+  const full = () => !!max && checked().length >= max;
+  const flatSync = () => {
+    if (!max) return;
+    for (const i of inputs()) setLimit(i, i.labels?.[0], !i.checked && full());
+  };
+  if (flatStatus) {
+    wrapper.append(flatStatus);
+    /** @param {Event} e */
+    const onClick = (e) => {
+      const t = /** @type {HTMLInputElement} */ (e.target);
+      if (!inputs().includes(t) || !t.checked) return;
+      if (checked().length > max) {
+        e.preventDefault(); // undoes the tick, no input or change event
+        announce(flatStatus, maxMessage(opts, max));
+      } else if (checked().length === max) announce(flatStatus, maxMessage(opts, max));
+    };
+    const onReset = () => setTimeout(flatSync, 0);
+    const form = inputs()[0]?.form;
+    wrapper.addEventListener("click", onClick);
+    wrapper.addEventListener("change", flatSync);
+    form?.addEventListener("reset", onReset);
+    flatUndo.push(() => {
+      wrapper.removeEventListener("click", onClick);
+      wrapper.removeEventListener("change", flatSync);
+      form?.removeEventListener("reset", onReset);
+      flatStatus.remove();
+      for (const i of inputs()) setLimit(i, i.labels?.[0], false);
+    });
+    flatSync();
+  }
   if (!ui && tiers.length) {
     /** Digit keys while the focus is on one of the group's inputs. @param {KeyboardEvent} e */
     const onKey = (e) => {
@@ -198,6 +251,7 @@ function build(wrapper, options) {
       e.preventDefault();
       const input = list[pos];
       if (!input || input.matches(":disabled")) return;
+      if (multiple && !input.checked && full()) return void announce(/** @type {Element} */ (flatStatus), maxMessage(opts, max));
       if (multiple) input.checked = !input.checked;
       else if (input.checked) return void input.focus();
       else {
@@ -226,6 +280,7 @@ function build(wrapper, options) {
     set value(v) {
       if (source) {
         source.set(v);
+        flatSync();
         return;
       }
       if (multiple) {
@@ -233,6 +288,7 @@ function build(wrapper, options) {
         const wanted = v.map(key);
         for (const i of inputs()) i.checked = wanted.includes(i.value);
         ui?.render();
+        flatSync();
         return;
       }
       const match = inputs().find((i) => i.value === key(v));
@@ -614,6 +670,15 @@ function addKeyElements(inputs, tiers) {
   return undo;
 }
 
+/** Visually hidden live region, by inline style, so it works without our stylesheet. @param {Document} doc */
+function statusRegion(doc) {
+  const status = create(doc, "div", "status");
+  status.setAttribute("role", "status");
+  status.style.cssText =
+    "position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap";
+  return status;
+}
+
 /**
  * Hides or shows one of our own elements. The `hidden` attribute alone loses against any page
  * CSS that sets `display`, so an inline display: none backs it up.
@@ -836,10 +901,7 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
   setHidden(empty, true);
   empty.textContent = typeof opts.noResultsText === "string" ? opts.noResultsText : "No matches";
   // Announces the match count. Visually hidden by inline style, so it works without our stylesheet.
-  const status = create(doc, "div", "status");
-  status.setAttribute("role", "status");
-  status.style.cssText =
-    "position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap";
+  const status = statusRegion(doc);
   /** @type {(n: number) => string} */
   const resultsText = typeof opts.resultsText === "function" ? opts.resultsText : (n) => (n === 1 ? "1 result" : `${n} results`);
   panel.append(search, scroller, empty, status);
@@ -866,6 +928,7 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
     else if (ariaLabel) el.setAttribute("aria-label", ariaLabel);
   }
 
+  const max = multiple ? maxOf(opts, wrapper) : 0;
   /** @type {(n: number) => string} */
   const selectedText = typeof opts.selectedText === "function" ? opts.selectedText : (n) => `${n} selected`;
   function render() {
@@ -874,7 +937,12 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
     field.textContent = !chosen.length ? placeholder
       : chosen.length <= 2 ? chosen.map(labelText).join(", ")
       : String(selectedText(chosen.length));
-    items.forEach((item, i) => item.setAttribute("aria-selected", String(radios[radioOf[i]].checked)));
+    const locked = !!max && chosen.length >= max;
+    items.forEach((item, i) => {
+      const r = radios[radioOf[i]];
+      item.setAttribute("aria-selected", String(r.checked));
+      setLimit(item, item, locked && !r.checked, r.matches(":disabled"));
+    });
     field.disabled = radios.every((r) => r.matches(":disabled"));
     if (current) field.removeAttribute("aria-invalid");
     if (!labelledBy && ariaLabel) field.setAttribute("aria-label", `${ariaLabel}, ${field.textContent}`);
@@ -996,10 +1064,7 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
     render();
     search.value = "";
     fillRecent();
-    items.forEach((item, i) => {
-      if (radios[radioOf[i]].matches(":disabled")) item.setAttribute("aria-disabled", "true");
-      else item.removeAttribute("aria-disabled");
-    });
+    render();
     setHidden(panel, false);
     field.setAttribute("aria-expanded", "true");
     search.setAttribute("aria-expanded", "true");
@@ -1030,6 +1095,9 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
     const radio = radios[radioOf[index]];
     if (!radio) return;
     if (radio.matches(":disabled")) return;
+    const count = radios.filter((r) => r.checked).length;
+    if (max && !radio.checked && count >= max) return void announce(status, maxMessage(opts, max));
+    if (max && !radio.checked && count + 1 === max) announce(status, maxMessage(opts, max));
     if (recentMax && (!multiple || !radio.checked)) remember(radio.value);
     if (multiple) {
       radio.checked = !radio.checked;

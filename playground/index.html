@@ -191,6 +191,18 @@
   </section>
 
   <section>
+    <div class="stamp">Checkboxes · max</div>
+    <h2>At most a few</h2>
+    <p class="note"><code>data-max</code>: below the threshold at most 2, in the panel at most 3. At the limit the rest is locked (muted, not struck through) and a screen reader hears "Maximum of n reached".</p>
+    <div class="frame">
+      <fieldset data-gridselect data-max="2" id="limited"><legend>Toppings (up to 2)</legend></fieldset>
+    </div>
+    <div class="frame">
+      <fieldset data-gridselect data-max="3" id="limited-long"><legend>Watchlist (up to 3)</legend></fieldset>
+    </div>
+  </section>
+
+  <section>
     <div class="stamp">Checkboxes · long</div>
     <h2>Long checkbox group</h2>
     <p class="note">Multiple choice in the panel: items toggle, the panel stays open, the search stays. Try <code>dollar</code> and pick several.</p>
@@ -439,8 +451,10 @@
   fill("required", countries, { required: true, disabled: [2] });
   fill("checks-long", currencies.slice(0, 24), { type: "checkbox" });
   fill("pinned", currencies);
+  fill("limited", ["Cheese", "Olives", "Mushrooms", "Peppers", "Onions"], { type: "checkbox" });
+  fill("limited-long", currencies.slice(0, 20), { type: "checkbox" });
 
-  for (const id of ["short", "checks", "filter", "highlight", "fuzzy", "flow", "checks-long", "list", "required", "pinned", "select-short", "select-long", "select-multi"]) {
+  for (const id of ["short", "checks", "filter", "highlight", "fuzzy", "flow", "checks-long", "list", "required", "pinned", "limited", "limited-long", "select-short", "select-long", "select-multi"]) {
     init(id);
     const wrapper = document.getElementById(id);
     for (const type of ["input", "change"]) {

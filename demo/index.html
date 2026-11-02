@@ -235,9 +235,9 @@ gridselect(document.querySelector("[data-gridselect]"));</code></pre>
   <section>
     <div class="stamp">Multiple · long</div>
     <h2>Pick several</h2>
-    <p class="note">Checkbox groups and <code>&lt;select multiple&gt;</code> get the same panel. Items toggle, the panel stays open, so you can filter and pick several in a row.</p>
+    <p class="note">Checkbox groups and <code>&lt;select multiple&gt;</code> get the same panel. Items toggle, the panel stays open, so you can filter and pick several in a row. <code>data-max="3"</code> stops at three: the rest is locked until you untick one.</p>
     <div class="frame">
-      <fieldset data-gridselect id="watch"><legend>Watchlist</legend></fieldset>
+      <fieldset data-gridselect data-max="3" id="watch"><legend>Watchlist (up to 3)</legend></fieldset>
     </div>
     <div class="frame">
       <div data-gridselect id="langs">

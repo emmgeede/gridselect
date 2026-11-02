@@ -68,3 +68,10 @@ gridselect(document.body, { pinned: ["a"], recent: "k", recentMax: 3, pinnedText
 gridselect(document.body, { recentMax: "3" });
 createElement(ReactGridSelect, { pinned: ["a"], recent: "k", recentMax: 3, pinnedText: "P", recentText: "R" });
 const vuePinned: VueProps = { pinned: ["a"], recent: "k", recentMax: 3 };
+
+// F17: max
+gridselect(document.body, { max: 3, maxText: (n) => `max ${n}` });
+// @ts-expect-error max is a number
+gridselect(document.body, { max: "3" });
+createElement(ReactGridSelect, { multiple: true, max: 2 });
+const vueMax: VueProps = { multiple: true, max: 2 };

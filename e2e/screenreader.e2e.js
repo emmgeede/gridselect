@@ -157,7 +157,7 @@ test("steps 18-19: multiple choice in the panel", async ({ page }) => {
   await expect(await active(page)).toHaveAttribute("aria-selected", "true");
   await expect(focused(page)).toHaveRole("combobox"); // the panel stays open
   await page.keyboard.press("Escape");
-  await expect(focused(page)).toHaveAccessibleName("Watchlist US dollar (USD), Canadian dollar (CAD)");
+  await expect(focused(page)).toHaveAccessibleName("Watchlist (up to 3) US dollar (USD), Canadian dollar (CAD)");
 });
 
 test("step 20: <grid-select> behaves the same", async ({ page }) => {

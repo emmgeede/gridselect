@@ -208,6 +208,7 @@ from the element.
 | `multiple` | Checkboxes instead of radios |
 | `value` | Initial choice, comma-separated with `multiple`. Without it, `selected` options count |
 | `threshold`, `layout`, `search`, `match`, `placeholder`, `search-placeholder` | As the options of the same name |
+| `max` | As the `max` option |
 | `pinned`, `recent`, `recent-max`, `pinned-text`, `recent-text` | As `pinned` (comma-separated), `recent`, `recentMax`, `pinnedText`, `recentText` |
 | `shortcuts` | `off`, or tiers separated by commas, e.g. `,Shift,Alt` |
 | `required`, `disabled` | As on native inputs |
@@ -248,7 +249,7 @@ function CurrencyField() {
   groups included. `<option>` and `<optgroup>` children work too.
 - The other attributes of `<grid-select>` are props in camelCase:
   `ariaLabel`, `multiple`, `threshold`, `layout`, `search`, `match`,
-  `placeholder`, `searchPlaceholder`, `required`, `disabled`, `pinned`,
+  `placeholder`, `searchPlaceholder`, `required`, `disabled`, `max`, `pinned`,
   `recent`, `recentMax`, `pinnedText`, `recentText`, and `shortcuts` as an
   array or `false`.
 - `ref` points to the `<grid-select>` element.
@@ -327,6 +328,8 @@ value wins, for checkboxes all of them are set.
 | `value` | | | Initial choice for `items` (an array with `multiple`) |
 | `multiple` | | `false` | Build checkboxes instead of radios from `items` |
 | `shortcuts` | `data-shortcuts="off"` | `["", "Shift", "Alt"]` | Digit key tiers, see [Digit shortcuts](#digit-shortcuts). `false` turns them off |
+| `max` | `data-max="3"` | | Multiple choice: at most this many, see [Multiple choice](#multiple-choice) |
+| `maxText` | | `n => "Maximum of " + n + " reached"` | Announcement at the limit |
 | `pinned` | `data-pinned="EUR,USD"` | | Values shown again on top of the panel, see [Pinned and recent entries](#pinned-and-recent-entries) |
 | `recent` | `data-recent="currency"` | off | Storage key: remember the last picks and show them on top |
 | `recentMax` | `data-recent-max` | `5` | How many recent picks; `0` turns recent off |
@@ -435,16 +438,24 @@ checkbox) and keeps the panel open with the search as it was, so you can
 filter for "dollar" and tick several in a row. The field shows one or two
 labels, or `selectedText(n)` for more. `gs.value` is always an array.
 
+`max` (or `data-max`) sets an upper limit, below and above the threshold.
+At the limit the remaining entries get `aria-disabled="true"` and
+`data-limit`: they stay focusable and readable, look muted but are not struck
+through (that stays for real `disabled` entries), and cannot be ticked. A
+`role="status"` region announces "Maximum of 3 reached" (`maxText(n)`) when
+the limit is reached and on every blocked attempt. A start value above the
+limit is kept as it is; untick entries to get below it again.
+
 <a href="https://gridselect.im/demo/">
 <picture>
-  <source media="(prefers-reduced-motion: reduce) and (prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/multiple-dark.png?v=3">
-  <source media="(prefers-reduced-motion: reduce)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/multiple-light.png?v=3">
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/multiple-dark.webp?v=3">
-  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/multiple-light.webp?v=3" width="100%" alt="Animation: the watchlist panel opens, 'dollar' filters it, Enter ticks US dollar, arrow right and Enter tick Canadian dollar, the digit 4 ticks New Zealand dollar, the field reads '3 selected', Escape closes the panel.">
+  <source media="(prefers-reduced-motion: reduce) and (prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/multiple-dark.png?v=4">
+  <source media="(prefers-reduced-motion: reduce)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/multiple-light.png?v=4">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/multiple-dark.webp?v=4">
+  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/multiple-light.webp?v=4" width="100%" alt="Animation: the watchlist panel opens, 'dollar' filters it, Enter ticks US dollar, arrow right and Enter tick Canadian dollar, the digit 4 ticks New Zealand dollar, the field reads '3 selected', Escape closes the panel.">
 </picture>
 </a>
 
-<sub><b>Multiple choice.</b> Enter, a click or a digit ticks an item and the panel stays open with the search as it was. The field shows the labels, from three on "3 selected".</sub>
+<sub><b>Multiple choice.</b> Enter, a click or a digit ticks an item and the panel stays open with the search as it was. The field shows the labels, from three on "3 selected". With <code>data-max="3"</code> the other entries are locked after the third tick.</sub>
 
 ### Groups
 
@@ -877,6 +888,7 @@ been done.
 | Auto column width and flow layout | available |
 | Group headings (`<optgroup>`, groups in `items`) | available |
 | Pinned and recent entries | available |
+| Upper limit for multiple choice (`max`) | available |
 | Themes: showcase, high contrast, compact, open for contributions | available |
 | React and Vue wrappers | available |
 

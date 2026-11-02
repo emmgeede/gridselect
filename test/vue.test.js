@@ -24,11 +24,11 @@ describe("Vue wrapper", () => {
   it("registers <grid-select> and renders attributes, booleans only when true", () => {
     expect(customElements.get("grid-select")).toBeTruthy();
     mount(() => h(GridSelect, { name: "cur", label: "Currency", items: ["EUR", "CHF"], ariaLabel: "C", threshold: 3, layout: "flow",
-      searchPlaceholder: "S", shortcuts: ["", "Alt"], required: true, pinned: ["EUR"], recent: "k", recentMax: 2 }));
+      searchPlaceholder: "S", shortcuts: ["", "Alt"], required: true, pinned: ["EUR"], recent: "k", recentMax: 2, max: 4 }));
     const a = (n) => gs().getAttribute(n);
     expect([a("name"), a("aria-label"), a("threshold"), a("layout"), a("search-placeholder"), a("shortcuts")])
       .toEqual(["cur", "C", "3", "flow", "S", ",Alt"]);
-    expect([a("pinned"), a("recent"), a("recent-max")]).toEqual(["EUR", "k", "2"]);
+    expect([a("pinned"), a("recent"), a("recent-max"), a("max")]).toEqual(["EUR", "k", "2", "4"]);
     expect(gs().hasAttribute("required")).toBe(true);
     expect(gs().hasAttribute("multiple")).toBe(false);
     expect(inputs().map((i) => i.value)).toEqual(["EUR", "CHF"]);

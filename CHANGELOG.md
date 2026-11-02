@@ -12,6 +12,19 @@ and breaking changes need a new major version.
 
 ## [Unreleased]
 
+### Added
+
+- Upper limit for multiple choice: `max` (`data-max`, `max` on the element,
+  React and Vue prop). At the limit the other entries are locked
+  (`aria-disabled`, `data-limit`, muted but not struck through), cannot be
+  ticked by click, Space or digit, and a status region announces
+  "Maximum of n reached" (`maxText`).
+
+### Changed
+
+- Size budget: core 8 kB, core plus element 9.5 kB (min+gzip).
+- Demo: the watchlist stops at three entries.
+
 ## [0.16.0] - 2026-11-02
 
 ### Added

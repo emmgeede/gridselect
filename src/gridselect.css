@@ -351,6 +351,14 @@
     cursor: not-allowed;
   }
 
+  /* At the limit of a multiple choice: locked for now, so muted but not struck through */
+  [data-gridselect] > label[data-limit],
+  .gridselect__item[data-limit] {
+    color: var(--gs-muted);
+    text-decoration: none;
+    cursor: not-allowed;
+  }
+
   .gridselect__empty {
     padding: 0.5rem 0.25rem 0;
     color: var(--gs-muted);

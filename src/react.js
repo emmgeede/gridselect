@@ -25,6 +25,7 @@ import "./element.js";
  * @property {string} [searchPlaceholder]
  * @property {boolean} [required]
  * @property {boolean} [disabled]
+ * @property {number} [max]
  * @property {string[]} [pinned]
  * @property {string} [recent]
  * @property {number} [recentMax]
@@ -41,7 +42,7 @@ const attributes = (p) => ({
   threshold: p.threshold === undefined ? undefined : String(p.threshold),
   layout: p.layout, search: p.search, match: p.match, placeholder: p.placeholder, "search-placeholder": p.searchPlaceholder,
   shortcuts: p.shortcuts === false ? "off" : p.shortcuts?.join(","),
-  pinned: p.pinned?.join(","), recent: p.recent, "recent-max": p.recentMax === undefined ? undefined : String(p.recentMax),
+  max: p.max === undefined ? undefined : String(p.max), pinned: p.pinned?.join(","), recent: p.recent, "recent-max": p.recentMax === undefined ? undefined : String(p.recentMax),
   "pinned-text": p.pinnedText, "recent-text": p.recentText,
   multiple: p.multiple ? "" : undefined, required: p.required ? "" : undefined, disabled: p.disabled ? "" : undefined,
 });

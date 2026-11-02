@@ -4,7 +4,7 @@
 import { gridselect } from "./gridselect.js";
 
 const ATTRIBUTES = ["name", "label", "aria-label", "multiple", "value", "threshold", "layout", "search", "match",
-  "shortcuts", "placeholder", "search-placeholder", "required", "disabled", "pinned", "recent", "recent-max", "pinned-text", "recent-text"];
+  "shortcuts", "placeholder", "search-placeholder", "required", "disabled", "pinned", "recent", "recent-max", "pinned-text", "recent-text", "max"];
 
 const SOURCE = ["OPTION", "OPTGROUP"];
 
@@ -171,6 +171,7 @@ export class GridSelectElement extends Base {
       pinned: attr("pinned")?.split(",").map((s) => s.trim()),
       recent: attr("recent") ?? undefined,
       recentMax: /^\d+$/.test(attr("recent-max") ?? "") ? Number(attr("recent-max")) : undefined,
+      max: /^\d+$/.test(attr("max") ?? "") ? Number(attr("max")) : undefined,
       pinnedText: attr("pinned-text") ?? undefined,
       recentText: attr("recent-text") ?? undefined,
     });
