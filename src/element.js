@@ -4,7 +4,7 @@
 import { gridselect } from "./gridselect.js";
 
 const ATTRIBUTES = ["name", "label", "aria-label", "multiple", "value", "threshold", "layout", "search", "match",
-  "shortcuts", "placeholder", "search-placeholder", "required", "disabled", "pinned", "recent", "recent-max", "pinned-text", "recent-text", "max", "search-description", "panel-height", "panel-width"];
+  "shortcuts", "placeholder", "search-placeholder", "required", "disabled", "pinned", "recent", "recent-max", "pinned-text", "recent-text", "max", "search-description", "panel-height", "panel-width", "min-query-length", "loading-text", "error-text"];
 
 const SOURCE = ["OPTION", "OPTGROUP"];
 
@@ -148,7 +148,7 @@ export class GridSelectElement extends Base {
 
   connectedCallback() {
     // Frameworks may set properties before the element is defined; take them over now.
-    for (const prop of /** @type {const} */ (["items", "value"])) {
+    for (const prop of /** @type {const} */ (["items", "value", "load"])) {
       if (Object.prototype.hasOwnProperty.call(this, prop)) {
         const v = /** @type {any} */ (this)[prop];
         delete (/** @type {any} */ (this))[prop];
@@ -187,6 +187,18 @@ export class GridSelectElement extends Base {
     if (this.#gs) this.#gs.value = v;
     else this.#pendingValue = v;
     this.#sync();
+  }
+
+  /** @type {((query: string, signal: AbortSignal) => Promise<import("./gridselect.js").Item[]>) | null} */
+  #load = null;
+  /** Entries from a server, as the `load` option: `el.load = (query, signal) => fetch(…)`. */
+  get load() {
+    return this.#load;
+  }
+
+  set load(fn) {
+    this.#load = typeof fn === "function" ? fn : null;
+    if (this.#gs) this.#rebuild(false);
   }
 
   /** Entries as in the `items` option; when set they replace the <option> children as source. */
@@ -261,7 +273,11 @@ export class GridSelectElement extends Base {
     const shortcuts = attr("shortcuts");
     const threshold = attr("threshold");
     this.#gs = gridselect(fieldset, {
-      items,
+      items: this.#load ? (this.#items ?? []) : items,
+      load: this.#load ?? undefined,
+      minQueryLength: /^\d+$/.test(attr("min-query-length") ?? "") ? Number(attr("min-query-length")) : undefined,
+      loadingText: attr("loading-text") ?? undefined,
+      errorText: attr("error-text") ?? undefined,
       multiple,
       // With ElementInternals the element submits; unnamed inner inputs point to no form.
       name: this.#internals ? undefined : (attr("name") ?? undefined),

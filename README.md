@@ -77,6 +77,7 @@ for what changed.
   - [Options](#options)
   - [Above the threshold](#above-the-threshold)
   - [Entries from JavaScript](#entries-from-javascript)
+  - [Entries from a server](#entries-from-a-server)
   - [Multiple choice](#multiple-choice)
   - [Groups](#groups)
   - [Pinned and recent entries](#pinned-and-recent-entries)
@@ -212,6 +213,7 @@ from the element.
 | `multiple` | Checkboxes instead of radios |
 | `value` | Initial choice, comma-separated with `multiple`. Without it, `selected` options count |
 | `threshold`, `layout`, `search`, `match`, `placeholder`, `search-placeholder` | As the options of the same name |
+| `min-query-length`, `loading-text`, `error-text` | As the options with `load` (set `el.load` as a property) |
 | `max`, `search-description`, `panel-height`, `panel-width` | As the options `max`, `searchDescription`, `panelHeight` and `panelWidth` |
 | `pinned`, `recent`, `recent-max`, `pinned-text`, `recent-text` | As `pinned` (comma-separated), `recent`, `recentMax`, `pinnedText`, `recentText` |
 | `shortcuts` | `off`, or tiers separated by commas, e.g. `,Shift,Alt` |
@@ -352,6 +354,9 @@ value wins, for checkboxes all of them are set.
 | `shortcuts` | `data-shortcuts="off"` | `["", "Shift", "Alt"]` | Digit key tiers, see [Digit shortcuts](#digit-shortcuts). `false` turns them off |
 | `panelWidth` | `data-panel-width` | `"full"` | `"full"`: the panel spans the window, 10 px from each edge, narrower when everything fits in one row. `"fixed"`: `--gs-panel-width` from the field's edge |
 | `panelHeight` | `data-panel-height` | `"auto"` | `"auto"`: the panel opens where it has room and grows up to the window edge. `"fixed"`: always below, list as high as `--gs-list-max-height`. See [Above the threshold](#above-the-threshold) |
+| `load` | | | `(query, signal) => Promise<items>`: entries from a server, see [Entries from a server](#entries-from-a-server) |
+| `minQueryLength`, `minQueryText` | | `0`, `n => "Type " + n + " characters to search"` | With `load`: load only from this many characters, and the hint below |
+| `loadingText`, `errorText` | | `"Loading…"`, `"Could not load entries"` | With `load`: shown and announced while loading and on failure |
 | `searchDescription` | `data-search-description` | `false` | Search the entries' descriptions too, see [Descriptions](#descriptions) |
 | `max` | `data-max="3"` | | Multiple choice: at most this many, see [Multiple choice](#multiple-choice) |
 | `maxText` | | `n => "Maximum of " + n + " reached"` | Announcement at the limit |
@@ -475,6 +480,39 @@ and leave the current entries untouched.
 
 Instances built from your own markup or a select have no `setItems()`. When
 you change their inputs, call `gs.destroy()` and `gridselect(el)` again.
+
+### Entries from a server
+
+For long or changing data, let GridSelect ask your server:
+
+```js
+gridselect(document.querySelector("#city"), {
+  name: "city",
+  load: async (query, signal) => {
+    const res = await fetch(`/api/cities?q=${encodeURIComponent(query)}`, { signal });
+    return (await res.json()).map((c) => ({ value: c.id, label: c.name }));
+  },
+  minQueryLength: 2, // optional: only search from two characters
+});
+```
+
+- The wrapper starts empty and always gets the field and panel. On open
+  GridSelect calls `load("", signal)`, and 250 ms after the last keystroke
+  `load(query, signal)`. The answer (the `items` format, groups included)
+  replaces the list; the panel, the search text and the focus stay, and the
+  cursor goes to the first result. GridSelect does not filter the answer
+  again: your server decides what matches.
+- While loading, the panel and the status region say "Loading…"
+  (`loadingText`); a failed request shows "Could not load entries"
+  (`errorText`) and keeps the entries, typing again retries. A newer request
+  aborts the older one through `signal`, and late answers are ignored.
+- Below `minQueryLength` nothing loads and the panel says "Type 2 characters
+  to search" (`minQueryText(n)`).
+- A chosen entry stays chosen when a later answer lacks it: the field text
+  and the submitted value stay right.
+- On `<grid-select>` set the property: `el.load = (query, signal) => …`,
+  with the attributes `min-query-length`, `loading-text` and `error-text`.
+  The React and Vue components take a `load` prop.
 
 ### Multiple choice
 
@@ -972,6 +1010,7 @@ been done.
 | Panel opens where there is room, up to the window edge | available |
 | Panel in the full window width | available |
 | `<grid-select>` as a form control (validity, reset, `FormData`) | available |
+| Entries from a server (`load`) | available |
 | Themes: showcase, high contrast, compact, open for contributions | available |
 | React and Vue wrappers | available |
 

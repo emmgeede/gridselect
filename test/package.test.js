@@ -67,11 +67,11 @@ describe("README on npm (QA F7)", () => {
   });
 });
 
-describe("size budget (PRD principle 6: core 8.5 kB, with element 10.5 kB since F19)", () => {
-  it("keeps the core under 8.5 kB and core plus element under 10.5 kB, min+gzip", () => {
+describe("size budget (PRD principle 6: core 9.5 kB, with element 11.5 kB since F20)", () => {
+  it("keeps the core under 9.5 kB and core plus element under 11.5 kB, min+gzip", () => {
     const size = (f) => gzipSync(readFileSync(f), { level: 9 }).length;
-    expect(size("dist/gridselect.min.js")).toBeLessThanOrEqual(8704);
-    expect(size("dist/gridselect-element.min.js")).toBeLessThanOrEqual(10752);
+    expect(size("dist/gridselect.min.js")).toBeLessThanOrEqual(9728);
+    expect(size("dist/gridselect-element.min.js")).toBeLessThanOrEqual(11776);
   });
 
   it("keeps each framework wrapper under 1 kB min+gzip, without React, Vue and the element (F13)", async () => {

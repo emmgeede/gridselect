@@ -11,6 +11,7 @@ import "./element.js";
  * @property {Value} [value] Controlled value: the element always shows it. Use with onChange.
  * @property {Value} [defaultValue] Initial value of an uncontrolled field.
  * @property {(value: Value) => void} [onChange] Called with the new value after the user picks.
+ * @property {(query: string, signal: AbortSignal) => Promise<Item[]>} [load] Entries from a server.
  * @property {Item[]} [items] Entries; replace <option>/<optgroup> children as source.
  * @property {string} [name]
  * @property {string} [label]
@@ -56,6 +57,10 @@ export const GridSelect = /** @type {import("react").ForwardRefExoticComponent<G
     const latest = useRef(props);
     latest.current = props;
     useImperativeHandle(ref, () => /** @type {import("./element.js").GridSelectElement} */ (el.current), []);
+
+    useLayoutEffect(() => {
+      if (props.load !== undefined) /** @type {any} */ (el.current).load = props.load;
+    }, [props.load]);
 
     // Items first: the default value must find its entries.
     useLayoutEffect(() => {

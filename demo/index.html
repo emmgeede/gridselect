@@ -129,7 +129,7 @@
       GridSelect
     </div>
     <h1>One select for every list,<br><span>short or long</span></h1>
-    <p>A dependency-free component on top of native radios, checkboxes and selects. Short lists stay visible, long ones open a searchable grid. Full keyboard support, digit shortcuts, light and dark mode, about 8 kB (min+gzip).</p>
+    <p>A dependency-free component on top of native radios, checkboxes and selects. Short lists stay visible, long ones open a searchable grid. Full keyboard support, digit shortcuts, light and dark mode, about 9 kB (min+gzip).</p>
     <fieldset data-gridselect data-theme="dark" id="theme-picker" class="theme-picker"><legend>Theme</legend></fieldset>
     <p id="theme-description" class="theme-description" aria-live="polite"></p>
     <div class="switches">
@@ -230,6 +230,15 @@ gridselect(document.querySelector("[data-gridselect]"));</code></pre>
       <fieldset data-gridselect data-pinned="EUR,USD" data-recent="demo-currency" id="pinned"><legend>Currency</legend></fieldset>
     </div>
     <pre class="code"><code>&lt;fieldset data-gridselect data-pinned="EUR,USD" data-recent="currency"&gt; … &lt;/fieldset&gt;</code></pre>
+  </section>
+
+  <section>
+    <div class="stamp">Server</div>
+    <h2>Entries from a server</h2>
+    <p class="note"><code>load(query, signal)</code> fetches entries on open and 250 ms after you stop typing; the answer replaces the list. Here a fake server answers after 400 ms. Try <code>dol</code>.</p>
+    <div class="frame">
+      <fieldset data-gridselect id="remote"><legend>Currency (from a server)</legend></fieldset>
+    </div>
   </section>
 
   <section>
@@ -386,7 +395,16 @@ import "@emmgeede/gridselect/element";</code></pre>
     for (const code of codes) group.append(new Option(currencies.find((c) => c.endsWith(`(${code})`)), code));
     regionSelect.append(group);
   }
-  document.querySelectorAll("[data-gridselect]:not(grid-select [data-gridselect]):not(#theme-picker):not(#described)").forEach((el) => gridselect(el));
+  document.querySelectorAll("[data-gridselect]:not(grid-select [data-gridselect]):not(#theme-picker):not(#described):not(#remote)").forEach((el) => gridselect(el));
+  // Entries from a server (F20): a fake one that answers after 400 ms.
+  gridselect(document.getElementById("remote"), {
+    name: "remote",
+    load: (query, signal) => new Promise((resolve, reject) => {
+      const timer = setTimeout(() => resolve(currencies.filter((c) => c.toLowerCase().includes(query.toLowerCase()))
+        .map((label) => ({ value: label.match(/\(([A-Z]{3})\)/)?.[1] ?? label, label }))), 400);
+      signal.addEventListener("abort", () => { clearTimeout(timer); reject(signal.reason); });
+    }),
+  });
   gridselect(document.getElementById("described"), { name: "described", items: [{ value: "AU0", label: "Austria", description: "Capital: Vienna" }, { value: "BE1", label: "Belgium", description: "Capital: Brussels" }, { value: "CR2", label: "Croatia", description: "Capital: Zagreb" }, { value: "DE3", label: "Denmark", description: "Capital: Copenhagen" }, { value: "ES4", label: "Estonia", description: "Capital: Tallinn" }, { value: "FI5", label: "Finland", description: "Capital: Helsinki" }, { value: "FR6", label: "France", description: "Capital: Paris" }, { value: "GE7", label: "Germany", description: "Capital: Berlin" }, { value: "GR8", label: "Greece", description: "Capital: Athens" }, { value: "IR9", label: "Ireland", description: "Capital: Dublin" }, { value: "IT10", label: "Italy", description: "Capital: Rome" }, { value: "LA11", label: "Latvia", description: "Capital: Riga" }, { value: "LI12", label: "Lithuania", description: "Capital: Vilnius" }, { value: "NE13", label: "Netherlands", description: "Capital: Amsterdam" }, { value: "PO14", label: "Portugal", description: "Capital: Lisbon" }, { value: "SP15", label: "Spain", description: "Capital: Madrid" }] });
 
 

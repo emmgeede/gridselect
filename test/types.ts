@@ -103,3 +103,8 @@ const ok: boolean = gsEl.checkValidity() && gsEl.reportValidity() && gsEl.validi
 const owner: HTMLFormElement | null = gsEl.form;
 gsEl.setCustomValidity("");
 const msg: string = gsEl.validationMessage + gsEl.name;
+
+// F20: load
+gridselect(document.body, { load: async (q, signal) => (signal.aborted ? [] : [q]), minQueryLength: 2, loadingText: "…", errorText: "!", minQueryText: (n) => `${n}` });
+gsEl.load = async () => [{ value: "a" }];
+createElement(ReactGridSelect, { load: async () => ["a"] });

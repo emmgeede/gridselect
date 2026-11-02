@@ -11,6 +11,7 @@ export const GridSelect = defineComponent({
   props: {
     modelValue: { type: /** @type {import("vue").PropType<string | string[] | null>} */ ([String, Array]), default: undefined },
     items: { type: /** @type {import("vue").PropType<import("./gridselect.js").Item[]>} */ (Array), default: undefined },
+    load: { type: /** @type {import("vue").PropType<(query: string, signal: AbortSignal) => Promise<import("./gridselect.js").Item[]>>} */ (Function), default: undefined },
     name: String,
     label: String,
     ariaLabel: String,
@@ -47,6 +48,7 @@ export const GridSelect = defineComponent({
     const onInput = (e) => emit("input", e);
     onMounted(() => {
       const node = /** @type {any} */ (el.value);
+      if (props.load !== undefined) node.load = props.load;
       if (props.items !== undefined) node.items = props.items;
       if (props.modelValue !== undefined) node.value = props.modelValue;
       node.addEventListener("change", onChange);
@@ -56,6 +58,7 @@ export const GridSelect = defineComponent({
       el.value?.removeEventListener("change", onChange);
       el.value?.removeEventListener("input", onInput);
     });
+    watch(() => props.load, (fn) => { if (el.value) /** @type {any} */ (el.value).load = fn ?? null; });
     watch(() => props.items, (items) => { if (el.value) /** @type {any} */ (el.value).items = items ?? null; });
     watch(() => props.modelValue, (v) => { if (el.value && v !== undefined) /** @type {any} */ (el.value).value = v; });
 

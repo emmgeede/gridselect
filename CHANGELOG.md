@@ -12,6 +12,21 @@ and breaking changes need a new major version.
 
 ## [Unreleased]
 
+### Added
+
+- Entries from a server: `load(query, signal)` is called on open and 250 ms
+  after typing; the answer replaces the list while the panel, search text
+  and focus stay. Loading and error states are shown and announced
+  (`loadingText`, `errorText`), stale requests are aborted, chosen entries
+  stay chosen, `minQueryLength` and `minQueryText` hold back short queries.
+  `el.load` on `<grid-select>` (with `min-query-length`, `loading-text`,
+  `error-text`), `load` prop in React and Vue.
+
+### Changed
+
+- Size budget: core 9.5 kB, core plus element 11.5 kB (min+gzip). The demo
+  now says about 9 kB.
+
 ## [0.21.0] - 2026-11-02
 
 ### Added

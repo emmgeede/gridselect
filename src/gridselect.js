@@ -15,6 +15,10 @@
  */
 
 /** @typedef {{ label: string }} GroupInfo */
+/** Remote hooks of an items instance with `load`, keyed by its options. @type {WeakMap<object, { opened(): void, input(q: string): void }>} */
+const remoteOf = new WeakMap();
+/** Panel of an instance, for the remote rebuild. @type {WeakMap<object, any>} */
+const uiOf = new WeakMap();
 /** Group of a generated input, set by the select and items sources, read by the panel. @type {WeakMap<HTMLInputElement, GroupInfo>} */
 const groupOf = new WeakMap();
 
@@ -55,6 +59,12 @@ const groupOf = new WeakMap();
  * @property {"auto" | "fixed"} [panelHeight] "auto" (default) opens the panel towards the room it
  *   needs and lets it grow up to the window edge; "fixed" always opens below, the list as high as
  *   --gs-list-max-height.
+ * @property {(query: string, signal: AbortSignal) => Promise<Item[]>} [load] Entries from a server: called
+ *   with "" on open and 250 ms after typing; the answer replaces the list. Always shows the panel.
+ * @property {number} [minQueryLength] With `load`: load only from this many characters. Default 0.
+ * @property {(n: number) => string} [minQueryText] Hint below `minQueryLength`. Default `n => "Type " + n + " characters to search"`.
+ * @property {string} [loadingText] With `load`: shown and announced while loading. Default "Loading…".
+ * @property {string} [errorText] With `load`: shown and announced when loading fails. Default "Could not load entries".
  * @property {boolean} [searchDescription] Search the entries' descriptions too (label matches first).
  * @property {(max: number) => string} [maxText] Announcement when the limit is reached or hit.
  *   Default `n => "Maximum of " + n + " reached"`.
@@ -170,7 +180,7 @@ export function gridselect(wrapper, options) {
     throw new TypeError("gridselect: expected a DOM element, got " + Object.prototype.toString.call(wrapper));
   const existing = instances.get(wrapper);
   if (existing) return existing;
-  if (options !== null && typeof options === "object" && Array.isArray(options.items))
+  if (options !== null && typeof options === "object" && (Array.isArray(options.items) || typeof options.load === "function"))
     return register(wrapper, fromItems(wrapper, options));
   return register(wrapper, build(wrapper, options));
 }
@@ -212,7 +222,7 @@ function build(wrapper, options) {
   const tiers = parseTiers(opts.shortcuts, wrapper.getAttribute("data-shortcuts"));
   const panelOpts = source?.placeholder !== undefined && opts.placeholder === undefined ? { ...opts, placeholder: source.placeholder } : opts;
   const all = inputs();
-  const ui = all.length > /** @type {number} */ (threshold)
+  const ui = all.length > /** @type {number} */ (threshold) || remoteOf.has(opts)
     ? createPanel(wrapper, all, panelOpts, tiers, source?.label, () => source?.pull(), multiple) : null;
   const flatUndo = ui || !tiers.length ? [] : addKeyElements(inputs(), tiers);
   for (const i of inputs()) describe(i, i.labels?.[0]?.querySelector("[data-gridselect-description]"), flatUndo);
@@ -308,11 +318,13 @@ function build(wrapper, options) {
     },
     destroy() {
       ui?.destroy();
+      uiOf.delete(instance);
       for (const fn of flatUndo) fn();
       for (const fn of source?.undo ?? []) fn();
       instances.delete(wrapper);
     },
   };
+  uiOf.set(instance, ui);
   return instance;
 }
 
@@ -374,7 +386,7 @@ function fromItems(wrapper, opts) {
    * @param {ReturnType<typeof normalizeItems>} list
    * @param {string[]} chosen
    */
-  function render(list, chosen) {
+  let render = (/** @type {ReturnType<typeof normalizeItems>} */ list, /** @type {string[]} */ chosen) => {
     labels = list.map((it) => {
       const label = doc.createElement("label");
       label.setAttribute("data-gridselect-generated", "");
@@ -386,13 +398,14 @@ function fromItems(wrapper, opts) {
       input.checked = chosen.includes(it.value);
       if (noForm) input.setAttribute("form", noForm);
       if (it.group) groupOf.set(input, it.group);
+      if (/** @type {any} */ (it).kept) input.setAttribute("data-gridselect-kept", "");
       label.append(input, " ", it.label);
       addDescription(label, it.description);
       wrapper.append(label);
       return label;
     });
     inner = build(wrapper, rest);
-  }
+  };
 
   let destroyed = false;
 
@@ -410,7 +423,80 @@ function fromItems(wrapper, opts) {
 
   /** @param {unknown} v */
   const asList = (v) => (Array.isArray(v) ? v : v == null ? [] : [v]).map(key).filter((k) => k !== undefined);
-  render(normalizeItems(opts.items), asList(opts.value));
+
+  // Entries from a server: load(query, signal) on open and after typing; the answer replaces the
+  // list while the panel stays open. Chosen entries the answer lacks are kept, hidden (data-gridselect-kept).
+  const load = typeof opts.load === "function" ? opts.load : null;
+  /** @type {Map<string, ReturnType<typeof normalizeItems>[number]>} */
+  const known = new Map();
+  /** @type {AbortController | null} */
+  let pending = null;
+  /** @type {ReturnType<typeof setTimeout> | undefined} */
+  let timer;
+  const min = isCount(opts.minQueryLength) ? /** @type {number} */ (opts.minQueryLength) : 0;
+  const text = (/** @type {unknown} */ v, /** @type {string} */ fallback) => (typeof v === "string" ? v : fallback);
+  /** @param {ReturnType<typeof normalizeItems>} list */
+  function replace(list, message = "") {
+    const old = uiOf.get(inner);
+    const query = old?.query() ?? "";
+    const wasOpen = !!old?.isOpen();
+    const chosen = asList(inner.value);
+    inner.destroy();
+    for (const l of labels) l.remove();
+    render(list, chosen);
+    instances.set(wrapper, outer);
+    const ui = uiOf.get(inner);
+    if (!wasOpen) return;
+    ui.open(query, true);
+    const n = list.length;
+    const results = typeof opts.resultsText === "function" ? opts.resultsText : (/** @type {number} */ c) => (c === 1 ? "1 result" : `${c} results`);
+    ui.say(message || (n ? String(results(n)) : text(opts.noResultsText, "No matches")), !!message || !n);
+  }
+  /** @param {string} query */
+  function run(query) {
+    pending?.abort();
+    pending = null;
+    if (query.length < min) {
+      const hint = typeof opts.minQueryText === "function" ? opts.minQueryText(min) : `Type ${min} characters to search`;
+      return replace([], String(hint));
+    }
+    const ctrl = (pending = new AbortController());
+    uiOf.get(inner)?.say(text(opts.loadingText, "Loading…"), true);
+    Promise.resolve()
+      .then(() => /** @type {NonNullable<typeof load>} */ (load)(query, ctrl.signal))
+      .then((items) => {
+        // An aborted request (newer query, destroy) never counts, even if it still answers.
+        if (ctrl !== pending || ctrl.signal.aborted) return;
+        const list = normalizeItems(items);
+        pending = null;
+        replace(list);
+      })
+      .catch(() => {
+        if (ctrl !== pending || ctrl.signal.aborted) return;
+        pending = null;
+        uiOf.get(inner)?.say(text(opts.errorText, "Could not load entries"), true);
+      });
+  }
+  if (load) remoteOf.set(rest, {
+    opened() {
+      clearTimeout(timer);
+      run("");
+    },
+    input(/** @type {string} */ q) {
+      clearTimeout(timer);
+      timer = setTimeout(() => run(q), 250);
+    },
+  });
+  if (load) {
+    const plain = render;
+    render = (list, chosen) => {
+      for (const r of list) known.set(r.value, r);
+      const kept = chosen.filter((v) => !list.some((r) => r.value === v) && known.has(v))
+        .map((v) => ({ .../** @type {NonNullable<ReturnType<typeof known.get>>} */ (known.get(v)), group: undefined, kept: true }));
+      plain([...list, ...kept], chosen);
+    };
+  }
+  render(normalizeItems(opts.items ?? []), asList(opts.value));
 
   /** @type {GridSelect} */
   const outer = {
@@ -436,6 +522,8 @@ function fromItems(wrapper, opts) {
     },
     destroy() {
       destroyed = true;
+      pending?.abort();
+      clearTimeout(timer);
       inner.destroy();
       for (const l of labels) l.remove();
       instances.delete(wrapper);
@@ -988,7 +1076,7 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
       item.setAttribute("aria-selected", String(r.checked));
       setLimit(item, item, locked && !r.checked, r.matches(":disabled"));
     });
-    field.disabled = radios.every((r) => r.matches(":disabled"));
+    field.disabled = radios.length > 0 && radios.every((r) => r.matches(":disabled"));
     if (current) field.removeAttribute("aria-invalid");
     if (!labelledBy && ariaLabel) field.setAttribute("aria-label", `${ariaLabel}, ${field.textContent}`);
   }
@@ -1025,7 +1113,8 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
   // filter: non-matches hidden, label-start matches first. highlight: everything stays, matches
   // and non-matches get marked. An empty query restores the plain list in both modes.
   function applyQuery() {
-    const query = fold(search.value.trim());
+    // With load the server filters: the list shows the answer as it is.
+    const query = remote ? "" : fold(search.value.trim());
     /** @type {number[]} matching items, best first */
     let matched;
     if (fuzzy) {
@@ -1054,7 +1143,7 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
     // list, so nothing shows twice; while searching the list has everything again.
     const top = query ? [] : tops.filter((j) => !items[j].hasAttribute("data-empty"));
     const onTop = new Set(top.map((j) => radioOf[j]));
-    const all = radios.map((_, i) => i).filter((i) => !onTop.has(i));
+    const all = radios.map((_, i) => i).filter((i) => !onTop.has(i) && !radios[i].hasAttribute("data-gridselect-kept"));
     if (highlight) {
       const firstMatch = all.find((i) => isMatch.has(i));
       items.forEach((item, i) => {
@@ -1079,7 +1168,7 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
     }
     for (const sec of topSections) setHidden(sec, !!query || sec.hasAttribute("data-empty"));
     for (const j of tops) setHidden(items[j], !top.includes(j));
-    if (highlight) radios.forEach((_, i) => setHidden(items[i], onTop.has(i)));
+    if (highlight) radios.forEach((_, i) => setHidden(items[i], !all.includes(i)));
     renumber();
     // Last, so a throwing resultsText from the page cannot stop the filtering above.
     const count = matched.length;
@@ -1088,7 +1177,8 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
   // The search input is ours: its input/change events must not look like a new selection.
   search.addEventListener("input", (e) => {
     e.stopPropagation();
-    applyQuery();
+    if (remote) remote.input(search.value.trim());
+    else applyQuery();
   });
   search.addEventListener("change", (e) => e.stopPropagation());
 
@@ -1110,11 +1200,13 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
     });
   }
 
-  function open() {
+  const remote = remoteOf.get(opts);
+  /** @param {string} [query] search text to show @param {boolean} [silent] reopened after loading: do not load again */
+  function open(query = "", silent = false) {
     if (!panel.hidden) return;
     beforeOpen?.();
     render();
-    search.value = "";
+    search.value = query;
     fillRecent();
     render();
     setHidden(panel, false);
@@ -1127,6 +1219,14 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
     doc.addEventListener("click", onOutsideClick, true);
     view?.addEventListener("scroll", place, { passive: true });
     view?.addEventListener("resize", place);
+    if (remote && query) setCursor(0);
+    if (remote && !silent) remote.opened();
+  }
+  /** Shows (or only announces) a message in the panel. @param {string} message @param {boolean} show */
+  function say(message, show) {
+    empty.textContent = message;
+    setHidden(empty, !show);
+    status.textContent = message;
   }
 
   const view = doc.defaultView;
@@ -1297,7 +1397,7 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
   }
   // reset fires before the inputs change, so render on the next task.
   const onReset = () => setTimeout(render, 0);
-  const form = radios[0].form;
+  const form = radios[0]?.form;
   for (const r of radios) r.addEventListener("invalid", onInvalid);
   form?.addEventListener("reset", onReset);
   undo.push(() => {
@@ -1309,6 +1409,10 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
 
   return {
     render,
+    open,
+    say,
+    query: () => search.value,
+    isOpen: () => !panel.hidden,
     invalid: onInvalid,
     destroy() {
       close(false);
