@@ -14,8 +14,10 @@ new major version.
 
 ### Changed
 
-- Documentation: the live examples use the showcase theme, checked with axe
-  in light and dark mode.
+- Documentation: the whole site takes the look of the demo and the
+  showcase theme (slate, sky blue, near-black dark mode, dark code blocks),
+  and the live examples use the showcase theme; checked with axe in light
+  and dark mode.
 
 ## [1.0.0] - 2026-11-02
 

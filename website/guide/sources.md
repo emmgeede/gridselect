@@ -4,7 +4,7 @@
 import { currencies, regions, countries, airports, fakeLoad } from "../.vuepress/data.js";
 </script>
 
-Radios, checkboxes and a `<select>` work as written in your HTML (see [Getting started](/guide/)). Entries can also come from JavaScript:
+Radios, checkboxes and a `<select>` work as written in your HTML (see [Getting started](/guide/README.md)). Entries can also come from JavaScript:
 
 <Example :options="{ name: 'airport', items: airports, value: 'FRA' }">
   <fieldset data-gridselect><legend>Airport</legend></fieldset>

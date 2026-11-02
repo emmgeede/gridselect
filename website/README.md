@@ -1,6 +1,7 @@
 ---
 home: true
 heroImage: /logo.svg
+heroHeight: 96
 heroText: GridSelect
 tagline: One select for every list, short or long.
 actions:

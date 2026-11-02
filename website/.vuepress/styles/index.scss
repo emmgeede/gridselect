@@ -1,10 +1,31 @@
-// Docs colours in GridSelect's sky blue, with WCAG AA contrast (the theme's green reaches only 3.9:1).
+// The docs in the look of GridSelect's demo and showcase theme: slate neutrals, sky blue accent,
+// near-black dark mode, dark code blocks. Every text colour keeps WCAG AA contrast.
 :root {
   --vp-c-accent: #0369a1;
   --vp-c-accent-bg: #0369a1;
   --vp-c-accent-hover: #075985;
   --vp-c-accent-text: #ffffff;
-  --vp-c-accent-soft: rgb(2 132 199 / 12%);
+  --vp-c-accent-soft: rgb(2 132 199 / 10%);
+
+  --vp-c-bg: #ffffff;
+  --vp-c-bg-alt: #f8fafc;
+  --vp-c-bg-elv: #ffffff;
+  --vp-c-text: #0f172a;
+  --vp-c-text-mute: #475569;
+  --vp-c-text-subtle: #64748b;
+  --vp-c-divider: #e2e8f0;
+  --vp-c-border: #cbd5e1;
+  --vp-c-border-hard: #94a3b8;
+  --vp-c-shadow: rgb(15 23 42 / 12%);
+  --vp-c-control: rgb(15 23 42 / 5%);
+  --vp-c-control-hover: rgb(15 23 42 / 9%);
+
+  --code-c-bg: #0b1120;
+  --code-c-text: #cbd5e1;
+  --code-c-highlight-bg: #172036;
+
+  --font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-family-code: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
 
 [data-theme="dark"] {
@@ -12,10 +33,33 @@
   --vp-c-accent-bg: #7dd3fc;
   --vp-c-accent-hover: #bae6fd;
   --vp-c-accent-text: #0c2d48;
-  --vp-c-accent-soft: rgb(125 211 252 / 16%);
+  --vp-c-accent-soft: rgb(125 211 252 / 14%);
+
+  --vp-c-bg: #030712;
+  --vp-c-bg-alt: #0b1120;
+  --vp-c-bg-elv: #111827;
+  --vp-c-text: #f1f5f9;
+  --vp-c-text-mute: #94a3b8;
+  --vp-c-text-subtle: #94a3b8;
+  --vp-c-divider: #1e293b;
+  --vp-c-border: #334155;
+  --vp-c-border-hard: #475569;
+  --vp-c-shadow: rgb(0 0 0 / 50%);
+  --vp-c-control: rgb(255 255 255 / 6%);
+  --vp-c-control-hover: rgb(255 255 255 / 10%);
+
+  --code-c-bg: #0b1120;
+  --code-c-text: #cbd5e1;
+  --code-c-highlight-bg: #172036;
 }
 
-// Code comments readable on the dark code background (5.6:1).
+// Code blocks like the demo's: dark, rounded, with a faint ring (also on the near-black page).
+div[class*="language-"] {
+  border-radius: 1rem;
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 8%);
+}
+
+// Code comments readable on the dark code background (6.0:1).
 div[class*="language-"] .token.comment {
   color: #a3acbd;
 }
@@ -24,4 +68,19 @@ div[class*="language-"] .token.comment {
 div[class*="language-"] pre {
   white-space: pre-wrap;
   word-break: break-word;
+}
+
+// Inline code in the demo's style.
+.vp-content :not(pre) > code {
+  border-radius: 0.3rem;
+  background: var(--vp-c-bg-alt);
+  box-shadow: inset 0 0 0 1px var(--vp-c-divider);
+  color: var(--vp-c-text);
+}
+
+// Live examples sit on a card like on the demo.
+.gs-example {
+  border-color: var(--vp-c-divider);
+  border-radius: 1rem;
+  background: var(--vp-c-bg);
 }
