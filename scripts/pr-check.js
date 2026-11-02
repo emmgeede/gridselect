@@ -14,8 +14,8 @@ export function checkPullRequest(pr) {
   const touches = (re) => pr.files.some((f) => re.test(f));
   if (touches(/^(src|themes)\//) && (!pr.files.includes("CHANGELOG.md") || !pr.unreleased.trim()))
     problems.push("Code, styles or themes changed: add an entry under ## [Unreleased] in CHANGELOG.md (Keep a Changelog).");
-  if (touches(/^src\//) && !pr.files.includes("README.md") && !pr.labels.includes("skip-readme"))
-    problems.push("Code changed: update README.md (usage, options, feature table), or ask a maintainer for the skip-readme label if nothing user-visible changed.");
+  if (touches(/^src\//) && !touches(/^(README\.md|website\/)/) && !pr.labels.includes("skip-readme"))
+    problems.push("Code changed: update the documentation in website/ (and README.md if the overview changes), or ask a maintainer for the skip-readme label if nothing user-visible changed.");
   if (pr.headVersion !== pr.baseVersion)
     problems.push(`Do not change the version in package.json (${pr.baseVersion} → ${pr.headVersion}): the maintainer sets it when releasing.`);
   if (Object.keys(pr.dependencies).length)

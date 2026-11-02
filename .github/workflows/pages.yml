@@ -18,6 +18,13 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Build the documentation
+        run: npm run docs:build
       - name: Assemble site
         run: node scripts/site.js
       - uses: actions/configure-pages@v5

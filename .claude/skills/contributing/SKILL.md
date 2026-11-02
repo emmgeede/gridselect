@@ -39,8 +39,9 @@ For each behaviour:
 
 ## 4. Docs in the same change
 
-- README: usage, options table, attributes table, feature table; keep the
-  Contents list in sync with the headings.
+- Documentation in `website/`: the feature's guide page (with a live
+  `<Example>`) and the reference tables. README only when the overview
+  changes; keep its Contents list in sync with the headings.
 - CHANGELOG: an entry under `## [Unreleased]` in the right section.
 - Never touch the version, tags, released CHANGELOG sections, `docs/` or
   `CLAUDE.md`.

@@ -1,0 +1,27 @@
+// Docs colours in GridSelect's sky blue, with WCAG AA contrast (the theme's green reaches only 3.9:1).
+:root {
+  --vp-c-accent: #0369a1;
+  --vp-c-accent-bg: #0369a1;
+  --vp-c-accent-hover: #075985;
+  --vp-c-accent-text: #ffffff;
+  --vp-c-accent-soft: rgb(2 132 199 / 12%);
+}
+
+[data-theme="dark"] {
+  --vp-c-accent: #7dd3fc;
+  --vp-c-accent-bg: #7dd3fc;
+  --vp-c-accent-hover: #bae6fd;
+  --vp-c-accent-text: #0c2d48;
+  --vp-c-accent-soft: rgb(125 211 252 / 16%);
+}
+
+// Code comments readable on the dark code background (5.6:1).
+div[class*="language-"] .token.comment {
+  color: #a3acbd;
+}
+
+// Code wraps instead of scrolling sideways: no scroll region that the keyboard cannot reach.
+div[class*="language-"] pre {
+  white-space: pre-wrap;
+  word-break: break-word;
+}

@@ -17,10 +17,11 @@ describe("pull request rules", () => {
     expect(checkPullRequest({ ...base, files: ["themes/forest.css", "CHANGELOG.md"], unreleased: "### Added\n- Forest theme." })).toEqual([]);
   });
 
-  it("asks for a README update when code changes, unless labelled skip-readme", () => {
+  it("asks for a documentation update when code changes, unless labelled skip-readme", () => {
     const pr = { ...base, files: ["src/gridselect.js", "CHANGELOG.md"], unreleased: "### Fixed\n- x" };
-    expect(checkPullRequest(pr).join(" ")).toMatch(/README/);
+    expect(checkPullRequest(pr).join(" ")).toMatch(/documentation/);
     expect(checkPullRequest({ ...pr, labels: ["skip-readme"] })).toEqual([]);
+    expect(checkPullRequest({ ...pr, files: [...pr.files, "website/guide/search.md"] })).toEqual([]);
   });
 
   it("refuses version changes and runtime dependencies", () => {

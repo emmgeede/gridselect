@@ -52,6 +52,16 @@ describe("numbers in the docs stay true", () => {
     expect(Number(claim[1])).toBe(Math.round(size / 1024));
   });
 
+  it("the README Contents lists exactly its headings, and every in-page link has a target", () => {
+    const readme = readFileSync("README.md", "utf8");
+    const after = readme.slice(readme.indexOf("## Contents"));
+    const slug = (t) => t.toLowerCase().replace(/[`<>()?,./:]/g, "").trim().replace(/\s+/g, "-");
+    const headings = [...after.matchAll(/^#{2,3} (.+)$/gm)].map((m) => slug(m[1])).filter((s) => s !== "contents");
+    const listed = [...after.slice(0, after.indexOf("\n## ", 5)).matchAll(/\]\(#([a-z0-9-]+)\)/g)].map((m) => m[1]);
+    expect(listed).toEqual(headings);
+    for (const [, anchor] of readme.matchAll(/\]\(#([a-z0-9-]+)\)/g)) expect(headings, anchor).toContain(anchor);
+  });
+
   it("the README status names the current version", () => {
     const { version } = JSON.parse(readFileSync("package.json", "utf8"));
     expect(readFileSync("README.md", "utf8")).toContain(`**Status:** version ${version},`);

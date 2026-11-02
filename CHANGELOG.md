@@ -14,8 +14,16 @@ and breaking changes need a new major version.
 
 ### Added
 
+- Documentation site at https://gridselect.im/docs/ (VuePress): a guide
+  with a live example on every page, a reference of options, attributes,
+  hooks, events and CSS variables, the changelog and contributing notes.
+  The demo links to it.
 - Demo: a section comparing the full-width panel with the narrow one
   (`data-panel-width="fixed"`).
+
+### Changed
+
+- The README is a short overview with links into the documentation.
 
 ## [0.22.0] - 2026-11-02
 

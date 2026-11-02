@@ -9,3 +9,8 @@ playwright-report/
 _site/
 .claude/settings.local.json
 themes/index.json
+website/.vuepress/.cache/
+website/.vuepress/.temp/
+website/.vuepress/dist/
+website/reference/changelog.md
+website/reference/contributing.md

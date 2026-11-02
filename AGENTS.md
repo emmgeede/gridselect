@@ -23,6 +23,7 @@ called **items**, never chips or pills.
 | `e2e/` | Playwright against `playground/` and `demo/`: layout, focus, keys, axe |
 | `playground/` | Test page with every variant (`npm run playground`) |
 | `demo/` | Public demo, https://gridselect.im/demo/ |
+| `website/` | VuePress documentation, https://gridselect.im/docs/ (`npm run docs:dev`) |
 
 ## Principles (not negotiable)
 
@@ -56,9 +57,11 @@ called **items**, never chips or pills.
 4. **Browser tests** for anything that depends on layout, visibility, focus
    or real key presses: a Playwright test in `e2e/`, and the variant on the
    playground first. Check accessibility with axe (see `e2e/a11y.e2e.js`).
-5. **Docs in the same pull request.** README: usage, options table,
-   attributes, feature table, and the Contents list in sync with the
-   headings. CHANGELOG: an entry under `## [Unreleased]` (Added, Changed,
+5. **Docs in the same pull request.** The documentation in `website/`: the
+   guide page of the feature (with its live example) and the reference
+   tables (options, attributes, CSS variables). README only when the
+   overview changes (features table, quick start); keep its Contents list in
+   sync. CHANGELOG: an entry under `## [Unreleased]` (Added, Changed,
    Fixed …, Keep a Changelog). Numbers in docs (sizes, versions) are checked
    by tests; keep them true.
 6. **Do not** change the version, create tags, edit `CHANGELOG` release
@@ -67,7 +70,7 @@ called **items**, never chips or pills.
 
    ```sh
    npm test                        # unit tests, types, package and size checks
-   npm run test:e2e                # build, then Playwright incl. axe
+   npm run test:e2e                # build, docs, then Playwright incl. axe
    node scripts/pr-check.js        # the rules CI checks on your pull request
    ```
 
