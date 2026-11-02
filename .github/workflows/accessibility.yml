@@ -16,5 +16,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium
-      # axe-core, WCAG 2.0/2.1/2.2 A and AA, every state, light and dark
-      - run: npx playwright test e2e/a11y.e2e.js e2e/demo.e2e.js
+      # The assembled site with the documentation, for the docs check
+      - run: npm run build && npm run docs:build && npm run site
+      # axe-core, WCAG 2.0/2.1/2.2 A and AA, every state, light and dark, demo and documentation
+      - run: npx playwright test e2e/a11y.e2e.js e2e/demo.e2e.js e2e/docs.e2e.js
