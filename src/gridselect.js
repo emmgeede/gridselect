@@ -9,8 +9,14 @@
  */
 
 /**
- * @typedef {string | number | { value: string | number, label?: string, disabled?: boolean }} Item
+ * @typedef {string | number | { value: string | number, label?: string, disabled?: boolean }} Entry
+ * @typedef {{ label: string, items: Entry[] }} Group A heading in the panel above its entries.
+ * @typedef {Entry | Group} Item
  */
+
+/** @typedef {{ label: string }} GroupInfo */
+/** Group of a generated input, set by the select and items sources, read by the panel. @type {WeakMap<HTMLInputElement, GroupInfo>} */
+const groupOf = new WeakMap();
 
 /**
  * @typedef {object} Options
@@ -246,14 +252,29 @@ function build(wrapper, options) {
  */
 function normalizeItems(items) {
   if (!Array.isArray(items)) throw new TypeError("gridselect: items must be an array");
-  return items.map((it, i) => {
-    if (typeof it === "string" || typeof it === "number") return { value: String(it), label: String(it), disabled: false };
-    const v = it !== null && typeof it === "object" ? /** @type {{ value?: unknown }} */ (it).value : undefined;
+  /** @type {{ value: string, label: string, disabled: boolean, group?: GroupInfo }[]} */
+  const out = [];
+  /**
+   * @param {unknown} it
+   * @param {string} at position for the error message
+   * @param {GroupInfo} [group]
+   */
+  const add = (it, at, group) => {
+    if (typeof it === "string" || typeof it === "number") return out.push({ value: String(it), label: String(it), disabled: false, group });
+    const rec = /** @type {{ value?: unknown, label?: unknown, disabled?: unknown, items?: unknown }} */ (it ?? {});
+    const v = rec.value;
+    if (typeof it === "object" && v === undefined && "items" in rec && !group) {
+      if (typeof rec.label !== "string" || !Array.isArray(rec.items))
+        throw new TypeError(`gridselect: group at ${at} needs a string label and an items array`);
+      const g = { label: rec.label };
+      return rec.items.forEach((x, j) => add(x, `${at}.items[${j}]`, g));
+    }
     if (typeof v !== "string" && typeof v !== "number")
-      throw new TypeError(`gridselect: item at position ${i} needs a string or number value`);
-    const rec = /** @type {{ label?: unknown, disabled?: unknown }} */ (it);
-    return { value: String(v), label: rec.label === undefined ? String(v) : String(rec.label), disabled: rec.disabled === true };
-  });
+      throw new TypeError(`gridselect: item at ${at} needs a string or number value`);
+    out.push({ value: String(v), label: rec.label === undefined ? String(v) : String(rec.label), disabled: rec.disabled === true, group });
+  };
+  items.forEach((it, i) => add(it, `items[${i}]`));
+  return out;
 }
 
 /**
@@ -293,6 +314,7 @@ function fromItems(wrapper, opts) {
       input.disabled = it.disabled;
       input.checked = chosen.includes(it.value);
       if (noForm) input.setAttribute("form", noForm);
+      if (it.group) groupOf.set(input, it.group);
       label.append(input, " ", it.label);
       wrapper.append(label);
       return label;
@@ -383,6 +405,8 @@ function fromSelect(wrapper, select) {
   const placeholderOption = options.find((o) => o.value === "");
   const name = uniqueId(doc);
   const noForm = uniqueId(doc);
+  /** @type {Map<Element, GroupInfo>} */
+  const groups = new Map();
   for (const o of options) {
     if (o.value === "") continue;
     const label = doc.createElement("label");
@@ -394,6 +418,11 @@ function fromSelect(wrapper, select) {
     input.setAttribute("form", noForm);
     input.disabled = select.disabled || o.matches(":disabled");
     input.checked = o.selected;
+    const og = o.parentElement;
+    if (og?.localName === "optgroup") {
+      if (!groups.has(og)) groups.set(og, { label: /** @type {HTMLOptGroupElement} */ (og).label });
+      groupOf.set(input, /** @type {GroupInfo} */ (groups.get(og)));
+    }
     label.append(input, " ", o.label);
     wrapper.append(label);
     undo.push(() => label.remove());
@@ -682,7 +711,38 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
     item.append(text);
     return item;
   });
-  list.append(...items);
+  // Groups: each run of items with the same group (or none) is a section inside the list. A
+  // named section is a role=group with a heading; it keeps its items together while filtering.
+  /** @type {HTMLElement[]} section of each item; empty when there are no groups */
+  const sectionOf = [];
+  if (radios.some((r) => groupOf.has(r))) {
+    /** @type {HTMLElement | undefined} */ let section;
+    /** @type {GroupInfo | undefined} */ let current;
+    radios.forEach((radio, i) => {
+      const g = groupOf.get(radio);
+      if (!section || g !== current) {
+        current = g;
+        section = create(doc, "div", "group");
+        if (g) {
+          const head = create(doc, "div", "group-label");
+          head.id = uniqueId(doc);
+          head.setAttribute("role", "presentation");
+          head.textContent = g.label;
+          section.setAttribute("role", "group");
+          section.setAttribute("aria-labelledby", head.id);
+          section.append(head);
+        } else {
+          section.setAttribute("role", "presentation");
+          section.removeAttribute("data-gridselect-group");
+          section.setAttribute("data-gridselect-section", "");
+        }
+        list.append(section);
+      }
+      section.append(items[i]);
+      sectionOf.push(section);
+    });
+  } else list.append(...items);
+  const sections = [...new Set(sectionOf)];
 
   const empty = create(doc, "div", "empty");
   setHidden(empty, true);
@@ -790,9 +850,12 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
       else if (firstMatch !== undefined) setCursor(firstMatch);
     } else {
       order = query ? matched : all;
+      // Groups keep their order, only the items inside a group are sorted (stable sort).
+      if (sections.length) order.sort((a, b) => sections.indexOf(sectionOf[a]) - sections.indexOf(sectionOf[b]));
       const shown = new Set(order);
       items.forEach((item, i) => setHidden(item, !shown.has(i)));
-      list.append(...order.map((i) => items[i]));
+      for (const i of order) (sectionOf[i] ?? list).append(items[i]);
+      for (const sec of sections) setHidden(sec, !order.some((i) => sectionOf[i] === sec));
       setHidden(empty, !query || order.length > 0);
       if (query) setCursor(0);
       else cursorToSelection();
@@ -940,7 +1003,7 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
     /** @type {Record<string, () => number>} */
     const moves = isList
       ? { ArrowDown: () => 1, ArrowUp: () => -1 }
-      : isFlow ? { ArrowRight: () => 1, ArrowLeft: () => -1, ArrowDown: () => rowStep(1), ArrowUp: () => rowStep(-1) }
+      : isFlow || sections.length > 1 ? { ArrowRight: () => 1, ArrowLeft: () => -1, ArrowDown: () => rowStep(1), ArrowUp: () => rowStep(-1) }
       : { ArrowRight: () => 1, ArrowLeft: () => -1, ArrowDown: columns, ArrowUp: () => -columns() };
     if (moves[e.key]) {
       e.preventDefault();

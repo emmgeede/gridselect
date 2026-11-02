@@ -101,6 +101,7 @@ Prefer HTML only? Use the custom element, see [`<grid-select>`](#grid-select):
   - [Above the threshold](#above-the-threshold)
   - [Entries from JavaScript](#entries-from-javascript)
   - [Multiple choice](#multiple-choice)
+  - [Groups](#groups)
   - [`<select>` as source](#select-as-source)
   - [Search](#search)
   - [`instance.value`](#instancevalue)
@@ -194,7 +195,7 @@ The custom element builds everything from HTML, no JavaScript call needed:
 
 It works in the light DOM: inside it builds a `<fieldset data-gridselect>`
 with a `<legend>` and native radios (or checkboxes with `multiple`) from its
-`<option>` children, which it hides. So the stylesheet, the theme, forms and
+`<option>` children (also inside `<optgroup>`, see [Groups](#groups)), which it hides. So the stylesheet, the theme, forms and
 screen readers work as everywhere else, and `input` and `change` bubble up
 from the element.
 
@@ -365,6 +366,51 @@ labels, or `selectedText(n)` for more. `gs.value` is always an array.
 
 <sub><b>Multiple choice.</b> Enter, a click or a digit ticks an item and the panel stays open with the search as it was. The field shows the labels, from three on "3 selected".</sub>
 
+### Groups
+
+Above the threshold, entries in groups get a heading in the panel. Each group
+starts a new row, and its heading stays at the top while the group scrolls
+by. Groups come from `<optgroup>` in a `<select>` or a `<grid-select>`, or
+from group objects in `items`:
+
+```js
+gridselect(el, {
+  name: "currency",
+  items: [
+    "USD",                                            // without a group
+    { label: "Europe", items: ["EUR", { value: "CHF", label: "Swiss franc" }] },
+    { label: "Asia", items: ["JPY", "CNY"] },
+  ],
+});
+```
+
+<a href="https://emmgeede.github.io/gridselect/">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/groups-dark.png?v=1">
+  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/groups-light.png?v=1" width="100%" alt="A currency panel with the heading Europe above sixteen currencies, followed by the heading Americas above five more, each group starting in a new row.">
+</picture>
+</a>
+
+<sub><b>Groups.</b> Each region has its own heading. The digits run on across the groups.</sub>
+
+- Groups are one level deep. Entries without a group stay where they are,
+  without a heading. Empty groups are left out.
+- Arrow keys cross group borders, up and down go to the nearest entry in the
+  row above or below. The cursor never lands on a heading.
+- Digits run on across groups, they do not restart per group.
+- In `filter` mode the groups keep their order and only the entries inside a
+  group are sorted. A group without matches is hidden with its heading. The
+  group name itself is not searched.
+- Each group is a `role="group"` named by its heading
+  (`[data-gridselect-group-label]`), so screen readers announce the group
+  name when the cursor enters it. Entries of a `<optgroup disabled>` are
+  disabled.
+- At or below the threshold there are no headings, the entries keep their
+  order.
+
+Style hooks: `.gridselect__group` (a section of the item list, it uses the
+list's columns through `subgrid`) and `.gridselect__group-label`.
+
 ### `<select>` as source
 
 A wrapper may hold one `<select>` instead of radios:
@@ -389,9 +435,9 @@ sets `select.value` and fires `input` and `change` on the select, so
 
 - An option with an empty value is the placeholder: it is not an item, its
   text becomes the field text, and `gs.value` is `null` while it is chosen.
-- Options inside `<optgroup>` are listed in order, the group labels are not
-  shown yet. `disabled` on options, groups and the select is respected, the
-  text comes from `option.label`.
+- Options inside `<optgroup>` get a heading per group above the threshold,
+  see [Groups](#groups). `disabled` on options, groups and the select is
+  respected, the text comes from `option.label`.
 - Without a `<legend>` or `aria-label` on the wrapper, the select's own
   `<label>` names the field.
 - Changes made by your code show up after a `change` event on the select or
@@ -553,7 +599,7 @@ Above the threshold:
 |---|---|---|
 | Field | Enter, Space, Arrow down, click | Open the panel, focus the search input. A second click closes it |
 | Panel | Arrow left / right | Previous / next item (grid layout only) |
-| Panel | Arrow up / down | One row up / down (one item in list layout). Stops at the edges |
+| Panel | Arrow up / down | One row up / down (one item in list layout), across group borders. Stops at the edges |
 | Panel | Enter, click on an item | Pick it and close. In multiple choice: toggle it, the panel and the search stay |
 | Panel | Escape | Close without change, focus back on the field |
 | Panel | Tab, Shift+Tab, click outside | Close without change, focus moves on as usual |
@@ -667,7 +713,9 @@ come.
 | Entries from a JS array, `setItems()` | available |
 | `<grid-select>` custom element | available |
 | Fuzzy matching | available |
-| Theme gallery, React/Vue wrappers, `<optgroup>` headings | ideas |
+| Auto column width and flow layout | available |
+| Group headings (`<optgroup>`, groups in `items`) | available |
+| Theme gallery, React/Vue wrappers | ideas |
 
 ## Browser support
 

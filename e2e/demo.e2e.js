@@ -7,11 +7,17 @@ test.beforeEach(async ({ page }) => {
 });
 
 test("shows every variant with the real stylesheet and no test tools", async ({ page }) => {
-  for (const id of ["short", "checks", "filter", "highlight", "layout-grid", "layout-flow", "watch", "langs", "list", "select"]) await expect(page.locator(`#${id}`)).toBeVisible();
+  for (const id of ["short", "checks", "filter", "highlight", "layout-grid", "layout-flow", "grouped", "watch", "langs", "list", "select"]) await expect(page.locator(`#${id}`)).toBeVisible();
   await expect(page.locator("#filter [data-gridselect-field]")).toBeVisible();
   await expect(page.locator("#select [data-gridselect-field]")).toHaveText("Choose a country…");
   await expect(page.locator("#log")).toHaveCount(0);
   await expect(page.locator("pre code").first()).toBeVisible();
+});
+
+test("the grouped select shows one heading per region", async ({ page }) => {
+  await page.locator("#grouped [data-gridselect-field]").click();
+  await expect(page.locator("#grouped [data-gridselect-group-label]")).toHaveText(["Europe", "Americas", "Asia-Pacific", "Middle East and Africa"]);
+  await expect(page.locator("#grouped [data-gridselect-item]")).toHaveCount(39);
 });
 
 test("the theme button cycles auto, light and dark", async ({ page }) => {
@@ -32,6 +38,8 @@ for (const scheme of ["light", "dark"]) {
     await page.keyboard.press("Escape");
     await page.locator("#watch [data-gridselect-field]").click();
     await page.keyboard.press("Enter");
+    await page.keyboard.press("Escape");
+    await page.locator("#grouped [data-gridselect-field]").click();
     const { violations } = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"]).analyze();
     expect(violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(" ")).join(", ")}`)).toEqual([]);
   });

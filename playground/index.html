@@ -278,6 +278,21 @@
   </section>
 
   <section>
+    <div class="stamp">Groups</div>
+    <h2>Groups with headings</h2>
+    <p class="note">Entries in groups (<code>items</code> with <code>{ label, items }</code>, <code>&lt;optgroup&gt;</code> works the same). Each group starts a new row under its heading, the heading stays at the top while its group scrolls by. Grid, flow and list layout.</p>
+    <div class="frame">
+      <fieldset data-gridselect id="grouped"><legend>Currency by region</legend></fieldset>
+    </div>
+    <div class="frame">
+      <fieldset data-gridselect id="grouped-flow"><legend>Currency by region (flow)</legend></fieldset>
+    </div>
+    <div class="frame">
+      <fieldset data-gridselect id="grouped-list"><legend>Currency by region (list)</legend></fieldset>
+    </div>
+  </section>
+
+  <section>
     <div class="stamp">Select · source</div>
     <h2>Select as source</h2>
     <p class="note">Plain <code>&lt;select&gt;</code> elements: the short one becomes visible items, the long ones get the field and panel, <code>multiple</code> included. The first option with an empty value is the placeholder.</p>
@@ -424,6 +439,18 @@
       });
     }
   }
+
+  // Groups (F14)
+  const label = (code) => currencies.find((c) => c.endsWith(`(${code})`));
+  const regions = {
+    Europe: ["EUR", "CHF", "GBP", "DKK", "NOK", "SEK", "PLN", "CZK", "HUF", "TRY", "ISK", "RON", "BGN", "RSD", "UAH", "GEL"],
+    Americas: ["USD", "CAD", "BRL", "MXN", "CLP"],
+    "Asia-Pacific": ["JPY", "AUD", "NZD", "INR", "CNY", "HKD", "SGD", "THB", "KRW", "PHP"],
+    "Middle East and Africa": ["ZAR", "ILS", "AED", "SAR", "EGP", "MAD", "KES", "NGN"],
+  };
+  const grouped = Object.entries(regions).map(([name, codes]) => ({ label: name, items: codes.map((value) => ({ value, label: label(value) })) }));
+  for (const [id, layout] of [["grouped", "grid"], ["grouped-flow", "flow"], ["grouped-list", "list"]])
+    instances[id] = gridselect(document.getElementById(id), { name: id, items: grouped, layout });
 
   // Entries from JS (F9)
   const airports = ["Berlin (BER)", "Frankfurt (FRA)", "Munich (MUC)", "Zurich (ZRH)", "Vienna (VIE)", "Amsterdam (AMS)",

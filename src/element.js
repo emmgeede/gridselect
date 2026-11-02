@@ -6,6 +6,8 @@ import { gridselect } from "./gridselect.js";
 const ATTRIBUTES = ["name", "label", "aria-label", "multiple", "value", "threshold", "layout", "search", "match",
   "shortcuts", "placeholder", "search-placeholder", "required", "disabled"];
 
+const SOURCE = ["OPTION", "OPTGROUP"];
+
 // Server-side rendering has no HTMLElement; importing must not throw there.
 const Base = /** @type {typeof HTMLElement} */ (typeof HTMLElement === "undefined" ? class {} : HTMLElement);
 
@@ -98,9 +100,9 @@ export class GridSelectElement extends Base {
     const relevant = list.some((m) => {
       if (this.#fieldset && this.#fieldset.contains(m.target)) return false; // our own DOM work
       if (m.type === "childList")
-        return [...m.addedNodes, ...m.removedNodes].some((n) => n.nodeName === "OPTION");
+        return [...m.addedNodes, ...m.removedNodes].some((n) => SOURCE.includes(n.nodeName));
       const node = m.target.nodeType === Node.TEXT_NODE ? m.target.parentElement : m.target;
-      return node?.nodeName === "OPTION";
+      return SOURCE.includes(node?.nodeName ?? "");
     });
     if (!relevant || this.#queued) return;
     this.#queued = true;
@@ -113,15 +115,21 @@ export class GridSelectElement extends Base {
   /** @param {string[]} [chosen] values to keep; undefined takes them from attributes and options */
   #build(chosen) {
     const doc = this.ownerDocument;
-    const options = /** @type {HTMLOptionElement[]} */ ([...this.querySelectorAll(":scope > option")]);
-    for (const o of options) this.#undo.push(hide(o));
+    const options = /** @type {HTMLOptionElement[]} */ ([...this.querySelectorAll(":scope > option, :scope > optgroup > option")]);
+    for (const o of this.querySelectorAll(":scope > option, :scope > optgroup")) this.#undo.push(hide(/** @type {HTMLElement} */ (o)));
     const multiple = this.hasAttribute("multiple");
     const attr = (/** @type {string} */ name) => this.getAttribute(name);
 
     const fromOptions = !this.#items;
-    const items = this.#items ?? options.filter((o) => o.value !== "")
-      .map((o) => ({ value: o.value, label: o.label, disabled: o.disabled }));
-    const placeholderOption = fromOptions ? options.find((o) => o.value === "") : undefined;
+    /** @param {HTMLOptionElement} o */
+    const entry = (o) => ({ value: o.value, label: o.label, disabled: o.matches(":disabled") });
+    /** @type {import("./gridselect.js").Item[]} */
+    /** @param {Element} el */
+    const entries = (el) => /** @type {HTMLOptionElement[]} */ ([...el.querySelectorAll(":scope > option")]).filter((o) => o.value !== "").map(entry);
+    const items = this.#items ?? [...this.children].flatMap(/** @returns {import("./gridselect.js").Item[]} */ (c) =>
+      c.localName === "optgroup" ? [{ label: /** @type {HTMLOptGroupElement} */ (c).label, items: entries(c) }]
+      : c.localName === "option" && /** @type {HTMLOptionElement} */ (c).value !== "" ? [entry(/** @type {HTMLOptionElement} */ (c))] : []);
+    const placeholderOption = fromOptions ? options.find((o) => o.value === "" && o.parentElement === this) : undefined;
 
     let value = chosen;
     if (value === undefined && this.#pendingValue !== undefined) value = asList(this.#pendingValue);

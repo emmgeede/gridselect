@@ -12,6 +12,20 @@ and breaking changes need a new major version.
 
 ## [Unreleased]
 
+### Added
+
+- Group headings in the panel: options inside `<optgroup>` (in a `<select>`
+  or a `<grid-select>`) and group objects in `items`
+  (`{ label, items: [...] }`, also in `setItems()`) get a heading above
+  their entries. Each group starts a new row, the heading stays at the top
+  while its group scrolls by, and each group is a `role="group"` named by its
+  heading. Arrow keys cross groups, digits run on, the filter keeps the
+  group order.
+
+### Changed
+
+- Size budget: core 7 kB, core plus element 8.5 kB (min+gzip).
+
 ## [0.12.2] - 2026-11-02
 
 ### Added

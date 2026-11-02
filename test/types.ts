@@ -35,6 +35,9 @@ const fromItems = gridselect(document.body, { items: ["a", { value: 1, label: "O
 fromItems.setItems(["b"]);
 // @ts-expect-error items are strings, numbers or objects with a value
 gridselect(document.body, { items: [true] });
+gridselect(document.body, { items: ["a", { label: "G", items: ["b", { value: 2, label: "Two" }] }] });
+// @ts-expect-error groups are one level deep
+gridselect(document.body, { items: [{ label: "G", items: [{ label: "H", items: [] }] }] });
 
 import "@emmgeede/gridselect/element";
 const el = document.createElement("grid-select");

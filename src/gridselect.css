@@ -241,8 +241,47 @@
     flex-wrap: wrap;
   }
 
-  .gridselect__items--flow > .gridselect__item {
+  .gridselect__items--flow .gridselect__item {
     flex: 0 1 auto;
+  }
+
+  /* Groups: each group spans the whole width and starts a new row. Its items share the columns
+     of the list (subgrid); rows are as tall as the tallest one per group. */
+  .gridselect__items:has(> .gridselect__group) {
+    grid-auto-rows: auto;
+  }
+
+  .gridselect__group {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+    grid-template-rows: auto;
+    grid-auto-rows: 1fr;
+    gap: var(--gs-gap);
+  }
+
+  .gridselect__items--list .gridselect__group {
+    grid-auto-rows: auto;
+  }
+
+  .gridselect__items--flow .gridselect__group {
+    display: flex;
+    flex: 1 1 100%;
+    flex-wrap: wrap;
+  }
+
+  .gridselect__group-label {
+    grid-column: 1 / -1;
+    flex: 1 1 100%;
+    /* stays at the top while its group scrolls by */
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    padding: 0.35rem 0.25rem 0.15rem;
+    background: var(--gs-bg);
+    color: var(--gs-muted);
+    font-size: 0.8125em;
+    font-weight: 600;
   }
 
   .gridselect__item {

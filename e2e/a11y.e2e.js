@@ -36,6 +36,16 @@ for (const scheme of ["light", "dark"]) {
       await check(page, "no matches");
     });
 
+    test("grouped panel open, also flow and filtered", async ({ page }) => {
+      await field(page, "grouped").click();
+      await check(page, "grouped open");
+      await page.locator("#grouped [data-gridselect-search]").fill("dollar");
+      await check(page, "grouped filtered");
+      await page.keyboard.press("Escape");
+      await field(page, "grouped-flow").click();
+      await check(page, "grouped flow open");
+    });
+
     test("fuzzy filtered", async ({ page }) => {
       await field(page, "fuzzy").click();
       await page.locator("#fuzzy [data-gridselect-search]").fill("swfr");

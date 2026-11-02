@@ -201,6 +201,24 @@ gridselect(document.querySelector("[data-gridselect]"));</code></pre>
   </section>
 
   <section>
+    <div class="stamp">Groups</div>
+    <h2>Groups with headings</h2>
+    <p class="note">Options in <code>&lt;optgroup&gt;</code> get a heading in the panel, and each group starts a new row. The heading stays at the top while its group scrolls by. Works the same with <code>items</code> and <code>&lt;grid-select&gt;</code>.</p>
+    <div class="frame">
+      <div data-gridselect id="grouped">
+        <label for="region-currency">Currency by region</label>
+        <select id="region-currency" name="region-currency"></select>
+      </div>
+    </div>
+    <pre class="code"><code>&lt;select name="currency"&gt;
+  &lt;optgroup label="Europe"&gt;
+    &lt;option value="EUR"&gt;Euro (EUR)&lt;/option&gt; …
+  &lt;/optgroup&gt;
+  &lt;optgroup label="Americas"&gt; … &lt;/optgroup&gt;
+&lt;/select&gt;</code></pre>
+  </section>
+
+  <section>
     <div class="stamp">Multiple · long</div>
     <h2>Pick several</h2>
     <p class="note">Checkbox groups and <code>&lt;select multiple&gt;</code> get the same panel. Items toggle, the panel stays open, so you can filter and pick several in a row.</p>
@@ -330,6 +348,20 @@ import "@emmgeede/gridselect/element";</code></pre>
     "Greece", "Ireland", "Italy", "Latvia", "Lithuania", "Luxembourg", "Malta", "Netherlands", "Portugal", "Slovakia",
     "Slovenia", "Spain"]);
   fill("layout-flow", currencies);
+  // Groups: one optgroup per region, built from the currency list above.
+  const regions = {
+    Europe: ["EUR", "CHF", "GBP", "DKK", "NOK", "SEK", "PLN", "CZK", "HUF", "TRY", "ISK", "RON", "BGN", "RSD", "UAH", "GEL"],
+    Americas: ["USD", "CAD", "BRL", "MXN", "CLP"],
+    "Asia-Pacific": ["JPY", "AUD", "NZD", "INR", "CNY", "HKD", "SGD", "THB", "KRW", "PHP"],
+    "Middle East and Africa": ["ZAR", "ILS", "AED", "SAR", "EGP", "MAD", "KES", "NGN"],
+  };
+  const regionSelect = document.getElementById("region-currency");
+  for (const [name, codes] of Object.entries(regions)) {
+    const group = document.createElement("optgroup");
+    group.label = name;
+    for (const code of codes) group.append(new Option(currencies.find((c) => c.endsWith(`(${code})`)), code));
+    regionSelect.append(group);
+  }
   document.querySelectorAll("[data-gridselect]:not(grid-select [data-gridselect])").forEach((el) => gridselect(el));
 
   const styleButton = document.getElementById("style");

@@ -177,6 +177,11 @@ const shots = {
       await page.locator("#layout-grid [data-gridselect-field]").click();
       await compact(page, "layout-grid");
     }),
+  groups: (page, scheme) =>
+    shoot(page, scheme, "grouped", async () => {
+      await page.locator("#grouped [data-gridselect-field]").click();
+      await page.locator("#grouped [data-gridselect-scroller]").evaluate((el) => (el.style.maxHeight = "21rem"));
+    }),
   "layout-flow": (page, scheme) =>
     shoot(page, scheme, "layout-flow", async () => {
       await page.locator("#layout-flow [data-gridselect-field]").click();
