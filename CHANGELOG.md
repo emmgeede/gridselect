@@ -5,12 +5,18 @@ All notable changes to GridSelect. The format follows
 [Semantic Versioning](https://semver.org/). Dates are ISO 8601 (YYYY-MM-DD),
 each version has a matching git tag `vX.Y.Z`.
 
-Until 1.0.0 every finished feature raises the minor version and fixes raise
-the patch version. 1.0.0 will be the first npm release; from then on the
-JavaScript API, the data attributes and the `--gs-*` variables are stable,
-and breaking changes need a new major version.
+Since 1.0.0 the JavaScript API, the options and attributes, the
+`data-gridselect-*` hooks and the `--gs-*` variables are stable: new features
+raise the minor version, fixes the patch version, and breaking changes need a
+new major version.
 
 ## [Unreleased]
+
+## [1.0.0] - 2026-11-02
+
+The first stable release. From here on the JavaScript API, the options and
+attributes, the `data-gridselect-*` hooks and the `--gs-*` variables follow
+Semantic Versioning.
 
 ### Added
 
@@ -443,7 +449,8 @@ and breaking changes need a new major version.
   radios with different names. Warning for duplicate values.
 - TypeScript declarations generated from JSDoc.
 
-[Unreleased]: https://github.com/emmgeede/gridselect/compare/v0.22.0...HEAD
+[Unreleased]: https://github.com/emmgeede/gridselect/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/emmgeede/gridselect/compare/v0.22.0...v1.0.0
 [0.22.0]: https://github.com/emmgeede/gridselect/compare/v0.21.0...v0.22.0
 [0.21.0]: https://github.com/emmgeede/gridselect/compare/v0.20.0...v0.21.0
 [0.20.0]: https://github.com/emmgeede/gridselect/compare/v0.19.0...v0.20.0
