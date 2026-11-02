@@ -1,4 +1,4 @@
-<p align="center"><a href="https://emmgeede.github.io/gridselect/"><img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/logo.svg?v=3" width="80" alt="GridSelect logo: four rounded squares in shades of sky blue"></a></p>
+<p align="center"><a href="https://gridselect.im/demo/"><img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/logo.svg?v=3" width="80" alt="GridSelect logo: four rounded squares in shades of sky blue"></a></p>
 
 # GridSelect
 
@@ -18,9 +18,9 @@ highlights matches in place, and digits pick an entry directly.
 Your markup stays native, so forms submit, reset and validate as usual, and
 everything still works without JavaScript.
 
-**[Try the demo](https://emmgeede.github.io/gridselect/)**
+**[Try the demo](https://gridselect.im/demo/)**
 
-<a href="https://emmgeede.github.io/gridselect/">
+<a href="https://gridselect.im/demo/">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/filter-dark.png?v=5">
   <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/filter-light.png?v=5" width="100%" alt="A currency field with its panel open. The search input contains 'dollar' and six matching currencies are shown as numbered items in a three-column grid, the first one outlined as the cursor.">
@@ -31,7 +31,7 @@ everything still works without JavaScript.
 "dollar" hides everything else and renumbers the six matches 1 to 6. The outlined item is the
 cursor: Enter, a click or its digit picks it.</sub>
 
-<a href="https://emmgeede.github.io/gridselect/">
+<a href="https://gridselect.im/demo/">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/short-dark.png?v=5">
   <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/short-light.png?v=5" width="100%" alt="A short list of four shipping options shown as rounded items with digit badges 1 to 4, the first one selected.">
@@ -41,7 +41,7 @@ cursor: Enter, a click or its digit picks it.</sub>
 <sub><b>Short list.</b> Up to 10 entries stay visible as items. They are native radio buttons
 underneath; arrow keys move between them and the digits 1 to 4 pick one directly.</sub>
 
-<a href="https://emmgeede.github.io/gridselect/">
+<a href="https://gridselect.im/demo/">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/highlight-dark.png?v=5">
   <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/highlight-light.png?v=5" width="100%" alt="Highlight mode: all currencies stay in place, the two krone entries are shown in blue, the others dimmed, the cursor is on Norwegian krone, digit badges switch to S1, S2 for the second tier.">
@@ -358,7 +358,7 @@ never forces one column. In the `flow` layout (`.gridselect__items--flow`)
 the items run one after another and wrap; arrow up and down jump to the item
 in the row above or below whose centre is closest.
 
-<a href="https://emmgeede.github.io/gridselect/">
+<a href="https://gridselect.im/demo/">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/layout-grid-dark.png?v=1">
   <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/layout-grid-light.png?v=1" width="100%" alt="Grid layout: a country panel with five columns of equally wide items, as wide as the longest country name.">
@@ -367,7 +367,7 @@ in the row above or below whose centre is closest.
 
 <sub><b>Grid layout (default).</b> Every column is as wide as the widest country name, so 27 short names fit in five columns.</sub>
 
-<a href="https://emmgeede.github.io/gridselect/">
+<a href="https://gridselect.im/demo/">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/layout-flow-dark.png?v=1">
   <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/layout-flow-light.png?v=1" width="100%" alt="Flow layout: currency items of different widths running one after another and wrapping like chips.">
@@ -428,7 +428,7 @@ checkbox) and keeps the panel open with the search as it was, so you can
 filter for "dollar" and tick several in a row. The field shows one or two
 labels, or `selectedText(n)` for more. `gs.value` is always an array.
 
-<a href="https://emmgeede.github.io/gridselect/">
+<a href="https://gridselect.im/demo/">
 <picture>
   <source media="(prefers-reduced-motion: reduce) and (prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/multiple-dark.png?v=3">
   <source media="(prefers-reduced-motion: reduce)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/multiple-light.png?v=3">
@@ -457,7 +457,7 @@ gridselect(el, {
 });
 ```
 
-<a href="https://emmgeede.github.io/gridselect/">
+<a href="https://gridselect.im/demo/">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/groups-dark.png?v=1">
   <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/groups-light.png?v=1" width="100%" alt="A currency panel with the heading Europe above sixteen currencies, followed by the heading Americas above five more, each group starting in a new row.">
@@ -533,7 +533,7 @@ it in the label, e.g. `Swiss franc (CHF)`.
   `data-dimmed`, the cursor jumps to the first match and arrow keys still
   reach every item, so frequent users can rely on positions.
 
-<a href="https://emmgeede.github.io/gridselect/">
+<a href="https://gridselect.im/demo/">
 <picture>
   <source media="(prefers-reduced-motion: reduce) and (prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/search-dark.png?v=3">
   <source media="(prefers-reduced-motion: reduce)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/search-light.png?v=3">
@@ -644,7 +644,7 @@ system; `data-theme="light"` or `data-theme="dark"` on any ancestor (e.g.
 
 A theme is one extra stylesheet, loaded after the default one. Each lives in
 its own layer (`gridselect-<name>`), so your own CSS still wins. Pick one in
-the [demo](https://emmgeede.github.io/gridselect/) with the Theme switch.
+the [demo](https://gridselect.im/demo/) with the Theme switch.
 
 ```js
 import "@emmgeede/gridselect/gridselect.css";
@@ -661,14 +661,14 @@ import "@emmgeede/gridselect/themes/high-contrast.css"; // any file in themes/
 <table>
 <tr>
 <td width="50%">
-<a href="https://emmgeede.github.io/gridselect/"><picture>
+<a href="https://gridselect.im/demo/"><picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/theme-default-dark.png?v=1">
   <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/theme-default-light.png?v=1" width="100%" alt="The currency panel filtered for dollar with the default stylesheet: teal accent, rounded items with 3:1 borders.">
 </picture></a>
 <br><sub><b>Default</b></sub>
 </td>
 <td width="50%">
-<a href="https://emmgeede.github.io/gridselect/"><picture>
+<a href="https://gridselect.im/demo/"><picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/theme-showcase-dark.png?v=1">
   <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/theme-showcase-light.png?v=1" width="100%" alt="The same panel with the showcase theme: sky blue, flat rows, subtle borders.">
 </picture></a>
@@ -677,14 +677,14 @@ import "@emmgeede/gridselect/themes/high-contrast.css"; // any file in themes/
 </tr>
 <tr>
 <td width="50%">
-<a href="https://emmgeede.github.io/gridselect/"><picture>
+<a href="https://gridselect.im/demo/"><picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/theme-high-contrast-dark.png?v=1">
   <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/theme-high-contrast-light.png?v=1" width="100%" alt="The same panel with the high contrast theme: black on white, thick borders.">
 </picture></a>
 <br><sub><b>High contrast</b></sub>
 </td>
 <td width="50%">
-<a href="https://emmgeede.github.io/gridselect/"><picture>
+<a href="https://gridselect.im/demo/"><picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/theme-compact-dark.png?v=1">
   <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/theme-compact-light.png?v=1" width="100%" alt="The same panel with the compact theme: default colours, smaller and denser items.">
 </picture></a>
@@ -720,7 +720,7 @@ Above the threshold:
 | Panel | Tab, Shift+Tab, click outside | Close without change, focus moves on as usual |
 | Panel | Digit (per tier) | Pick that item and close (toggle it in multiple choice) |
 
-<a href="https://emmgeede.github.io/gridselect/">
+<a href="https://gridselect.im/demo/">
 <picture>
   <source media="(prefers-reduced-motion: reduce) and (prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/keyboard-dark.png?v=3">
   <source media="(prefers-reduced-motion: reduce)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/keyboard-light.png?v=3">
@@ -740,7 +740,7 @@ checkbox toggles). In the panel they always pick and are never typed into
 the search; in `filter` mode the visible matches are renumbered from 1, in
 `highlight` mode the numbers stay put.
 
-<a href="https://emmgeede.github.io/gridselect/">
+<a href="https://gridselect.im/demo/">
 <picture>
   <source media="(prefers-reduced-motion: reduce) and (prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/digits-dark.png?v=3">
   <source media="(prefers-reduced-motion: reduce)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/digits-light.png?v=3">

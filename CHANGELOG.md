@@ -12,6 +12,11 @@ and breaking changes need a new major version.
 
 ## [Unreleased]
 
+### Changed
+
+- The demo moved to its own domain: https://gridselect.im (the old
+  GitHub Pages address redirects there).
+
 ## [0.15.0] - 2026-11-02
 
 ### Added

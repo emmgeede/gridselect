@@ -84,7 +84,7 @@
     "vanilla",
     "no-dependencies"
   ],
-  "homepage": "https://emmgeede.github.io/gridselect/",
+  "homepage": "https://gridselect.im/",
   "bugs": "https://github.com/emmgeede/gridselect/issues",
   "publishConfig": {
     "access": "public"
