@@ -965,7 +965,12 @@ npm run test:e2e     # browser tests (Playwright, Chromium) incl. axe-core check
 npm run build        # dist/gridselect.d.ts and dist/gridselect.min.js
 npm run screenshots  # README images and animations in assets/, from the demo page (needs ImageMagick)
 npm run playground   # http://localhost:5173/playground/ (tests) and /demo/
+node scripts/pr-check.js  # the contribution rules CI checks on pull requests
 ```
+
+Contributing: read [AGENTS.md](AGENTS.md) (rules for people and AI agents,
+with a `contributing` skill for Claude Code) and, for themes,
+[CONTRIBUTING.md](CONTRIBUTING.md).
 
 Releases: pushing a version tag (`vX.Y.Z`, matching `package.json`) runs the
 Publish workflow, which tests, builds and publishes to npm with provenance.

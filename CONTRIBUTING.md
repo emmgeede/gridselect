@@ -1,8 +1,11 @@
 # Contributing
 
 Bug reports, ideas and pull requests are welcome. For code changes, please
-open an issue first so we can agree on the approach. Every change comes with
-tests (`npm test` for logic, `npm run test:e2e` for anything visible).
+open an issue first so we can agree on the approach. The rules for every
+change, for people and AI agents, are in [AGENTS.md](AGENTS.md); Claude Code
+users get them as the `contributing` skill. Every change comes with tests
+(`npm test` for logic, `npm run test:e2e` for anything visible), and
+`node scripts/pr-check.js` checks the rest before you open the pull request.
 
 ## Contributing a theme
 
