@@ -207,3 +207,12 @@ describe("outside clicks inside the wrapper (reported 2026-11-01)", () => {
     expect(panel.hidden).toBe(true);
   });
 });
+
+describe("F24 panelContainer without layout", () => {
+  it("opens without errors in jsdom", () => {
+    document.body.innerHTML = `<div data-gridselect-container="x"><fieldset id="w">${rows(20)}</fieldset></div>`;
+    gridselect(document.getElementById("w"), { panelContainer: "x" });
+    document.querySelector("[data-gridselect-field]").click();
+    expect(document.querySelector("[data-gridselect-panel]").hidden).toBe(false);
+  });
+});

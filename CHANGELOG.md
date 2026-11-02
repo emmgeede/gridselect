@@ -12,6 +12,8 @@ new major version.
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-11-02
+
 ### Added
 
 - Panel within a container: `panelContainer: "<name>"` (`data-panel-container`,
@@ -28,6 +30,8 @@ new major version.
   showcase theme (slate, sky blue, near-black dark mode, dark code blocks),
   and the live examples use the showcase theme; checked with axe in light
   and dark mode.
+- Documentation: comments in code examples sit directly after the code or
+  on their own line above it, so code lines no longer wrap.
 
 ### Fixed
 
@@ -471,7 +475,8 @@ Semantic Versioning.
   radios with different names. Warning for duplicate values.
 - TypeScript declarations generated from JSDoc.
 
-[Unreleased]: https://github.com/emmgeede/gridselect/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/emmgeede/gridselect/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/emmgeede/gridselect/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/emmgeede/gridselect/compare/v0.22.0...v1.0.0
 [0.22.0]: https://github.com/emmgeede/gridselect/compare/v0.21.0...v0.22.0
 [0.21.0]: https://github.com/emmgeede/gridselect/compare/v0.20.0...v0.21.0

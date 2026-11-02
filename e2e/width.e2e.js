@@ -169,3 +169,21 @@ test("playground: the contained variant stays within its frame", async ({ page }
   expect(Math.abs(p.left - c.left)).toBeLessThan(1.5);
   expect(p.right).toBeLessThanOrEqual(c.right + 1.5);
 });
+
+test("panelContainer: a one-row list stays narrow and inside; an empty name matches", async ({ page }) => {
+  await page.evaluate(async () => {
+    const { gridselect } = await import("/src/gridselect.js");
+    const outer = document.createElement("div");
+    outer.setAttribute("data-gridselect-container", "");
+    outer.style.cssText = "position:absolute;top:0;left:900px;z-index:9;width:600px;background:Canvas";
+    outer.innerHTML = '<fieldset id="few"><legend>Few</legend></fieldset>';
+    document.body.append(outer);
+    gridselect(outer.firstChild, { threshold: 2, items: ["A", "B", "C"], panelContainer: "" });
+  });
+  await field(page, "few").click();
+  const p = await panelBox(page, "few");
+  const c = await page.locator('[data-gridselect-container=""]').evaluate((el) => el.getBoundingClientRect().toJSON());
+  expect(p.width).toBeLessThan(600);
+  expect(p.left).toBeGreaterThanOrEqual(c.left - 1);
+  expect(p.right).toBeLessThanOrEqual(c.right + 1);
+});
