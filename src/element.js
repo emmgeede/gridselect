@@ -4,7 +4,7 @@
 import { gridselect } from "./gridselect.js";
 
 const ATTRIBUTES = ["name", "label", "aria-label", "multiple", "value", "threshold", "layout", "search", "match",
-  "shortcuts", "placeholder", "search-placeholder", "required", "disabled"];
+  "shortcuts", "placeholder", "search-placeholder", "required", "disabled", "pinned", "recent", "recent-max", "pinned-text", "recent-text"];
 
 const SOURCE = ["OPTION", "OPTGROUP"];
 
@@ -168,6 +168,11 @@ export class GridSelectElement extends Base {
       placeholder: attr("placeholder") ?? placeholderOption?.label ?? undefined,
       searchPlaceholder: attr("search-placeholder") ?? undefined,
       shortcuts: shortcuts === null ? undefined : shortcuts === "off" ? false : shortcuts.split(",").map((s) => s.trim()),
+      pinned: attr("pinned")?.split(",").map((s) => s.trim()),
+      recent: attr("recent") ?? undefined,
+      recentMax: /^\d+$/.test(attr("recent-max") ?? "") ? Number(attr("recent-max")) : undefined,
+      pinnedText: attr("pinned-text") ?? undefined,
+      recentText: attr("recent-text") ?? undefined,
     });
     if (this.hasAttribute("required")) for (const i of fieldset.querySelectorAll("input")) i.required = true;
   }

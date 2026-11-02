@@ -42,6 +42,12 @@ const groupOf = new WeakMap();
  * @property {string} [name] Form name of the inputs built from `items`. Without it they are not submitted.
  * @property {string | number | (string | number)[]} [value] Initial choice for `items`.
  * @property {boolean} [multiple] Build checkboxes instead of radios from `items`.
+ * @property {string[]} [pinned] Values shown again on top of the panel, under `pinnedText`.
+ * @property {string} [recent] Storage key: the last picked entries are kept in localStorage and
+ *   shown on top of the panel, under `recentText`. Off by default.
+ * @property {number} [recentMax] How many recent entries to keep and show. Default 5, 0 turns it off.
+ * @property {string} [pinnedText] Heading of the pinned entries. Default "Pinned".
+ * @property {string} [recentText] Heading of the recent entries. Default "Recent".
  */
 
 const DEFAULT_THRESHOLD = 10;
@@ -696,21 +702,39 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
   if (isList || isFlow) list.classList.add(`gridselect__items--${layout}`);
   search.setAttribute("aria-controls", scroller.id);
 
-  const items = radios.map((radio) => {
+  /** Item index → radio index; items after the list's own are copies on top of the panel. */
+  const radioOf = radios.map((_, i) => i);
+  /** Points item `item` at radio `r`: value and text. */
+  const fill = (/** @type {HTMLElement} */ item, /** @type {number} */ r) => {
+    item.dataset.value = radios[r].value;
+    /** @type {HTMLElement} */ (item.lastChild).textContent = labelText(radios[r]);
+  };
+  const makeItem = (/** @type {number} */ r) => {
     const item = create(doc, "div", "item");
     item.id = uniqueId(doc);
     item.setAttribute("role", "option");
-    item.dataset.value = radio.value;
     if (tiers.length) {
       const key = create(doc, "span", "key");
       key.setAttribute("aria-hidden", "true");
       item.append(key);
     }
-    const text = create(doc, "span", "label");
-    text.textContent = labelText(radio);
-    item.append(text);
+    item.append(create(doc, "span", "label"));
+    fill(item, r);
     return item;
-  });
+  };
+  const items = radios.map((_, i) => makeItem(i));
+  /** A role=group section with a heading. @param {string} label */
+  const makeGroup = (label) => {
+    const section = create(doc, "div", "group");
+    const head = create(doc, "div", "group-label");
+    head.id = uniqueId(doc);
+    head.setAttribute("role", "presentation");
+    head.textContent = label;
+    section.setAttribute("role", "group");
+    section.setAttribute("aria-labelledby", head.id);
+    section.append(head);
+    return section;
+  };
   // Groups: each run of items with the same group (or none) is a section inside the list. A
   // named section is a role=group with a heading; it keeps its items together while filtering.
   /** @type {HTMLElement[]} section of each item; empty when there are no groups */
@@ -722,16 +746,9 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
       const g = groupOf.get(radio);
       if (!section || g !== current) {
         current = g;
-        section = create(doc, "div", "group");
-        if (g) {
-          const head = create(doc, "div", "group-label");
-          head.id = uniqueId(doc);
-          head.setAttribute("role", "presentation");
-          head.textContent = g.label;
-          section.setAttribute("role", "group");
-          section.setAttribute("aria-labelledby", head.id);
-          section.append(head);
-        } else {
+        if (g) section = makeGroup(g.label);
+        else {
+          section = create(doc, "div", "group");
           section.setAttribute("role", "presentation");
           section.removeAttribute("data-gridselect-group");
           section.setAttribute("data-gridselect-section", "");
@@ -743,6 +760,77 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
     });
   } else list.append(...items);
   const sections = [...new Set(sectionOf)];
+
+  // Pinned and recent entries: copies on top of the panel, each group with a fixed number of places.
+  /** @param {unknown} v @param {string} attr */
+  const valuesOf = (v, attr) => (Array.isArray(v) ? v.map(String) : wrapper.getAttribute(attr)?.split(",").map((x) => x.trim()) ?? []);
+  const indexOf = (/** @type {string} */ v) => radios.findIndex((r) => r.value === v);
+  const pinIdx = [...new Set(valuesOf(opts.pinned, "data-pinned").map(indexOf).filter((i) => i >= 0))];
+  const recentKey = typeof opts.recent === "string" && opts.recent ? opts.recent : wrapper.getAttribute("data-recent");
+  const maxAttr = wrapper.getAttribute("data-recent-max");
+  const recentMax = !recentKey ? 0 : isCount(opts.recentMax) ? /** @type {number} */ (opts.recentMax)
+    : maxAttr !== null && /^\d+$/.test(maxAttr) ? Number(maxAttr) : 5;
+  const storeKey = `gridselect-recent:${recentKey}`;
+  /** @returns {string[]} */
+  const readRecent = () => {
+    try {
+      const v = JSON.parse((doc.defaultView ?? window).localStorage.getItem(storeKey) ?? "[]");
+      return Array.isArray(v) ? v.map(String) : [];
+    } catch {
+      return [];
+    }
+  };
+  /** @param {string} value */
+  const remember = (value) => {
+    try {
+      (doc.defaultView ?? window).localStorage.setItem(storeKey, JSON.stringify([value, ...readRecent().filter((v) => v !== value)].slice(0, recentMax)));
+    } catch { /* storage blocked: nothing to remember */ }
+  };
+  /** @type {number[]} item indices of the top places, pinned first */
+  const tops = [];
+  /** @type {HTMLElement[]} */
+  const topSections = [];
+  for (const [count, text, fallback] of /** @type {const} */ ([[pinIdx.length, opts.pinnedText, "Pinned"], [recentMax, opts.recentText, "Recent"]])) {
+    if (!count) continue;
+    const section = makeGroup(typeof text === "string" ? text : fallback);
+    section.setAttribute("data-gridselect-top", "");
+    for (let k = 0; k < count; k++) {
+      const r = fallback === "Pinned" ? pinIdx[k] : 0;
+      tops.push(items.length);
+      radioOf.push(r);
+      sectionOf[items.length] = section;
+      const item = makeItem(r);
+      items.push(item);
+      section.append(item);
+    }
+    topSections.push(section);
+  }
+  // Without groups of its own the list gets one plain section, so CSS can set it off from the top.
+  if (tops.length && !sections.length) {
+    const section = create(doc, "div", "group");
+    section.setAttribute("role", "presentation");
+    section.removeAttribute("data-gridselect-group");
+    section.setAttribute("data-gridselect-section", "");
+    radios.forEach((_, i) => section.append(items[(sectionOf[i] = section, i)]));
+    list.append(section);
+    sections.push(section);
+  }
+  list.prepend(...topSections);
+  /** Recent places: refilled from storage on every open. Pinned values are not repeated. */
+  function fillRecent() {
+    if (!recentMax) return;
+    const values = readRecent().map(indexOf).filter((i) => i >= 0 && !pinIdx.includes(i));
+    const section = topSections[topSections.length - 1];
+    tops.slice(pinIdx.length).forEach((j, k) => {
+      const r = values[k];
+      if (r !== undefined) {
+        radioOf[j] = r;
+        fill(items[j], r);
+      }
+      items[j].toggleAttribute("data-empty", r === undefined);
+    });
+    section.toggleAttribute("data-empty", !values.length);
+  }
 
   const empty = create(doc, "div", "empty");
   setHidden(empty, true);
@@ -786,7 +874,7 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
     field.textContent = !chosen.length ? placeholder
       : chosen.length <= 2 ? chosen.map(labelText).join(", ")
       : String(selectedText(chosen.length));
-    items.forEach((item, i) => item.setAttribute("aria-selected", String(radios[i].checked)));
+    items.forEach((item, i) => item.setAttribute("aria-selected", String(radios[radioOf[i]].checked)));
     field.disabled = radios.every((r) => r.matches(":disabled"));
     if (current) field.removeAttribute("aria-invalid");
     if (!labelledBy && ariaLabel) field.setAttribute("aria-label", `${ariaLabel}, ${field.textContent}`);
@@ -838,20 +926,23 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
       matched = [...starts, ...contains];
     }
     const isMatch = new Set(matched);
-    const all = items.map((_, i) => i);
+    const all = radios.map((_, i) => i);
+    // Top places only without a query, and only those with an entry.
+    const top = query ? [] : tops.filter((j) => !items[j].hasAttribute("data-empty"));
     if (highlight) {
       const firstMatch = all.find((i) => isMatch.has(i));
       items.forEach((item, i) => {
         item.toggleAttribute("data-match", !!query && isMatch.has(i));
         item.toggleAttribute("data-dimmed", !!query && !isMatch.has(i));
       });
-      order = all;
+      order = [...top, ...all];
       if (!query) cursorToSelection();
       else if (firstMatch !== undefined) setCursor(firstMatch);
     } else {
       order = query ? matched : all;
       // Groups keep their order, only the items inside a group are sorted (stable sort).
       if (sections.length) order.sort((a, b) => sections.indexOf(sectionOf[a]) - sections.indexOf(sectionOf[b]));
+      order = [...top, ...order];
       const shown = new Set(order);
       items.forEach((item, i) => setHidden(item, !shown.has(i)));
       for (const i of order) (sectionOf[i] ?? list).append(items[i]);
@@ -860,6 +951,8 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
       if (query) setCursor(0);
       else cursorToSelection();
     }
+    for (const sec of topSections) setHidden(sec, !!query || sec.hasAttribute("data-empty"));
+    for (const j of tops) setHidden(items[j], !top.includes(j));
     renumber();
     // Last, so a throwing resultsText from the page cannot stop the filtering above.
     const count = matched.length;
@@ -872,12 +965,19 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
   });
   search.addEventListener("change", (e) => e.stopPropagation());
 
+  /** @type {number[]} item index per digit position */
+  let byPos = [];
   // Digits follow the display order: visible matches in filter mode, fixed positions otherwise.
+  // Top places keep 0..n-1 (empty recent places included), the list starts after them.
   function renumber() {
     if (!tiers.length) return;
     /** @type {number[]} display position per item, -1 when not shown */
     const posOf = items.map(() => -1);
-    order.forEach((i, pos) => (posOf[i] = pos));
+    const filtering = !!search.value.trim() && !highlight;
+    let next = filtering ? 0 : tops.length;
+    for (const i of order) posOf[i] = i < radios.length ? next++ : tops.indexOf(i);
+    byPos = [];
+    posOf.forEach((pos, i) => pos >= 0 && (byPos[pos] = i));
     items.forEach((item, i) => {
       const pos = posOf[i];
       const sc = pos < 0 ? null : shortcutAt(tiers, pos);
@@ -895,8 +995,9 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
     beforeOpen?.();
     render();
     search.value = "";
+    fillRecent();
     items.forEach((item, i) => {
-      if (radios[i].matches(":disabled")) item.setAttribute("aria-disabled", "true");
+      if (radios[radioOf[i]].matches(":disabled")) item.setAttribute("aria-disabled", "true");
       else item.removeAttribute("aria-disabled");
     });
     setHidden(panel, false);
@@ -926,9 +1027,10 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
 
   /** Like a user click on the input behind item `index`: radios check and close, checkboxes toggle. */
   function pick(/** @type {number} */ index) {
-    const radio = radios[index];
+    const radio = radios[radioOf[index]];
     if (!radio) return;
     if (radio.matches(":disabled")) return;
+    if (recentMax && (!multiple || !radio.checked)) remember(radio.value);
     if (multiple) {
       radio.checked = !radio.checked;
       radio.dispatchEvent(new Event("input", { bubbles: true }));
@@ -997,13 +1099,13 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
     const pos = tiers.length ? positionOf(tiers, e) : -1;
     if (pos >= 0) {
       e.preventDefault();
-      if (order[pos] !== undefined) pick(order[pos]);
+      if (byPos[pos] !== undefined) pick(byPos[pos]);
       return;
     }
     /** @type {Record<string, () => number>} */
     const moves = isList
       ? { ArrowDown: () => 1, ArrowUp: () => -1 }
-      : isFlow || sections.length > 1 ? { ArrowRight: () => 1, ArrowLeft: () => -1, ArrowDown: () => rowStep(1), ArrowUp: () => rowStep(-1) }
+      : isFlow || sections.length > 1 || tops.length ? { ArrowRight: () => 1, ArrowLeft: () => -1, ArrowDown: () => rowStep(1), ArrowUp: () => rowStep(-1) }
       : { ArrowRight: () => 1, ArrowLeft: () => -1, ArrowDown: columns, ArrowUp: () => -columns() };
     if (moves[e.key]) {
       e.preventDefault();

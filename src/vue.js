@@ -24,6 +24,11 @@ export const GridSelect = defineComponent({
     searchPlaceholder: String,
     required: Boolean,
     disabled: Boolean,
+    pinned: /** @type {import("vue").PropType<string[]>} */ (Array),
+    recent: String,
+    recentMax: Number,
+    pinnedText: String,
+    recentText: String,
   },
   emits: ["update:modelValue", "change", "input"],
   setup(props, { emit, slots, expose }) {
@@ -57,6 +62,9 @@ export const GridSelect = defineComponent({
       "^layout": props.layout, "^search": props.search, "^match": props.match,
       "^placeholder": props.placeholder, "^search-placeholder": props.searchPlaceholder,
       "^shortcuts": props.shortcuts === false ? "off" : props.shortcuts?.join(","),
+      "^pinned": props.pinned?.join(","), "^recent": props.recent,
+      "^recent-max": props.recentMax === undefined ? undefined : String(props.recentMax),
+      "^pinned-text": props.pinnedText, "^recent-text": props.recentText,
       "^multiple": flag(props.multiple), "^required": flag(props.required), "^disabled": flag(props.disabled),
     }, slots.default?.());
   },

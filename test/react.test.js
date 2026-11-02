@@ -44,6 +44,8 @@ describe("React wrapper", () => {
     expect(gs().hasAttribute("disabled")).toBe(false);
     render(h(GridSelect, { ariaLabel: "Cur", shortcuts: false, items: ["a"] }));
     expect(a("shortcuts")).toBe("off");
+    render(h(GridSelect, { ariaLabel: "Cur", items: ["a"], pinned: ["a", "b"], recent: "k", recentMax: 2, pinnedText: "P", recentText: "R" }));
+    expect([a("pinned"), a("recent"), a("recent-max"), a("pinned-text"), a("recent-text")]).toEqual(["a,b", "k", "2", "P", "R"]);
   });
 
   it("is controlled: onChange gets the new value, the element keeps showing value", () => {

@@ -61,3 +61,10 @@ type VueProps = InstanceType<typeof VueGridSelect>["$props"];
 const vueOk: VueProps = { modelValue: ["a"], items: ["a"], layout: "list", searchPlaceholder: "x" };
 // @ts-expect-error unknown layout
 const vueBad: VueProps = { layout: "table" };
+
+// F16: pinned and recent
+gridselect(document.body, { pinned: ["a"], recent: "k", recentMax: 3, pinnedText: "P", recentText: "R" });
+// @ts-expect-error recentMax is a number
+gridselect(document.body, { recentMax: "3" });
+createElement(ReactGridSelect, { pinned: ["a"], recent: "k", recentMax: 3, pinnedText: "P", recentText: "R" });
+const vuePinned: VueProps = { pinned: ["a"], recent: "k", recentMax: 3 };

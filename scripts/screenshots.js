@@ -190,6 +190,12 @@ const shots = {
       await page.locator("#layout-grid [data-gridselect-field]").click();
       await compact(page, "layout-grid");
     }),
+  pinned: (page, scheme) =>
+    shoot(page, scheme, "pinned", async () => {
+      await page.evaluate(() => localStorage.setItem("gridselect-recent:demo-currency", JSON.stringify(["JPY", "CHF"])));
+      await page.locator("#pinned [data-gridselect-field]").click();
+      await page.locator("#pinned [data-gridselect-scroller]").evaluate((el) => (el.style.maxHeight = "19rem"));
+    }),
   groups: (page, scheme) =>
     shoot(page, scheme, "grouped", async () => {
       await page.locator("#grouped [data-gridselect-field]").click();

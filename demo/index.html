@@ -223,6 +223,16 @@ gridselect(document.querySelector("[data-gridselect]"));</code></pre>
   </section>
 
   <section>
+    <div class="stamp">Pinned · recent</div>
+    <h2>Favourites on top</h2>
+    <p class="note">Pinned entries and the last picks appear on top with their own digits. They stay in the list as well, so positions there never change. Recent picks are stored in this browser only.</p>
+    <div class="frame">
+      <fieldset data-gridselect data-pinned="EUR,USD" data-recent="demo-currency" id="pinned"><legend>Currency</legend></fieldset>
+    </div>
+    <pre class="code"><code>&lt;fieldset data-gridselect data-pinned="EUR,USD" data-recent="currency"&gt; … &lt;/fieldset&gt;</code></pre>
+  </section>
+
+  <section>
     <div class="stamp">Multiple · long</div>
     <h2>Pick several</h2>
     <p class="note">Checkbox groups and <code>&lt;select multiple&gt;</code> get the same panel. Items toggle, the panel stays open, so you can filter and pick several in a row.</p>
@@ -352,6 +362,7 @@ import "@emmgeede/gridselect/element";</code></pre>
     "Greece", "Ireland", "Italy", "Latvia", "Lithuania", "Luxembourg", "Malta", "Netherlands", "Portugal", "Slovakia",
     "Slovenia", "Spain"]);
   fill("layout-flow", currencies);
+  fill("pinned", currencies);
   // Groups: one optgroup per region, built from the currency list above.
   const regions = {
     Europe: ["EUR", "CHF", "GBP", "DKK", "NOK", "SEK", "PLN", "CZK", "HUF", "TRY", "ISK", "RON", "BGN", "RSD", "UAH", "GEL"],

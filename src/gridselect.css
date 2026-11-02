@@ -276,6 +276,13 @@
     flex-wrap: wrap;
   }
 
+  /* The list below pinned and recent entries */
+  [data-gridselect-top] + [data-gridselect-section] {
+    margin-top: 0.25rem;
+    padding-top: calc(var(--gs-gap) + 0.25rem);
+    border-top: 1px solid var(--gs-subtle-border, var(--gs-border));
+  }
+
   .gridselect__group-label {
     grid-column: 1 / -1;
     flex: 1 1 100%;

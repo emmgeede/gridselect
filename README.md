@@ -76,6 +76,7 @@ for what changed.
   - [Entries from JavaScript](#entries-from-javascript)
   - [Multiple choice](#multiple-choice)
   - [Groups](#groups)
+  - [Pinned and recent entries](#pinned-and-recent-entries)
   - [`<select>` as source](#select-as-source)
   - [Search](#search)
   - [`instance.value`](#instancevalue)
@@ -207,6 +208,7 @@ from the element.
 | `multiple` | Checkboxes instead of radios |
 | `value` | Initial choice, comma-separated with `multiple`. Without it, `selected` options count |
 | `threshold`, `layout`, `search`, `match`, `placeholder`, `search-placeholder` | As the options of the same name |
+| `pinned`, `recent`, `recent-max`, `pinned-text`, `recent-text` | As `pinned` (comma-separated), `recent`, `recentMax`, `pinnedText`, `recentText` |
 | `shortcuts` | `off`, or tiers separated by commas, e.g. `,Shift,Alt` |
 | `required`, `disabled` | As on native inputs |
 
@@ -246,8 +248,9 @@ function CurrencyField() {
   groups included. `<option>` and `<optgroup>` children work too.
 - The other attributes of `<grid-select>` are props in camelCase:
   `ariaLabel`, `multiple`, `threshold`, `layout`, `search`, `match`,
-  `placeholder`, `searchPlaceholder`, `required`, `disabled`, and `shortcuts`
-  as an array or `false`.
+  `placeholder`, `searchPlaceholder`, `required`, `disabled`, `pinned`,
+  `recent`, `recentMax`, `pinnedText`, `recentText`, and `shortcuts` as an
+  array or `false`.
 - `ref` points to the `<grid-select>` element.
 
 ```vue
@@ -324,6 +327,10 @@ value wins, for checkboxes all of them are set.
 | `value` | | | Initial choice for `items` (an array with `multiple`) |
 | `multiple` | | `false` | Build checkboxes instead of radios from `items` |
 | `shortcuts` | `data-shortcuts="off"` | `["", "Shift", "Alt"]` | Digit key tiers, see [Digit shortcuts](#digit-shortcuts). `false` turns them off |
+| `pinned` | `data-pinned="EUR,USD"` | | Values shown again on top of the panel, see [Pinned and recent entries](#pinned-and-recent-entries) |
+| `recent` | `data-recent="currency"` | off | Storage key: remember the last picks and show them on top |
+| `recentMax` | `data-recent-max` | `5` | How many recent picks; `0` turns recent off |
+| `pinnedText`, `recentText` | | `"Pinned"`, `"Recent"` | Headings of the two groups |
 
 JS options win over data attributes. Invalid values fall back to the default.
 
@@ -483,6 +490,42 @@ gridselect(el, {
 
 Style hooks: `.gridselect__group` (a section of the item list, it uses the
 list's columns through `subgrid`) and `.gridselect__group-label`.
+
+### Pinned and recent entries
+
+People who use a list every day pick the same few entries again and again.
+`pinned` puts chosen values on top of the panel, `recent` adds the last
+picks:
+
+```js
+gridselect(el, { pinned: ["EUR", "USD"], recent: "currency" });
+```
+
+```html
+<fieldset data-gridselect data-pinned="EUR,USD" data-recent="currency"> … </fieldset>
+```
+
+<a href="https://gridselect.im/demo/">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/pinned-dark.png?v=1">
+  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/pinned-light.png?v=1" width="100%" alt="A currency panel with a Pinned group (Euro, US dollar, digits 1 and 2) and a Recent group (Japanese yen, Swiss franc, digits 3 and 4) above the full list, which starts at digit 8.">
+</picture>
+</a>
+
+<sub><b>Pinned and recent.</b> Two pinned entries, two recent picks. Five places are reserved for recent picks, so the full list always starts at the same digit.</sub>
+
+- Both appear as groups ("Pinned", "Recent", change with `pinnedText` and
+  `recentText`) above the list, and the entries stay in the list too, so
+  positions there never change.
+- Digits start at 1 on top. Recent always reserves `recentMax` places
+  (default 5), so the list's digits do not move when the recent picks change.
+- While you type, the top groups are hidden and nothing appears twice.
+- `recent` is off unless you set a storage key. GridSelect then keeps up to
+  `recentMax` values in `localStorage` under `gridselect-recent:<key>`, only
+  values that exist in the list, newest first. If storage is blocked, recent
+  simply stays empty. The values are stored in the visitor's browser and can
+  be personal (a city, a name): mention it in your privacy notice if so.
+- Only above the threshold; short lists show everything anyway.
 
 ### `<select>` as source
 
@@ -830,6 +873,7 @@ come.
 | Fuzzy matching | available |
 | Auto column width and flow layout | available |
 | Group headings (`<optgroup>`, groups in `items`) | available |
+| Pinned and recent entries | available |
 | Themes: showcase, high contrast, compact, open for contributions | available |
 | React and Vue wrappers | available |
 

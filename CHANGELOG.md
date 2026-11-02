@@ -12,8 +12,18 @@ and breaking changes need a new major version.
 
 ## [Unreleased]
 
+### Added
+
+- Pinned and recent entries: `pinned` (`data-pinned`, `pinned`) shows chosen
+  values on top of the panel, `recent` (`data-recent`, `recent`) remembers
+  the last picks in `localStorage` and shows them below. Both are groups with
+  their own digits; the list keeps its entries and starts after the reserved
+  places. Options `recentMax`, `pinnedText`, `recentText`; React and Vue
+  props of the same names.
+
 ### Changed
 
+- Size budget: core 7.5 kB, core plus element 9 kB (min+gzip).
 - The demo moved to its own domain: https://gridselect.im (the old
   GitHub Pages address redirects there).
 
