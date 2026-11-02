@@ -12,6 +12,15 @@ and breaking changes need a new major version.
 
 ## [Unreleased]
 
+## [0.18.1] - 2026-11-02
+
+### Changed
+
+- Pinned and recent entries no longer show a second time in the list below,
+  and the digits run on from the top into the list without a gap (no
+  reserved places for recent picks). While searching, the top groups are
+  hidden and the list holds every entry again.
+
 ## [0.18.0] - 2026-11-02
 
 ### Added
@@ -342,7 +351,8 @@ and breaking changes need a new major version.
   radios with different names. Warning for duplicate values.
 - TypeScript declarations generated from JSDoc.
 
-[Unreleased]: https://github.com/emmgeede/gridselect/compare/v0.18.0...HEAD
+[Unreleased]: https://github.com/emmgeede/gridselect/compare/v0.18.1...HEAD
+[0.18.1]: https://github.com/emmgeede/gridselect/compare/v0.18.0...v0.18.1
 [0.18.0]: https://github.com/emmgeede/gridselect/compare/v0.17.0...v0.18.0
 [0.17.0]: https://github.com/emmgeede/gridselect/compare/v0.16.0...v0.17.0
 [0.16.0]: https://github.com/emmgeede/gridselect/compare/v0.15.0...v0.16.0

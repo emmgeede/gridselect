@@ -1010,8 +1010,11 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
     item.scrollIntoView?.({ block: "nearest" });
   }
 
-  /** Cursor on the selected item if it is shown, else on the first one. */
-  const cursorToSelection = () => setCursor(Math.max(0, order.indexOf(radios.findIndex((r) => r.checked))));
+  /** Cursor on the selected entry (on top or in the list), else on the first one. */
+  const cursorToSelection = () => {
+    const r = radios.findIndex((x) => x.checked);
+    setCursor(Math.max(0, order.findIndex((j) => radioOf[j] === r)));
+  };
 
   // filter: non-matches hidden, label-start matches first. highlight: everything stays, matches
   // and non-matches get marked. An empty query restores the plain list in both modes.
@@ -1041,9 +1044,11 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
       matched = [...starts, ...contains, ...described];
     }
     const isMatch = new Set(matched);
-    const all = radios.map((_, i) => i);
-    // Top places only without a query, and only those with an entry.
+    // Top places only without a query, and only those with an entry. Their entries then leave the
+    // list, so nothing shows twice; while searching the list has everything again.
     const top = query ? [] : tops.filter((j) => !items[j].hasAttribute("data-empty"));
+    const onTop = new Set(top.map((j) => radioOf[j]));
+    const all = radios.map((_, i) => i).filter((i) => !onTop.has(i));
     if (highlight) {
       const firstMatch = all.find((i) => isMatch.has(i));
       items.forEach((item, i) => {
@@ -1068,6 +1073,7 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
     }
     for (const sec of topSections) setHidden(sec, !!query || sec.hasAttribute("data-empty"));
     for (const j of tops) setHidden(items[j], !top.includes(j));
+    if (highlight) radios.forEach((_, i) => setHidden(items[i], onTop.has(i)));
     renumber();
     // Last, so a throwing resultsText from the page cannot stop the filtering above.
     const count = matched.length;
@@ -1080,19 +1086,12 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
   });
   search.addEventListener("change", (e) => e.stopPropagation());
 
-  /** @type {number[]} item index per digit position */
-  let byPos = [];
-  // Digits follow the display order: visible matches in filter mode, fixed positions otherwise.
-  // Top places keep 0..n-1 (empty recent places included), the list starts after them.
+  // Digits follow the display order: top entries, then the list, in one run.
   function renumber() {
     if (!tiers.length) return;
     /** @type {number[]} display position per item, -1 when not shown */
     const posOf = items.map(() => -1);
-    const filtering = !!search.value.trim() && !highlight;
-    let next = filtering ? 0 : tops.length;
-    for (const i of order) posOf[i] = i < radios.length ? next++ : tops.indexOf(i);
-    byPos = [];
-    posOf.forEach((pos, i) => pos >= 0 && (byPos[pos] = i));
+    order.forEach((i, pos) => (posOf[i] = pos));
     items.forEach((item, i) => {
       const pos = posOf[i];
       const sc = pos < 0 ? null : shortcutAt(tiers, pos);
@@ -1214,7 +1213,7 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
     const pos = tiers.length ? positionOf(tiers, e) : -1;
     if (pos >= 0) {
       e.preventDefault();
-      if (byPos[pos] !== undefined) pick(byPos[pos]);
+      if (order[pos] !== undefined) pick(order[pos]);
       return;
     }
     /** @type {Record<string, () => number>} */

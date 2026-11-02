@@ -54,7 +54,7 @@ daily can rely on positions. The matches (Danish and Norwegian krone) are marked
 cursor jumps to the first match, all other entries are dimmed. Entries 11 to 20 are picked with
 Shift and a digit (S1 to S0).</sub>
 
-**Status:** version 0.18.0, early development. Published on npm as
+**Status:** version 0.18.1, early development. Published on npm as
 `@emmgeede/gridselect`, because npm treats the plain name `gridselect` as too
 similar to an older package. Versions
 follow [Semantic Versioning](https://semver.org/). See
@@ -530,19 +530,19 @@ gridselect(el, { pinned: ["EUR", "USD"], recent: "currency" });
 
 <a href="https://gridselect.im/demo/">
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/pinned-dark.png?v=1">
-  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/pinned-light.png?v=1" width="100%" alt="A currency panel with a Pinned group (Euro, US dollar, digits 1 and 2) and a Recent group (Japanese yen, Swiss franc, digits 3 and 4) above the full list, which starts at digit 8.">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/pinned-dark.png?v=2">
+  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/pinned-light.png?v=2" width="100%" alt="A currency panel with a Pinned group (Euro, US dollar, digits 1 and 2) and a Recent group (Japanese yen, Swiss franc, digits 3 and 4) above the remaining list, which goes on with digit 5.">
 </picture>
 </a>
 
-<sub><b>Pinned and recent.</b> Two pinned entries, two recent picks. Five places are reserved for recent picks, so the full list always starts at the same digit.</sub>
+<sub><b>Pinned and recent.</b> Two pinned entries, two recent picks, then the rest of the list. The digits run on without a gap.</sub>
 
 - Both appear as groups ("Pinned", "Recent", change with `pinnedText` and
-  `recentText`) above the list, and the entries stay in the list too, so
-  positions there never change.
-- Digits start at 1 on top. Recent always reserves `recentMax` places
-  (default 5), so the list's digits do not move when the recent picks change.
-- While you type, the top groups are hidden and nothing appears twice.
+  `recentText`) above the list. Entries shown on top leave the list, so
+  nothing appears twice.
+- Digits run on from the top into the list without a gap.
+- While you type, the top groups are hidden and the list holds every entry
+  again, so pinned and recent entries can be found like any other.
 - `recent` is off unless you set a storage key. GridSelect then keeps up to
   `recentMax` values in `localStorage` under `gridselect-recent:<key>`, only
   values that exist in the list, newest first. If storage is blocked, recent

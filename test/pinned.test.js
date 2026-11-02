@@ -36,12 +36,21 @@ beforeEach(() => {
 });
 
 describe("pinned", () => {
-  it("shows the pinned entries on top in their order, and keeps them in the list", () => {
+  it("shows the pinned entries on top in their order and not again in the list", () => {
     const [w] = mount("", { pinned: ["CHF", "EUR", "XXX"] });
     open(w);
     expect(heads(w)).toEqual(["Pinned"]);
     expect(groupValues(w, "Pinned")).toEqual(["CHF", "EUR"]);
-    expect(visibleItems(w).filter((i) => i.dataset.value === "CHF").length).toBe(2);
+    expect(visibleItems(w).map((i) => i.dataset.value)).toEqual(["CHF", "EUR", ...CODES.filter((c) => c !== "CHF" && c !== "EUR")]);
+  });
+
+  it("finds pinned entries in the list while searching", () => {
+    const [w] = mount("", { pinned: ["CHF"] });
+    open(w);
+    type(w, "chf");
+    const found = visibleItems(w);
+    expect(found.map((i) => i.dataset.value)).toEqual(["CHF"]);
+    expect(found[0].closest("[data-gridselect-top]")).toBeNull();
   });
 
   it("reads data-pinned and pinnedText, and shows nothing without valid values", () => {
@@ -53,13 +62,16 @@ describe("pinned", () => {
     expect(heads(w)).toEqual([]);
   });
 
-  it("picking a pinned copy checks the input and marks both copies", () => {
+  it("picking a pinned entry checks the input; the cursor then starts on it", () => {
     const [w, gs] = mount("", { pinned: ["CHF"] });
     open(w);
     w.querySelector('[data-gridselect-group] [data-value="CHF"]').click();
     expect(gs.value).toBe("CHF");
     open(w);
-    expect([...w.querySelectorAll('[data-value="CHF"]')].map((i) => i.getAttribute("aria-selected"))).toEqual(["true", "true"]);
+    const cur = w.querySelector("[data-cursor]");
+    expect(cur.dataset.value).toBe("CHF");
+    expect(cur.getAttribute("aria-selected")).toBe("true");
+    expect(cur.closest("[data-gridselect-top]")).not.toBeNull();
   });
 
   it("has no top area at or below the threshold", () => {
@@ -138,26 +150,22 @@ describe("recent", () => {
 });
 
 describe("digits, search and keys", () => {
-  it("numbers the top from 1 and starts the list after the reserved places", () => {
+  it("numbers top and list in one run, without gaps", () => {
     localStorage.setItem("gridselect-recent:cur", JSON.stringify(["GBP"]));
     const [w, gs] = mount("", { pinned: ["CHF"], recent: "cur", recentMax: 3 });
     open(w);
     const items = visibleItems(w);
-    expect(items.slice(0, 2).map(badge)).toEqual(["1", "2"]);
-    expect(badge(items[2])).toBe("5"); // first list entry after 1 pinned + 3 reserved recent places
-    expect(items[2].dataset.value).toBe("EUR");
+    expect(items.slice(0, 4).map((i) => [i.dataset.value, badge(i)])).toEqual([["CHF", "1"], ["GBP", "2"], ["EUR", "3"], ["USD", "4"]]);
     digit(w, 2);
     expect(gs.value).toBe("GBP");
     open(w);
-    digit(w, 5);
+    digit(w, 3);
     expect(gs.value).toBe("EUR");
-    open(w);
-    digit(w, 4);
-    expect(gs.value).toBe("EUR"); // recent now holds EUR and GBP: place 4 is reserved and empty, nothing happens
-    expect(w.querySelector("[data-gridselect-panel]").hidden).toBe(false);
+    open(w); // recent: EUR, GBP
+    expect(visibleItems(w).slice(0, 4).map((i) => [i.dataset.value, badge(i)])).toEqual([["CHF", "1"], ["EUR", "2"], ["GBP", "3"], ["USD", "4"]]);
   });
 
-  it("hides the top while searching; filter renumbers, highlight keeps the numbers", () => {
+  it("hides the top while searching and numbers the whole list from 1", () => {
     let [w] = mount("", { pinned: ["CHF", "EUR"] });
     open(w);
     type(w, "u");
@@ -165,11 +173,10 @@ describe("digits, search and keys", () => {
     expect(badge(visibleItems(w)[0])).toBe("1");
     [w] = mount('data-search="highlight"', { pinned: ["CHF", "EUR"] });
     open(w);
-    const before = badge(visibleItems(w).find((i) => i.dataset.value === "USD" && !i.closest("[data-gridselect-group]")));
+    expect(visibleItems(w).map((i) => i.dataset.value).slice(0, 3)).toEqual(["CHF", "EUR", "USD"]);
     type(w, "usd");
     expect(heads(w)).toEqual([]);
-    expect(badge(visibleItems(w).find((i) => i.dataset.value === "USD"))).toBe(before);
-    expect(before).toBe("5");
+    expect(visibleItems(w).map((i) => [i.dataset.value, badge(i)]).slice(0, 3)).toEqual([["EUR", "1"], ["CHF", "2"], ["USD", "3"]]);
   });
 
   it("arrow keys reach the top and cross into the list; the cursor starts on the chosen list entry", () => {
@@ -183,7 +190,7 @@ describe("digits, search and keys", () => {
     expect(cur().closest("[data-gridselect-group]")).not.toBeNull();
     key(w, "ArrowRight");
     key(w, "ArrowRight");
-    expect(cur().dataset.value).toBe("EUR");
+    expect(cur().dataset.value).toBe("USD");
     expect(cur().closest("[data-gridselect-group]")).toBeNull();
   });
 });

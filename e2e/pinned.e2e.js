@@ -26,7 +26,7 @@ test("pinned on top, a pick shows up under Recent after reopening, also after a 
 test("the list starts on a new row below the top groups, arrow down crosses into it", async ({ page }) => {
   await field(page).click();
   const pinned = page.locator("#pinned [data-gridselect-group] [data-gridselect-item]:visible");
-  const firstList = page.locator("#pinned [data-gridselect-section] [data-gridselect-item]").first();
+  const firstList = page.locator("#pinned [data-gridselect-section] [data-gridselect-item]:visible").first();
   const bottom = Math.max(...(await pinned.evaluateAll((els) => els.map((e) => e.getBoundingClientRect().bottom))));
   expect((await firstList.boundingBox()).y).toBeGreaterThanOrEqual(bottom - 1);
   await page.keyboard.press("ArrowLeft"); // cursor starts on the chosen entry or the first one
