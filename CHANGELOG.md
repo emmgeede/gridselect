@@ -12,6 +12,8 @@ and breaking changes need a new major version.
 
 ## [Unreleased]
 
+## [0.20.0] - 2026-11-02
+
 ### Added
 
 - Panel width: by default (`panelWidth: "full"`) the panel spans the window,
@@ -388,7 +390,8 @@ and breaking changes need a new major version.
   radios with different names. Warning for duplicate values.
 - TypeScript declarations generated from JSDoc.
 
-[Unreleased]: https://github.com/emmgeede/gridselect/compare/v0.19.0...HEAD
+[Unreleased]: https://github.com/emmgeede/gridselect/compare/v0.20.0...HEAD
+[0.20.0]: https://github.com/emmgeede/gridselect/compare/v0.19.0...v0.20.0
 [0.19.0]: https://github.com/emmgeede/gridselect/compare/v0.18.1...v0.19.0
 [0.18.1]: https://github.com/emmgeede/gridselect/compare/v0.18.0...v0.18.1
 [0.18.0]: https://github.com/emmgeede/gridselect/compare/v0.17.0...v0.18.0
