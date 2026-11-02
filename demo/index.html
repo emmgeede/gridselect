@@ -200,22 +200,30 @@ gridselect(document.querySelector("[data-gridselect]"));</code></pre>
     <div class="frame">
       <fieldset data-gridselect data-layout="flow" id="layout-flow"><legend>Currency (flow)</legend></fieldset>
     </div>
-    <pre class="code"><code>&lt;fieldset data-gridselect&gt; … &lt;/fieldset&gt;                     &lt;!-- grid, the default --&gt;
+    <pre class="code"><code>&lt;!-- grid, the default --&gt;
+&lt;fieldset data-gridselect&gt; … &lt;/fieldset&gt;
 &lt;fieldset data-gridselect data-layout="flow"&gt; … &lt;/fieldset&gt;</code></pre>
   </section>
 
   <section>
     <div class="stamp">Panel width</div>
-    <h2>Full width or narrow</h2>
-    <p class="note">By default the panel spans the window with 10 px to each edge, so as many columns as possible fit. <code>data-panel-width="fixed"</code> keeps it narrow: <code>--gs-panel-width</code> from the field's edge. Both open towards the room they need and grow up to the window edge.</p>
+    <h2>Full width, narrow or within a container</h2>
+    <p class="note">By default the panel spans the window with 10 px to each edge, so as many columns as possible fit. <code>data-panel-width="fixed"</code> keeps it narrow: <code>--gs-panel-width</code> from the field's edge. <code>data-panel-container="form"</code> keeps it within the ancestor marked <code>data-gridselect-container="form"</code> (the dashed box). All open towards the room they need and grow up to the window edge.</p>
     <div class="frame">
       <fieldset data-gridselect id="width-full"><legend>Currency (full width, the default)</legend></fieldset>
     </div>
     <div class="frame">
       <fieldset data-gridselect data-panel-width="fixed" id="width-fixed"><legend>Currency (narrow)</legend></fieldset>
     </div>
-    <pre class="code"><code>&lt;fieldset data-gridselect&gt; … &lt;/fieldset&gt;                          &lt;!-- full width --&gt;
-&lt;fieldset data-gridselect data-panel-width="fixed"&gt; … &lt;/fieldset&gt;</code></pre>
+    <div class="frame" data-gridselect-container="form" style="max-width: 36rem; border: 1px dashed">
+      <fieldset data-gridselect data-panel-container="form" id="width-container"><legend>Currency (within the dashed box)</legend></fieldset>
+    </div>
+    <pre class="code"><code>&lt;!-- full width --&gt;
+&lt;fieldset data-gridselect&gt; … &lt;/fieldset&gt;
+&lt;fieldset data-gridselect data-panel-width="fixed"&gt; … &lt;/fieldset&gt;
+&lt;form data-gridselect-container="form"&gt;
+  &lt;fieldset data-gridselect data-panel-container="form"&gt; … &lt;/fieldset&gt;
+&lt;/form&gt;</code></pre>
   </section>
 
   <section>
@@ -396,6 +404,7 @@ import "@emmgeede/gridselect/element";</code></pre>
   fill("layout-flow", currencies);
   fill("width-full", currencies);
   fill("width-fixed", currencies);
+  fill("width-container", currencies);
   fill("pinned", currencies);
   // Groups: one optgroup per region, built from the currency list above.
   const regions = {

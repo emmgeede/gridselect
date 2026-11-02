@@ -12,6 +12,11 @@ new major version.
 
 ## [Unreleased]
 
+### Changed
+
+- Demo: the width section also shows a panel kept within a container
+  (`data-panel-container`), and its code comments sit on their own line.
+
 ## [1.1.0] - 2026-11-02
 
 ### Added
