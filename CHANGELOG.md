@@ -12,6 +12,11 @@ and breaking changes need a new major version.
 
 ## [Unreleased]
 
+### Added
+
+- Demo: a section comparing the full-width panel with the narrow one
+  (`data-panel-width="fixed"`).
+
 ## [0.22.0] - 2026-11-02
 
 ### Added

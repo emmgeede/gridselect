@@ -7,7 +7,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 test("shows every variant with the real stylesheet and no test tools", async ({ page }) => {
-  for (const id of ["short", "checks", "filter", "highlight", "layout-grid", "layout-flow", "grouped", "pinned", "described", "remote", "watch", "langs", "list", "select"]) await expect(page.locator(`#${id}`)).toBeVisible();
+  for (const id of ["short", "checks", "filter", "highlight", "layout-grid", "layout-flow", "width-full", "width-fixed", "grouped", "pinned", "described", "remote", "watch", "langs", "list", "select"]) await expect(page.locator(`#${id}`)).toBeVisible();
   await expect(page.locator("#filter [data-gridselect-field]")).toBeVisible();
   await expect(page.locator("#select [data-gridselect-field]")).toHaveText("Choose a country…");
   await expect(page.locator("#log")).toHaveCount(0);
@@ -164,3 +164,16 @@ for (const scheme of ["light", "dark"]) {
     }
   });
 }
+
+test("the width section shows a full-width and a narrow panel", async ({ page }) => {
+  await page.setViewportSize({ width: 1400, height: 900 });
+  const width = async (id) => {
+    await page.locator(`#${id} [data-gridselect-field]`).click();
+    const w = await page.locator(`#${id} [data-gridselect-panel]`).evaluate((el) => el.getBoundingClientRect().width);
+    await page.keyboard.press("Escape");
+    return w;
+  };
+  const vw = await page.evaluate(() => document.documentElement.clientWidth);
+  expect(Math.round(await width("width-full"))).toBe(vw - 20);
+  expect(await width("width-fixed")).toBeLessThanOrEqual(42 * 16 + 1);
+});

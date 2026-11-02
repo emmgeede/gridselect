@@ -205,6 +205,20 @@ gridselect(document.querySelector("[data-gridselect]"));</code></pre>
   </section>
 
   <section>
+    <div class="stamp">Panel width</div>
+    <h2>Full width or narrow</h2>
+    <p class="note">By default the panel spans the window with 10 px to each edge, so as many columns as possible fit. <code>data-panel-width="fixed"</code> keeps it narrow: <code>--gs-panel-width</code> from the field's edge. Both open towards the room they need and grow up to the window edge.</p>
+    <div class="frame">
+      <fieldset data-gridselect id="width-full"><legend>Currency (full width, the default)</legend></fieldset>
+    </div>
+    <div class="frame">
+      <fieldset data-gridselect data-panel-width="fixed" id="width-fixed"><legend>Currency (narrow)</legend></fieldset>
+    </div>
+    <pre class="code"><code>&lt;fieldset data-gridselect&gt; … &lt;/fieldset&gt;                          &lt;!-- full width --&gt;
+&lt;fieldset data-gridselect data-panel-width="fixed"&gt; … &lt;/fieldset&gt;</code></pre>
+  </section>
+
+  <section>
     <div class="stamp">Groups</div>
     <h2>Groups with headings</h2>
     <p class="note">Options in <code>&lt;optgroup&gt;</code> get a heading in the panel, and each group starts a new row. The heading stays at the top while its group scrolls by. Works the same with <code>items</code> and <code>&lt;grid-select&gt;</code>.</p>
@@ -380,6 +394,8 @@ import "@emmgeede/gridselect/element";</code></pre>
     "Greece", "Ireland", "Italy", "Latvia", "Lithuania", "Luxembourg", "Malta", "Netherlands", "Portugal", "Slovakia",
     "Slovenia", "Spain"]);
   fill("layout-flow", currencies);
+  fill("width-full", currencies);
+  fill("width-fixed", currencies);
   fill("pinned", currencies);
   // Groups: one optgroup per region, built from the currency list above.
   const regions = {
