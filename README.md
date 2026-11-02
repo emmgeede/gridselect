@@ -853,8 +853,11 @@ and keep focus outlines visible. The behaviour above is covered by unit and
 browser tests, and axe-core checks every state (closed, open, filtered,
 highlighted, no matches, invalid) for WCAG 2.0, 2.1 and 2.2 A and AA in
 light and dark mode on every push; the Accessibility badge above shows the
-result. A manual screen reader pass (Orca, NVDA, VoiceOver) is still to
-come.
+result. A screen reader walkthrough runs as a browser test too: it drives
+every step by keyboard and checks the role, name, state and announcements
+screen readers read from the accessibility tree. It runs in Chromium; it is
+not a substitute for listening with Orca, NVDA or VoiceOver, which has not
+been done.
 
 ## Features
 
