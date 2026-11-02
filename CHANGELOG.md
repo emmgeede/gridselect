@@ -12,6 +12,8 @@ and breaking changes need a new major version.
 
 ## [Unreleased]
 
+## [0.15.0] - 2026-11-02
+
 ### Added
 
 - React and Vue wrappers: `@emmgeede/gridselect/react` (`<GridSelect>` with
@@ -296,7 +298,8 @@ and breaking changes need a new major version.
   radios with different names. Warning for duplicate values.
 - TypeScript declarations generated from JSDoc.
 
-[Unreleased]: https://github.com/emmgeede/gridselect/compare/v0.14.0...HEAD
+[Unreleased]: https://github.com/emmgeede/gridselect/compare/v0.15.0...HEAD
+[0.15.0]: https://github.com/emmgeede/gridselect/compare/v0.14.0...v0.15.0
 [0.14.0]: https://github.com/emmgeede/gridselect/compare/v0.13.0...v0.14.0
 [0.13.0]: https://github.com/emmgeede/gridselect/compare/v0.12.2...v0.13.0
 [0.12.2]: https://github.com/emmgeede/gridselect/compare/v0.12.1...v0.12.2
