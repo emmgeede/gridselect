@@ -1,4 +1,8 @@
 /*
+ * @name Showcase
+ * @description Compact and contemporary in sky blue, with flat items, subtle borders and check marks.
+ * @author emmgeede
+ *
  * GridSelect "showcase" theme: a compact, contemporary look in sky blue on top of gridselect.css.
  * Load it after gridselect.css. It sits in its own layer, declared after "gridselect",
  * so it wins over the default stylesheet and still loses to any CSS of your own.

@@ -20,9 +20,11 @@ test("the grouped select shows one heading per region", async ({ page }) => {
   await expect(page.locator("#grouped [data-gridselect-item]")).toHaveCount(39);
 });
 
-test("the theme button cycles auto, light and dark", async ({ page }) => {
+test("the mode button cycles auto, light and dark", async ({ page }) => {
   const button = page.locator("#theme");
+  await expect(button).toHaveText("Mode: auto");
   await button.click();
+  await expect(button).toHaveText("Mode: light");
   await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
   await button.click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
@@ -85,3 +87,62 @@ test("the layouts section shows a wide grid and a flowing list", async ({ page }
   await page.locator("#layout-flow [data-gridselect-field]").click();
   await expect(page.locator("#layout-flow [data-gridselect-items]")).toHaveClass(/gridselect__items--flow/);
 });
+
+// F12: theme picker
+const picker = (page) => page.locator("#theme-picker");
+const themeSheet = (page) => page.locator("link#theme-css");
+
+test("the theme picker offers Default plus every theme, showcase first chosen", async ({ page }) => {
+  const list = await (await page.request.get("/themes/index.json")).json();
+  await expect(picker(page).locator("label")).toHaveText(["Default", ...list.map((t) => t.name)].map((n) => new RegExp(n)));
+  await expect(picker(page).locator("input:checked")).toHaveValue("showcase");
+  await expect(themeSheet(page)).toHaveAttribute("href", "../themes/showcase.css");
+  await expect(page.locator("#theme-description")).toHaveText(list.find((t) => t.file === "showcase.css").description);
+});
+
+test("picking a theme loads it at once and the choice survives a reload", async ({ page }) => {
+  await page.evaluate(() => (window.marker = 1));
+  await picker(page).getByText("High contrast").click();
+  await expect(themeSheet(page)).toHaveAttribute("href", "../themes/high-contrast.css");
+  await expect(page.locator("#theme-description")).toContainText("7:1");
+  await expect(page.locator("#filter [data-gridselect-field]")).toHaveCSS("border-top-width", "2px");
+  expect(await page.evaluate(() => window.marker)).toBe(1);
+  await picker(page).getByText("Default").click();
+  expect(await themeSheet(page).evaluate((l) => l.disabled)).toBe(true);
+  await picker(page).getByText("Compact").click();
+  await page.reload();
+  await expect(picker(page).locator("input:checked")).toHaveValue("compact");
+  await expect(themeSheet(page)).toHaveAttribute("href", "../themes/compact.css");
+});
+
+test("without localStorage, or with an unknown stored theme, the demo uses showcase", async ({ page }) => {
+  const errors = [];
+  page.on("pageerror", (e) => errors.push(e.message));
+  page.on("console", (m) => m.type() === "error" && errors.push(m.text()));
+  await page.addInitScript(() => Object.defineProperty(window, "localStorage", { get() { throw new Error("blocked"); } }));
+  await page.goto("/demo/");
+  await expect(picker(page).locator("input:checked")).toHaveValue("showcase");
+  await picker(page).getByText("Compact").click();
+  expect(errors).toEqual([]);
+
+  const page2 = await page.context().newPage();
+  await page2.addInitScript(() => localStorage.setItem("gridselect-demo-theme", "gone"));
+  await page2.goto("/demo/");
+  await expect(page2.locator("#theme-picker input:checked")).toHaveValue("showcase");
+});
+
+for (const scheme of ["light", "dark"]) {
+  test(`every theme on the demo passes axe (${scheme})`, async ({ page }) => {
+    test.setTimeout(90_000);
+    await page.emulateMedia({ colorScheme: scheme });
+    const values = await picker(page).locator("input").evaluateAll((els) => els.map((e) => e.value));
+    for (const [i, value] of values.entries()) {
+      await picker(page).locator("label").nth(i).click();
+      await expect(picker(page).locator("input:checked")).toHaveValue(value);
+      await page.locator("#filter [data-gridselect-field]").click();
+      const { violations } = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"]).analyze();
+      expect.soft(violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(" ")).join(", ")}`), value).toEqual([]);
+      await page.keyboard.press("Escape");
+    }
+  });
+}

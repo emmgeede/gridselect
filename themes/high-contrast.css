@@ -1,0 +1,83 @@
+/*
+ * @name High contrast
+ * @description Black and white with strong borders and 7:1 text contrast (WCAG AAA), for low vision.
+ * @author emmgeede
+ * @contrast AAA
+ *
+ * Load it after gridselect.css. Everything sits in its own layer, declared after "gridselect",
+ * so it wins over the default stylesheet and still loses to any CSS of your own.
+ * Text reaches 7:1 or more everywhere (also dimmed entries, badges and group headings), borders
+ * and the cursor ring stay far above 3:1, and matches are underlined besides being coloured.
+ */
+@layer gridselect-high-contrast {
+  :root,
+  [data-theme="light"] {
+    --gs-bg: #ffffff;
+    --gs-item-bg: #ffffff;
+    --gs-fg: #000000;
+    --gs-muted: #333333;
+    --gs-border: #000000;
+    --gs-accent: #0b3d91;
+    --gs-accent-fg: #ffffff;
+    --gs-accent-text: #0b3d91;
+    --gs-key-bg: #e8e8e8;
+    --gs-key-fg: #000000;
+    --gs-key-selected-bg: #000000;
+    --gs-invalid: #a30000;
+    --gs-shadow: 0 0 0 1px #000000;
+    --gs-focus-width: 3px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --gs-bg: #000000;
+      --gs-item-bg: #000000;
+      --gs-fg: #ffffff;
+      --gs-muted: #cccccc;
+      --gs-border: #ffffff;
+      --gs-accent: #9ec5ff;
+      --gs-accent-fg: #000000;
+      --gs-accent-text: #9ec5ff;
+      --gs-key-bg: #1f1f1f;
+      --gs-key-fg: #ffffff;
+      --gs-key-selected-bg: #ffffff;
+      --gs-invalid: #ff8a8a;
+      --gs-shadow: 0 0 0 1px #ffffff;
+    }
+  }
+
+  [data-theme="dark"] {
+    --gs-bg: #000000;
+    --gs-item-bg: #000000;
+    --gs-fg: #ffffff;
+    --gs-muted: #cccccc;
+    --gs-border: #ffffff;
+    --gs-accent: #9ec5ff;
+    --gs-accent-fg: #000000;
+    --gs-accent-text: #9ec5ff;
+    --gs-key-bg: #1f1f1f;
+    --gs-key-fg: #ffffff;
+    --gs-key-selected-bg: #ffffff;
+    --gs-invalid: #ff8a8a;
+    --gs-shadow: 0 0 0 1px #ffffff;
+  }
+
+  [data-gridselect] > label,
+  .gridselect__field,
+  .gridselect__search,
+  .gridselect__panel,
+  .gridselect__item {
+    border-width: 2px;
+  }
+
+  /* Matches carry an underline too, so they never depend on colour alone */
+  .gridselect__item[data-match] .gridselect__label {
+    text-decoration: underline 2px;
+    text-underline-offset: 3px;
+  }
+
+  .gridselect__group-label {
+    color: var(--gs-fg);
+    font-size: 0.875em;
+  }
+}

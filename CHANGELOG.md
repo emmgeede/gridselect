@@ -12,6 +12,23 @@ and breaking changes need a new major version.
 
 ## [Unreleased]
 
+### Added
+
+- Themes `high-contrast` (black and white, 2 px borders, 7:1 text, WCAG
+  AAA) and `compact` (dense spacing, colours of the default stylesheet),
+  next to `showcase`.
+- Any file in `themes/` can be imported: `"./themes/*"` export, e.g.
+  `@emmgeede/gridselect/themes/compact.css`.
+- `CONTRIBUTING.md` with the rules for new themes. The browser tests check
+  every theme automatically (axe, text contrast, chevron, focus and cursor,
+  header comment, own layer, light and dark).
+- Demo: a Theme switch (built with GridSelect) offers Default and every
+  theme, remembers the choice, and shows the theme's description.
+
+### Changed
+
+- Demo: the light and dark switch is labelled "Mode".
+
 ## [0.13.0] - 2026-11-02
 
 ### Added

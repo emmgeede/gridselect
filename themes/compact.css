@@ -1,0 +1,50 @@
+/*
+ * @name Compact
+ * @description Dense spacing for data-heavy screens: more entries in less room, colours of the default stylesheet.
+ * @author emmgeede
+ *
+ * Load it after gridselect.css. It only changes sizes and spacing, so colours, contrast and the
+ * light and dark modes come unchanged from gridselect.css. Items stay at least 24 px high
+ * (WCAG 2.5.8 target size).
+ */
+@layer gridselect-compact {
+  :root {
+    --gs-gap: 0.25rem;
+    --gs-item-min-height: 1.5rem;
+    --gs-item-padding: 0.125rem 0.5rem;
+    --gs-item-min-width: 5rem;
+    --gs-panel-width: min(36rem, 100vw - 2rem);
+    --gs-list-max-height: 20rem;
+  }
+
+  [data-gridselect] {
+    font-size: 0.875rem;
+    line-height: 1.3;
+  }
+
+  .gridselect__field {
+    min-height: 2rem;
+    padding: 0.25rem 2rem 0.25rem 0.6rem;
+  }
+
+  .gridselect__panel {
+    padding: 0.5rem;
+  }
+
+  .gridselect__search {
+    min-height: 2rem;
+    margin-bottom: 0.4rem;
+    padding: 0.2rem 0.5rem;
+  }
+
+  .gridselect__items {
+    gap: 0.2rem 0.25rem;
+  }
+
+  .gridselect__key {
+    min-width: 1.5rem;
+    min-height: 1.15rem;
+    margin-inline-start: -0.3rem;
+    font-size: 0.6875rem;
+  }
+}

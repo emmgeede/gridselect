@@ -3,7 +3,9 @@
 /**
  * Runs in the page: contrast ratio between a colour of `el` and the colour behind it.
  * `what` is "text" (color vs. composited background), "border" (border colour vs. the parent's
- * background) or "outline" (outline colour vs. the parent's background).
+ * background), "outline" (outline colour vs. the parent's background), "chevron" (the ::after
+ * border colour vs. the element's background) or "indicator" (the outline if there is one, else
+ * the first box-shadow colour, vs. the element's background for an inset shadow).
  */
 export async function contrast(locator, what = "text") {
   return locator.evaluate((el, what) => {
@@ -41,6 +43,12 @@ export async function contrast(locator, what = "text") {
     if (what === "text") {
       bg = backdrop(el);
       fg = over(parse(s.color), bg);
+    } else if (what === "chevron") {
+      bg = backdrop(el);
+      fg = over(parse(getComputedStyle(el, "::after").borderRightColor), bg);
+    } else if (what === "indicator" && s.outlineStyle === "none") {
+      bg = backdrop(el);
+      fg = over(parse(s.boxShadow), bg);
     } else {
       bg = backdrop(el.parentElement);
       fg = over(parse(what === "border" ? s.borderTopColor : s.outlineColor), bg);

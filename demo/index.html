@@ -6,7 +6,7 @@
 <title>GridSelect demo</title>
 <meta name="description" content="GridSelect: a dependency-free select for short and long lists, with search, keyboard navigation and digit shortcuts.">
 <link rel="stylesheet" href="../src/gridselect.css">
-<link rel="stylesheet" href="../themes/showcase.css" id="showcase">
+<link rel="stylesheet" href="../themes/showcase.css" id="theme-css">
 <style>
   /* Page layout only, in the spirit of a split "changelog" layout: a fixed dark intro column
      on the left, the examples scrolling on the right with their names at the divider.
@@ -71,6 +71,9 @@
   .switches { display: flex; gap: 0.5rem; margin-top: 2rem; padding: 0.3rem; width: fit-content; border-radius: 0.75rem; background: rgb(255 255 255 / 0.04); box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.1); }
   .switches button { font: inherit; font-size: 0.8125rem; font-weight: 600; color: var(--intro-fg); background: rgb(255 255 255 / 0.08); border: 0; border-radius: 0.5rem; padding: 0.45rem 0.8rem; cursor: pointer; }
   .switches button:hover { background: rgb(255 255 255 / 0.14); }
+  .theme-picker { margin-top: 2rem; color: var(--intro-fg); }
+  .theme-picker > legend { color: var(--intro-fg); font-size: 0.8125rem; }
+  .theme-description { margin: 0.6rem 0 0; min-height: 2.6em; font-size: 0.8125rem; line-height: 1.6; color: var(--intro-text); }
   .switches button:focus-visible, .links a:focus-visible { outline: 2px solid var(--intro-accent); outline-offset: 2px; }
   .links { display: flex; flex-wrap: wrap; gap: 0.25rem 1.5rem; margin-top: 2rem; padding: 0; list-style: none; font-size: 0.8125rem; font-weight: 500; }
   .links a { display: inline-flex; align-items: center; gap: 0.45rem; color: var(--intro-fg); text-decoration: none; }
@@ -127,11 +130,12 @@
     </div>
     <h1>One select for every list,<br><span>short or long</span></h1>
     <p>A dependency-free component on top of native radios, checkboxes and selects. Short lists stay visible, long ones open a searchable grid. Full keyboard support, digit shortcuts, light and dark mode, about 5 kB.</p>
+    <fieldset data-gridselect id="theme-picker" class="theme-picker"><legend>Theme</legend></fieldset>
+    <p id="theme-description" class="theme-description" aria-live="polite"></p>
     <div class="switches">
-      <button id="style" type="button">Style: showcase</button>
-      <button id="theme" type="button">Theme: auto</button>
+      <button id="theme" type="button">Mode: auto</button>
     </div>
-    <p class="notice"><strong>About accessibility:</strong> this page uses the optional showcase theme. Text contrast, keyboard use and screen reader support follow WCAG 2.2 AA, but some resting borders are lighter than the 3:1 the default stylesheet keeps. For strict visual compliance use the default stylesheet (switch "Style" above).</p>
+    <p class="notice"><strong>About accessibility:</strong> every theme keeps text contrast, keyboard use and screen reader support at WCAG 2.2 AA. Showcase draws some resting borders lighter than the 3:1 the default stylesheet keeps; for strict visual compliance pick Default, for 7:1 text pick High contrast.</p>
     <ul class="links">
       <li><a href="https://github.com/emmgeede/gridselect"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 1a7 7 0 0 0-2.2 13.6c.35.07.48-.15.48-.34v-1.2c-1.95.42-2.36-.94-2.36-.94-.32-.81-.78-1.03-.78-1.03-.64-.43.05-.42.05-.42.7.05 1.07.72 1.07.72.62 1.07 1.64.76 2.04.58.06-.45.24-.76.44-.94-1.55-.18-3.19-.78-3.19-3.46 0-.76.27-1.39.72-1.88-.07-.18-.31-.89.07-1.85 0 0 .59-.19 1.92.72a6.7 6.7 0 0 1 3.5 0c1.33-.91 1.92-.72 1.92-.72.38.96.14 1.67.07 1.85.45.49.72 1.12.72 1.88 0 2.69-1.64 3.28-3.2 3.45.25.22.47.64.47 1.29v1.91c0 .19.13.41.48.34A7 7 0 0 0 8 1Z"/></svg>GitHub</a></li>
       <li><a href="https://www.npmjs.com/package/@emmgeede/gridselect"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M2 2h12v12H2V2Zm2 2v8h4V6h2v6h2V4H4Z"/></svg>npm</a></li>
@@ -362,24 +366,43 @@ import "@emmgeede/gridselect/element";</code></pre>
     for (const code of codes) group.append(new Option(currencies.find((c) => c.endsWith(`(${code})`)), code));
     regionSelect.append(group);
   }
-  document.querySelectorAll("[data-gridselect]:not(grid-select [data-gridselect])").forEach((el) => gridselect(el));
+  document.querySelectorAll("[data-gridselect]:not(grid-select [data-gridselect]):not(#theme-picker)").forEach((el) => gridselect(el));
 
-  const styleButton = document.getElementById("style");
-  const showcase = document.getElementById("showcase");
-  styleButton.addEventListener("click", () => {
-    showcase.disabled = !showcase.disabled;
-    styleButton.textContent = `Style: ${showcase.disabled ? "default" : "showcase"}`;
-  });
 
-  const themes = ["auto", "light", "dark"];
+  const modes = ["auto", "light", "dark"];
   const button = document.getElementById("theme");
   button.addEventListener("click", () => {
-    const next = themes[(themes.indexOf(button.dataset.theme ?? "auto") + 1) % themes.length];
+    const next = modes[(modes.indexOf(button.dataset.theme ?? "auto") + 1) % modes.length];
     button.dataset.theme = next;
-    button.textContent = `Theme: ${next}`;
+    button.textContent = `Mode: ${next}`;
     if (next === "auto") document.documentElement.removeAttribute("data-theme");
     else document.documentElement.dataset.theme = next;
   });
+
+  // Theme picker: Default plus every theme listed in themes/index.json (built from the CSS headers).
+  const KEY = "gridselect-demo-theme";
+  const sheet = document.getElementById("theme-css");
+  const description = document.getElementById("theme-description");
+  const store = {
+    get() { try { return localStorage.getItem(KEY); } catch { return null; } },
+    set(v) { try { localStorage.setItem(KEY, v); } catch { /* storage blocked: the choice lasts for this visit */ } },
+  };
+  const list = await fetch("../themes/index.json").then((r) => (r.ok ? r.json() : [])).catch(() => []);
+  const themes = [{ value: "default", label: "Default", description: "Only gridselect.css: teal, with 3:1 borders everywhere." },
+    ...list.map((t) => ({ value: t.file.replace(/\.css$/, ""), label: t.name, description: t.description }))];
+  const saved = store.get();
+  const start = themes.some((t) => t.value === saved) ? saved : "showcase";
+  function applyTheme(value) {
+    const theme = themes.find((t) => t.value === value);
+    if (value !== "default") sheet.setAttribute("href", `../themes/${value}.css`);
+    sheet.disabled = value === "default";
+    description.textContent = theme?.description ?? "";
+    store.set(value);
+  }
+  const picker = document.getElementById("theme-picker");
+  gridselect(picker, { name: "theme", items: themes.map(({ value, label }) => ({ value, label })), value: start, shortcuts: false });
+  picker.addEventListener("change", (e) => applyTheme(e.target.value));
+  applyTheme(start);
 </script>
 </body>
 </html>

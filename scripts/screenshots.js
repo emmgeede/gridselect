@@ -7,6 +7,7 @@ import { writeFileSync, mkdtempSync, rmSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { themeList } from "./themes.js";
 
 // Transparent around the card, so the image sits on GitHub's own light or dark background.
 const STAGE = { light: "transparent", dark: "transparent" };
@@ -158,6 +159,18 @@ const animations = {
   ]],
 };
 
+/** One still per theme (and Default): the currency panel filtered for "dollar". */
+const themeShots = Object.fromEntries(["default", ...themeList("themes").map((t) => t.file.replace(/\.css$/, ""))].map((value) => [
+  `theme-${value}`,
+  async (page, scheme) => {
+    await page.locator(`#theme-picker input[value="${value}"]`).evaluate((i) => i.closest("label").click());
+    return shoot(page, scheme, "filter", async () => {
+      await page.locator("#filter [data-gridselect-field]").click();
+      await page.locator("#filter [data-gridselect-search]").fill("dollar");
+    });
+  },
+]));
+
 const shots = {
   short: (page, scheme) => shoot(page, scheme, "short"),
   filter: (page, scheme) =>
@@ -190,7 +203,7 @@ const shots = {
 };
 
 for (const scheme of ["light", "dark"]) {
-  for (const [name, take] of Object.entries(shots)) {
+  for (const [name, take] of Object.entries({ ...shots, ...themeShots })) {
     test(`${name} ${scheme}`, async ({ page }) => {
       await page.emulateMedia({ colorScheme: scheme });
       await page.setViewportSize({ width: 1100, height: 1200 });

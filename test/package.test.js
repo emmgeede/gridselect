@@ -27,7 +27,7 @@ describe("npm package", () => {
     expect(files.map((f) => f.path).sort()).toEqual([
       "CHANGELOG.md", "LICENSE", "README.md", "dist/element.d.ts", "dist/gridselect-element.min.js",
       "dist/gridselect.d.ts", "dist/gridselect.min.js", "package.json", "src/element.js", "src/gridselect.css",
-      "src/gridselect.js", "themes/showcase.css",
+      "src/gridselect.js", "themes/compact.css", "themes/high-contrast.css", "themes/showcase.css",
     ]);
   });
 
@@ -37,7 +37,7 @@ describe("npm package", () => {
     expect(pkg.scripts.prepublishOnly).toMatch(/npm run build/);
     expect(pkg.unpkg).toBe("./dist/gridselect.min.js");
     expect(pkg.jsdelivr).toBe("./dist/gridselect.min.js");
-    expect(Object.keys(pkg.exports)).toEqual([".", "./element", "./gridselect.css", "./themes/showcase.css", "./dist/gridselect.min.js"]);
+    expect(Object.keys(pkg.exports)).toEqual([".", "./element", "./gridselect.css", "./themes/*", "./dist/gridselect.min.js"]);
   });
 });
 

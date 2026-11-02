@@ -82,7 +82,7 @@ for what changed.
   - [`instance.destroy()`](#instancedestroy)
   - [TypeScript](#typescript)
 - [Styling](#styling)
-  - [Showcase theme](#showcase-theme)
+  - [Themes](#themes)
 - [Keyboard](#keyboard)
   - [Digit shortcuts](#digit-shortcuts)
 - [Accessibility](#accessibility)
@@ -567,26 +567,68 @@ modes. If you change colours, keep those ratios. Light or dark follows the
 system; `data-theme="light"` or `data-theme="dark"` on any ancestor (e.g.
 `<html>`) forces one.
 
-### Showcase theme
+### Themes
 
-The screenshots and the demo use an optional second stylesheet with a compact,
-contemporary look: 14 px text, flat rows in the panel, soft fills instead of
-outlines, a check mark on selected entries and small keycap badges. Load it
-after the default stylesheet:
+A theme is one extra stylesheet, loaded after the default one. Each lives in
+its own layer (`gridselect-<name>`), so your own CSS still wins. Pick one in
+the [demo](https://emmgeede.github.io/gridselect/) with the Theme switch.
 
 ```js
 import "@emmgeede/gridselect/gridselect.css";
-import "@emmgeede/gridselect/themes/showcase.css";
+import "@emmgeede/gridselect/themes/high-contrast.css"; // any file in themes/
 ```
 
-It uses sky blue as its accent (the default stylesheet uses teal) and lives
-in its own layer (`gridselect-showcase`), so your own CSS still wins.
-It keeps 4.5:1 for all text and 3:1 for the chevron, focus and cursor, but its
-resting borders are subtle: the field is recognised by its text and chevron,
-and the search input always shows a 3:1 border while it is focused. If you need
-strong borders everywhere, stay with the default stylesheet alone. The theme
-also works as a template for your own: copy it and change the variables.
+| Theme | For | File |
+|---|---|---|
+| Default | Strict WCAG 2.2 AA everywhere, 3:1 borders on every control, teal | `gridselect.css` alone |
+| Showcase | A compact, contemporary look in sky blue: flat rows, check marks, keycap badges | `themes/showcase.css` |
+| High contrast | Low vision: black and white, 2 px borders, 7:1 text (WCAG AAA), underlined matches | `themes/high-contrast.css` |
+| Compact | Data-heavy screens: smaller, denser items, colours of the default stylesheet, items still 24 px high | `themes/compact.css` |
 
+<table>
+<tr>
+<td width="50%">
+<a href="https://emmgeede.github.io/gridselect/"><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/theme-default-dark.png?v=1">
+  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/theme-default-light.png?v=1" width="100%" alt="The currency panel filtered for dollar with the default stylesheet: teal accent, rounded items with 3:1 borders.">
+</picture></a>
+<br><sub><b>Default</b></sub>
+</td>
+<td width="50%">
+<a href="https://emmgeede.github.io/gridselect/"><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/theme-showcase-dark.png?v=1">
+  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/theme-showcase-light.png?v=1" width="100%" alt="The same panel with the showcase theme: sky blue, flat rows, subtle borders.">
+</picture></a>
+<br><sub><b>Showcase</b></sub>
+</td>
+</tr>
+<tr>
+<td width="50%">
+<a href="https://emmgeede.github.io/gridselect/"><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/theme-high-contrast-dark.png?v=1">
+  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/theme-high-contrast-light.png?v=1" width="100%" alt="The same panel with the high contrast theme: black on white, thick borders.">
+</picture></a>
+<br><sub><b>High contrast</b></sub>
+</td>
+<td width="50%">
+<a href="https://emmgeede.github.io/gridselect/"><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/theme-compact-dark.png?v=1">
+  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/theme-compact-light.png?v=1" width="100%" alt="The same panel with the compact theme: default colours, smaller and denser items.">
+</picture></a>
+<br><sub><b>Compact</b></sub>
+</td>
+</tr>
+</table>
+
+Every theme passes the same automatic checks in light and dark mode: axe,
+4.5:1 for all text (7:1 for high contrast) and 3:1 for the chevron, the
+focused search input and the cursor. Showcase keeps its resting borders
+subtle: the field is recognised by its text and chevron, and the search input
+shows a 3:1 border while it is focused. If you need strong borders
+everywhere, use the default stylesheet alone or high contrast.
+
+Want to add a theme? See [CONTRIBUTING.md](CONTRIBUTING.md): one file, a
+header comment, its own layer, and the checks run on their own.
 ## Keyboard
 
 Up to the threshold the keys are native, GridSelect only adds digits (see
@@ -715,7 +757,8 @@ come.
 | Fuzzy matching | available |
 | Auto column width and flow layout | available |
 | Group headings (`<optgroup>`, groups in `items`) | available |
-| Theme gallery, React/Vue wrappers | ideas |
+| Themes: showcase, high contrast, compact, open for contributions | available |
+| React/Vue wrappers | ideas |
 
 ## Browser support
 
