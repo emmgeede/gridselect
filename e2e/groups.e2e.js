@@ -63,3 +63,22 @@ test("arrow down jumps from the last row of a group to the nearest item of the n
   await page.keyboard.press("ArrowUp");
   expect(await cursor()).toBe("GEL");
 });
+
+// QA B1: scrolling up must not park the cursor item under the sticky heading.
+for (const [id, showcase] of [["grouped", false], ["grouped-list", false], ["grouped", true], ["grouped-flow", true]]) {
+  test(`${id}${showcase ? " (showcase)" : ""}: moving up keeps the cursor item clear of the sticky heading`, async ({ page }) => {
+    if (showcase) await page.locator("#style").click();
+    await page.locator(`#${id} [data-gridselect-field]`).click();
+    await page.locator(`#${id} [data-gridselect-scroller]`).evaluate((el) => (el.style.maxHeight = "9rem"));
+    for (let i = 0; i < 12; i++) await page.keyboard.press("ArrowDown");
+    for (let i = 0; i < 8; i++) {
+      await page.keyboard.press("ArrowUp");
+      const covered = await page.locator(`#${id}`).evaluate((w) => {
+        const c = w.querySelector("[data-cursor]").getBoundingClientRect();
+        return [...w.querySelectorAll("[data-gridselect-group-label]")].map((h) => h.getBoundingClientRect())
+          .some((h) => h.height && h.bottom > c.top - 2 && h.top < c.bottom);
+      });
+      expect(covered).toBe(false);
+    }
+  });
+}

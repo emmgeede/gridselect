@@ -251,6 +251,12 @@
     grid-auto-rows: auto;
   }
 
+  /* Keeps the item under the cursor (and its outline) below the sticky heading when the arrow
+     keys scroll it into view: heading height plus room for the outline. */
+  .gridselect__scroller:has(.gridselect__group-label) {
+    scroll-padding-top: calc(1.2em + 0.5rem + var(--gs-focus-width) + 4px);
+  }
+
   .gridselect__group {
     display: grid;
     grid-column: 1 / -1;
