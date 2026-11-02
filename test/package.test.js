@@ -26,8 +26,8 @@ describe("npm package", () => {
     const { files } = Array.isArray(parsed) ? parsed[0] : Object.values(parsed)[0];
     expect(files.map((f) => f.path).sort()).toEqual([
       "CHANGELOG.md", "LICENSE", "README.md", "dist/element.d.ts", "dist/gridselect-element.min.js",
-      "dist/gridselect.d.ts", "dist/gridselect.min.js", "package.json", "src/element.js", "src/gridselect.css",
-      "src/gridselect.js", "themes/compact.css", "themes/high-contrast.css", "themes/showcase.css",
+      "dist/gridselect.d.ts", "dist/gridselect.min.js", "dist/react.d.ts", "dist/vue.d.ts", "package.json", "src/element.js", "src/gridselect.css",
+      "src/gridselect.js", "src/react.js", "src/vue.js", "themes/compact.css", "themes/high-contrast.css", "themes/showcase.css",
     ]);
   });
 
@@ -37,7 +37,10 @@ describe("npm package", () => {
     expect(pkg.scripts.prepublishOnly).toMatch(/npm run build/);
     expect(pkg.unpkg).toBe("./dist/gridselect.min.js");
     expect(pkg.jsdelivr).toBe("./dist/gridselect.min.js");
-    expect(Object.keys(pkg.exports)).toEqual([".", "./element", "./gridselect.css", "./themes/*", "./dist/gridselect.min.js"]);
+    expect(Object.keys(pkg.exports)).toEqual([".", "./element", "./react", "./vue", "./gridselect.css", "./themes/*", "./dist/gridselect.min.js"]);
+    expect(pkg.dependencies ?? {}).toEqual({});
+    expect(pkg.peerDependencies).toEqual({ react: ">=18", vue: ">=3.3" });
+    expect(pkg.peerDependenciesMeta).toEqual({ react: { optional: true }, vue: { optional: true } });
   });
 });
 
@@ -55,6 +58,15 @@ describe("size budget (PRD principle 6: core 7 kB, with element 8.5 kB since F14
     const size = (f) => gzipSync(readFileSync(f), { level: 9 }).length;
     expect(size("dist/gridselect.min.js")).toBeLessThanOrEqual(7168);
     expect(size("dist/gridselect-element.min.js")).toBeLessThanOrEqual(8704);
+  });
+
+  it("keeps each framework wrapper under 1 kB min+gzip, without React, Vue and the element (F13)", async () => {
+    const { build } = await import("esbuild");
+    for (const file of ["src/react.js", "src/vue.js"]) {
+      const out = await build({ entryPoints: [file], bundle: true, minify: true, write: false, format: "esm",
+        external: ["react", "vue", "./element.js"] });
+      expect(gzipSync(out.outputFiles[0].contents, { level: 9 }).length, file).toBeLessThanOrEqual(1024);
+    }
   });
 
   it("registers the element from the IIFE build", () => {

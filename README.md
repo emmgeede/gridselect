@@ -68,6 +68,7 @@ for what changed.
   - [Reacting to changes](#reacting-to-changes)
   - [Several at once](#several-at-once)
 - [`<grid-select>`](#grid-select)
+- [React and Vue](#react-and-vue)
 - [API](#api)
   - [`gridselect(wrapper, options?)`](#gridselectwrapper-options)
   - [Options](#options)
@@ -219,6 +220,78 @@ the focus. An option with an empty value is the placeholder, an option without
 In React, Vue, Svelte or Angular write `<grid-select>` like any HTML element.
 For events, add a native listener (`addEventListener("change", …)`, in React
 via a ref) rather than relying on framework-specific change props.
+
+## React and Vue
+
+Thin wrappers around `<grid-select>`, in the same package. React (18 or 19)
+and Vue (3.3 or newer) are optional peer dependencies: install them only if
+you use the wrapper.
+
+```jsx
+import { GridSelect } from "@emmgeede/gridselect/react";
+import "@emmgeede/gridselect/gridselect.css";
+
+function CurrencyField() {
+  const [currency, setCurrency] = useState("CHF");
+  return (
+    <GridSelect name="currency" label="Currency" items={currencies}
+      value={currency} onChange={setCurrency} search="highlight" />
+  );
+}
+```
+
+- `value` with `onChange(value)` is a controlled field: the element always
+  shows `value`. `defaultValue` makes it uncontrolled.
+- `items` takes the same format as [Entries from JavaScript](#entries-from-javascript),
+  groups included. `<option>` and `<optgroup>` children work too.
+- The other attributes of `<grid-select>` are props in camelCase:
+  `ariaLabel`, `multiple`, `threshold`, `layout`, `search`, `match`,
+  `placeholder`, `searchPlaceholder`, `required`, `disabled`, and `shortcuts`
+  as an array or `false`.
+- `ref` points to the `<grid-select>` element.
+
+```vue
+<script setup>
+import { ref } from "vue";
+import { GridSelect } from "@emmgeede/gridselect/vue";
+const currency = ref("CHF");
+</script>
+
+<template>
+  <GridSelect v-model="currency" name="currency" label="Currency" :items="currencies" />
+</template>
+```
+
+The Vue component takes the same props, supports `v-model` and passes the
+native `change` and `input` events on. If you use `<grid-select>` directly in
+Vue templates, tell the compiler it is a custom element
+(`compilerOptions.isCustomElement: (tag) => tag === "grid-select"`).
+
+Svelte, Angular and others use the element itself:
+
+```svelte
+<script>
+  import "@emmgeede/gridselect/element";
+  let currency = $state("CHF");
+</script>
+
+<grid-select name="currency" label="Currency" value={currency}
+  onchange={(e) => (currency = e.currentTarget.value)}>
+  <option value="EUR">Euro</option>
+  <option value="CHF">Swiss franc</option>
+</grid-select>
+```
+
+```ts
+// Angular: allow custom elements in the component, then bind as usual
+@Component({
+  selector: "app-currency",
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  template: `<grid-select name="currency" label="Currency" [items]="currencies"
+    (change)="currency = $any($event.currentTarget).value"></grid-select>`,
+})
+export class CurrencyComponent { currencies = ["EUR", "CHF"]; currency = "CHF"; }
+```
 
 ## API
 
@@ -758,7 +831,7 @@ come.
 | Auto column width and flow layout | available |
 | Group headings (`<optgroup>`, groups in `items`) | available |
 | Themes: showcase, high contrast, compact, open for contributions | available |
-| React/Vue wrappers | ideas |
+| React and Vue wrappers | available |
 
 ## Browser support
 

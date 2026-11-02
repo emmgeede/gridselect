@@ -18,6 +18,14 @@
       "types": "./dist/element.d.ts",
       "default": "./src/element.js"
     },
+    "./react": {
+      "types": "./dist/react.d.ts",
+      "default": "./src/react.js"
+    },
+    "./vue": {
+      "types": "./dist/vue.d.ts",
+      "default": "./src/vue.js"
+    },
     "./gridselect.css": "./src/gridselect.css",
     "./themes/*": "./themes/*",
     "./dist/gridselect.min.js": "./dist/gridselect.min.js"
@@ -25,10 +33,14 @@
   "files": [
     "src/gridselect.js",
     "src/element.js",
+    "src/react.js",
+    "src/vue.js",
     "src/gridselect.css",
     "themes/*.css",
     "dist/gridselect.d.ts",
     "dist/element.d.ts",
+    "dist/react.d.ts",
+    "dist/vue.d.ts",
     "dist/gridselect.min.js",
     "dist/gridselect-element.min.js",
     "CHANGELOG.md"
@@ -47,10 +59,15 @@
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",
     "@playwright/test": "^1.64.1",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
     "esbuild": "^0.28.2",
     "jsdom": "^30.1.3",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
     "typescript": "^7.0.2",
-    "vitest": "^5.0.5"
+    "vitest": "^5.0.5",
+    "vue": "^3.5.44"
   },
   "style": "./src/gridselect.css",
   "unpkg": "./dist/gridselect.min.js",
@@ -71,5 +88,17 @@
   "bugs": "https://github.com/emmgeede/gridselect/issues",
   "publishConfig": {
     "access": "public"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "vue": ">=3.3"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "vue": {
+      "optional": true
+    }
   }
 }

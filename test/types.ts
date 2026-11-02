@@ -49,3 +49,15 @@ gridselect(document.body, { match: "fuzzy" });
 gridselect(document.body, { match: "regex" });
 
 gridselect(document.body, { layout: "flow" });
+
+// F13: wrappers
+import { createElement } from "react";
+import { GridSelect as ReactGridSelect } from "@emmgeede/gridselect/react";
+import { GridSelect as VueGridSelect } from "@emmgeede/gridselect/vue";
+createElement(ReactGridSelect, { value: "a", onChange: (v) => console.log(v), items: ["a", { label: "G", items: ["b"] }], layout: "flow", shortcuts: false });
+// @ts-expect-error unknown layout
+createElement(ReactGridSelect, { layout: "table" });
+type VueProps = InstanceType<typeof VueGridSelect>["$props"];
+const vueOk: VueProps = { modelValue: ["a"], items: ["a"], layout: "list", searchPlaceholder: "x" };
+// @ts-expect-error unknown layout
+const vueBad: VueProps = { layout: "table" };

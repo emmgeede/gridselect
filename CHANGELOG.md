@@ -12,6 +12,14 @@ and breaking changes need a new major version.
 
 ## [Unreleased]
 
+### Added
+
+- React and Vue wrappers: `@emmgeede/gridselect/react` (`<GridSelect>` with
+  `value`/`onChange`, `defaultValue`, `items`, props in camelCase, `ref`;
+  React 18 and 19) and `@emmgeede/gridselect/vue` (`v-model`, the same
+  props, `change` and `input` passed on; Vue 3.3+). Both wrap
+  `<grid-select>`; React and Vue are optional peer dependencies.
+
 ## [0.14.0] - 2026-11-02
 
 ### Added
