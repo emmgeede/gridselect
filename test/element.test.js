@@ -174,3 +174,20 @@ describe("QA F10 fixes", () => {
     expect(el.value).toEqual(["y"]);
   });
 });
+
+describe("options that arrive after the element (parser, streaming)", () => {
+  it("takes selected options and the value attribute until someone picks", async () => {
+    const el = document.createElement("grid-select");
+    el.setAttribute("label", "x");
+    document.body.append(el);
+    el.innerHTML = '<option value="a">A</option><option value="b" selected>B</option>';
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(el.value).toBe("b");
+    el.querySelector('input[value="a"]').click();
+    el.append(new Option("C", "c"));
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(el.value).toBe("a"); // a pick wins over the markup
+  });
+});

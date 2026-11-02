@@ -12,6 +12,27 @@ and breaking changes need a new major version.
 
 ## [Unreleased]
 
+### Added
+
+- `<grid-select>` is a form control of its own (ElementInternals): it is in
+  `form.elements`, submits its value under `name` (each value with
+  `multiple`), and has `form`, `validity`, `validationMessage`,
+  `willValidate`, `checkValidity()`, `reportValidity()` and
+  `setCustomValidity()`. `required` uses the browser's message and
+  `:invalid`; reset, a disabled fieldset and back/forward restore work like
+  on native fields. Browsers without ElementInternals keep the inner inputs.
+
+### Fixed
+
+- `<grid-select>` that is already defined while the page is parsed (script
+  in `<head>`) now takes `selected` options and the `value` attribute that
+  arrive after it; before, the first, empty build won. Once someone picks,
+  their choice wins over later markup changes.
+
+### Changed
+
+- Size budget: core plus element 10.5 kB (min+gzip).
+
 ## [0.20.0] - 2026-11-02
 
 ### Added

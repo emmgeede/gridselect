@@ -34,6 +34,102 @@ export class GridSelectElement extends Base {
     return ATTRIBUTES;
   }
 
+  // A real form control (form.elements, validity, reset) where ElementInternals can set a value.
+  static formAssociated = true;
+  /** @type {ElementInternals | null} null: the inner inputs submit, as before */
+  #internals = null;
+  #formDisabled = false;
+  #custom = "";
+
+  constructor() {
+    super();
+    const i = typeof this.attachInternals === "function" ? this.attachInternals() : null;
+    if (typeof i?.setFormValue === "function") this.#internals = i;
+  }
+
+  /** Value and validity for the form, after every build and change. */
+  #sync() {
+    const i = this.#internals;
+    if (!i || !this.#gs) return;
+    const list = asList(this.#gs.value);
+    const name = this.getAttribute("name");
+    /** @type {FormData | string | null} */
+    let data = null;
+    if (name && list.length && this.hasAttribute("multiple")) {
+      data = new FormData();
+      for (const v of list) data.append(name, v);
+    } else if (name && list.length) data = list[0];
+    i.setFormValue(data, JSON.stringify(list));
+    const anchor = /** @type {HTMLElement | undefined} */ (this.querySelector("[data-gridselect-field]") ?? this.querySelector("input:not(:disabled)") ?? undefined);
+    if (this.#custom) i.setValidity({ customError: true }, this.#custom, anchor);
+    else if (this.hasAttribute("required") && !list.length) {
+      // The browser's own words for an empty required select.
+      const probe = this.ownerDocument.createElement("select");
+      probe.required = true;
+      i.setValidity({ valueMissing: true }, probe.validationMessage || "Please select an item in the list.", anchor);
+    } else i.setValidity({});
+  }
+
+  #onChange = () => {
+    this.#dirty = true;
+    for (const el of this.querySelectorAll("[aria-invalid]")) el.removeAttribute("aria-invalid");
+    this.#sync();
+  };
+
+  /** A blocked submit: mark the field (or the inputs) as invalid, like gridselect() does. */
+  #onInvalid = () => {
+    const field = this.querySelector("[data-gridselect-field]");
+    for (const el of field ? [field] : this.querySelectorAll("input")) el.setAttribute("aria-invalid", "true");
+  };
+
+  get form() {
+    return this.#internals?.form ?? null;
+  }
+  get name() {
+    return this.getAttribute("name") ?? "";
+  }
+  set name(v) {
+    this.setAttribute("name", v);
+  }
+  /** @returns {ValidityState} */
+  get validity() {
+    return /** @type {ValidityState} */ (this.#internals?.validity);
+  }
+  get validationMessage() {
+    return this.#internals?.validationMessage ?? "";
+  }
+  get willValidate() {
+    return this.#internals?.willValidate ?? false;
+  }
+  checkValidity() {
+    return this.#internals?.checkValidity() ?? true;
+  }
+  reportValidity() {
+    return this.#internals?.reportValidity() ?? true;
+  }
+  /** @param {string} message empty to clear */
+  setCustomValidity(message) {
+    this.#custom = String(message);
+    this.#sync();
+  }
+  formResetCallback() {
+    this.#pendingValue = undefined;
+    this.#dirty = false;
+    this.#rebuild(true);
+  }
+  /** @param {boolean} disabled */
+  formDisabledCallback(disabled) {
+    this.#formDisabled = disabled;
+    if (this.#fieldset) this.#fieldset.disabled = disabled || this.hasAttribute("disabled");
+  }
+  /** @param {string} state the JSON list given to setFormValue */
+  formStateRestoreCallback(state) {
+    try {
+      const list = JSON.parse(state);
+      this.value = this.hasAttribute("multiple") ? list : (list[0] ?? null);
+    } catch { /* not ours: ignore */ }
+  }
+
   /** @type {import("./gridselect.js").GridSelect | null} */
   #gs = null;
   /** @type {HTMLFieldSetElement | null} */
@@ -47,6 +143,8 @@ export class GridSelectElement extends Base {
   #queued = false;
   /** @type {unknown} Value set before the element is built (frameworks do that); applied on build. */
   #pendingValue = undefined;
+  /** Someone picked or code set a value: from then on rebuilds keep the choice, before that the markup decides. */
+  #dirty = false;
 
   connectedCallback() {
     // Frameworks may set properties before the element is defined; take them over now.
@@ -57,6 +155,8 @@ export class GridSelectElement extends Base {
         /** @type {any} */ (this)[prop] = v;
       }
     }
+    this.addEventListener("change", this.#onChange);
+    this.addEventListener("invalid", this.#onInvalid);
     this.#build();
     this.#observer = new MutationObserver((list) => this.#onMutations(list));
     this.#observer.observe(this, { childList: true, subtree: true, characterData: true,
@@ -66,6 +166,8 @@ export class GridSelectElement extends Base {
   disconnectedCallback() {
     this.#observer?.disconnect();
     this.#observer = null;
+    this.removeEventListener("change", this.#onChange);
+    this.removeEventListener("invalid", this.#onInvalid);
     this.#teardown();
   }
 
@@ -81,8 +183,10 @@ export class GridSelectElement extends Base {
   }
 
   set value(v) {
+    this.#dirty = true;
     if (this.#gs) this.#gs.value = v;
     else this.#pendingValue = v;
+    this.#sync();
   }
 
   /** Entries as in the `items` option; when set they replace the <option> children as source. */
@@ -150,7 +254,7 @@ export class GridSelectElement extends Base {
       fieldset.append(legend);
     } else if (ariaLabel !== null) fieldset.setAttribute("aria-label", ariaLabel);
     else console.warn("gridselect: <grid-select> needs a label or aria-label attribute, a group without a name fails WCAG");
-    if (this.hasAttribute("disabled")) fieldset.disabled = true;
+    if (this.hasAttribute("disabled") || this.#formDisabled) fieldset.disabled = true;
     this.append(fieldset);
     this.#fieldset = fieldset;
 
@@ -159,7 +263,8 @@ export class GridSelectElement extends Base {
     this.#gs = gridselect(fieldset, {
       items,
       multiple,
-      name: attr("name") ?? undefined,
+      // With ElementInternals the element submits; unnamed inner inputs point to no form.
+      name: this.#internals ? undefined : (attr("name") ?? undefined),
       value: multiple ? value : value[0],
       threshold: threshold !== null && /^\d+$/.test(threshold) ? Number(threshold) : undefined,
       layout: /** @type {any} */ (attr("layout") ?? undefined),
@@ -179,6 +284,7 @@ export class GridSelectElement extends Base {
       recentText: attr("recent-text") ?? undefined,
     });
     if (this.hasAttribute("required")) for (const i of fieldset.querySelectorAll("input")) i.required = true;
+    this.#sync();
   }
 
   #teardown() {
@@ -192,7 +298,7 @@ export class GridSelectElement extends Base {
 
   /** Rebuilds with the current choice (or the value attribute) and keeps the focus in place. */
   #rebuild(/** @type {boolean} */ useValueAttribute) {
-    const chosen = useValueAttribute ? undefined : asList(this.#gs?.value);
+    const chosen = useValueAttribute || !this.#dirty ? undefined : asList(this.#gs?.value);
     const active = /** @type {HTMLElement | null} */ (this.ownerDocument.activeElement);
     const hadFocus = !!active && !!this.#fieldset?.contains(active);
     const focusedValue = active instanceof HTMLInputElement ? active.value : undefined;

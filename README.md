@@ -224,6 +224,17 @@ as frameworks do all the time, the element rebuilds and keeps the choice and
 the focus. An option with an empty value is the placeholder, an option without
 `value` uses its text.
 
+In forms `<grid-select>` is a form control of its own, like a `<select>`:
+it appears in `form.elements`, submits its value under `name` (each value
+separately with `multiple`), and has `el.form`, `el.validity`,
+`el.validationMessage`, `el.willValidate`, `checkValidity()`,
+`reportValidity()` and `setCustomValidity()`. With `required` and nothing
+chosen it is invalid with the browser's own message, matches `:invalid`, and
+a submit is blocked with the focus on the field. A form reset brings back the
+start value, a disabled `<fieldset>` around it disables it, and the browser's
+back and forward buttons restore the choice. So `new FormData(form)` just
+works. (Browsers without `ElementInternals` fall back to the inner inputs.)
+
 In React, Vue, Svelte or Angular write `<grid-select>` like any HTML element.
 For events, add a native listener (`addEventListener("change", …)`, in React
 via a ref) rather than relying on framework-specific change props.
@@ -960,6 +971,7 @@ been done.
 | Descriptions (a second line per entry) | available |
 | Panel opens where there is room, up to the window edge | available |
 | Panel in the full window width | available |
+| `<grid-select>` as a form control (validity, reset, `FormData`) | available |
 | Themes: showcase, high contrast, compact, open for contributions | available |
 | React and Vue wrappers | available |
 

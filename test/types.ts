@@ -96,3 +96,10 @@ gridselect(document.body, { panelWidth: "fixed" });
 gridselect(document.body, { panelWidth: "wide" });
 createElement(ReactGridSelect, { panelWidth: "full" });
 const vueWidth: VueProps = { panelWidth: "fixed" };
+
+// F19: form control
+const gsEl = document.createElement("grid-select");
+const ok: boolean = gsEl.checkValidity() && gsEl.reportValidity() && gsEl.validity.valueMissing && gsEl.willValidate;
+const owner: HTMLFormElement | null = gsEl.form;
+gsEl.setCustomValidity("");
+const msg: string = gsEl.validationMessage + gsEl.name;
