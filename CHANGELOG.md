@@ -12,6 +12,11 @@ new major version.
 
 ## [Unreleased]
 
+### Changed
+
+- Documentation: the live examples use the showcase theme, checked with axe
+  in light and dark mode.
+
 ## [1.0.0] - 2026-11-02
 
 The first stable release. From here on the JavaScript API, the options and

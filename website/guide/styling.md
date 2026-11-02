@@ -1,6 +1,6 @@
 # Styling and themes
 
-Variables on any ancestor change the look; here `--gs-accent` and `--gs-radius`:
+The examples in this documentation use the showcase theme (see below). Variables on any ancestor change the look; here `--gs-accent` and `--gs-radius`:
 
 <Example>
   <fieldset data-gridselect style="--gs-accent: #7c3aed; --gs-accent-fg: #ffffff; --gs-radius: 6px">

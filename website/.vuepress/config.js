@@ -20,7 +20,7 @@ export default defineUserConfig({
     viteOptions: { server: { fs: { allow: [path.resolve(__dirname, "../..")] } } },
     vuePluginOptions: { template: { compilerOptions: { isCustomElement: (tag) => tag === "grid-select" } } },
   }),
-  alias: { "@gridselect": path.resolve(__dirname, "../../src") },
+  alias: { "@gridselect": path.resolve(__dirname, "../../src"), "@themes": path.resolve(__dirname, "../../themes") },
   theme: defaultTheme({
     logo: "/logo.svg",
     repo: "emmgeede/gridselect",

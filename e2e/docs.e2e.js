@@ -28,8 +28,9 @@ async function crawl(page) {
   return { pages: [...seen], links };
 }
 
-test("every page loads, every internal link and anchor resolves, axe finds nothing", async ({ page }) => {
+for (const scheme of ["light", "dark"]) test(`every page loads, every internal link and anchor resolves, axe finds nothing (${scheme})`, async ({ page }) => {
   test.setTimeout(240_000);
+  await page.emulateMedia({ colorScheme: scheme });
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
   page.on("response", (r) => r.status() >= 400 && errors.push(`${r.status()} ${r.url()}`));
@@ -49,8 +50,11 @@ test("every page loads, every internal link and anchor resolves, axe finds nothi
   expect(errors).toEqual([]);
 });
 
-test("the live examples run", async ({ page }) => {
+test("the live examples run, styled by the showcase theme", async ({ page }) => {
   await page.goto(`${ROOT}/docs/guide/search.html`);
+  expect(await page.evaluate(() => [...document.styleSheets].some((s) => {
+    try { return [...s.cssRules].some((r) => r instanceof CSSLayerBlockRule && r.name === "gridselect-showcase"); } catch { return false; }
+  }))).toBe(true);
   const examples = page.locator(".gs-example");
   await expect(examples).toHaveCount(2);
   await examples.first().locator("[data-gridselect-field]").click();
