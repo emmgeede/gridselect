@@ -69,6 +69,9 @@ for what changed.
   - [Several at once](#several-at-once)
 - [`<grid-select>`](#grid-select)
 - [React and Vue](#react-and-vue)
+  - [React](#react)
+  - [Vue](#vue)
+  - [Svelte, Angular and others](#svelte-angular-and-others)
 - [API](#api)
   - [`gridselect(wrapper, options?)`](#gridselectwrapper-options)
   - [Options](#options)
@@ -230,6 +233,8 @@ Thin wrappers around `<grid-select>`, in the same package. React (18 or 19)
 and Vue (3.3 or newer) are optional peer dependencies: install them only if
 you use the wrapper.
 
+### React
+
 ```jsx
 import { GridSelect } from "@emmgeede/gridselect/react";
 import "@emmgeede/gridselect/gridselect.css";
@@ -254,6 +259,8 @@ function CurrencyField() {
   array or `false`.
 - `ref` points to the `<grid-select>` element.
 
+### Vue
+
 ```vue
 <script setup>
 import { ref } from "vue";
@@ -271,7 +278,9 @@ native `change` and `input` events on. If you use `<grid-select>` directly in
 Vue templates, tell the compiler it is a custom element
 (`compilerOptions.isCustomElement: (tag) => tag === "grid-select"`).
 
-Svelte, Angular and others use the element itself:
+### Svelte, Angular and others
+
+These frameworks use the element itself:
 
 ```svelte
 <script>
