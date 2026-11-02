@@ -60,7 +60,7 @@ export class GridSelectElement extends Base {
     this.#build();
     this.#observer = new MutationObserver((list) => this.#onMutations(list));
     this.#observer.observe(this, { childList: true, subtree: true, characterData: true,
-      attributes: true, attributeFilter: ["value", "label", "disabled", "selected"] });
+      attributes: true, attributeFilter: ["value", "label", "disabled", "selected", "data-description"] });
   }
 
   disconnectedCallback() {

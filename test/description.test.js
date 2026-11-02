@@ -111,3 +111,14 @@ describe("element and wrappers", () => {
     expect(item(el, "GBP").hasAttribute("aria-describedby")).toBe(false); // empty description: none
   });
 });
+
+describe("QA F18", () => {
+  it("B1: <grid-select> rebuilds when an option's data-description changes", async () => {
+    document.body.innerHTML = `<grid-select label="x"><option value="a" data-description="old">A</option><option value="b">B</option></grid-select>`;
+    const el = document.querySelector("grid-select");
+    el.querySelector("option").dataset.description = "new";
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(el.querySelector('input[value="a"]').labels[0].querySelector("[data-gridselect-description]").textContent).toBe("new");
+  });
+});
