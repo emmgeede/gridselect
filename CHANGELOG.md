@@ -12,6 +12,8 @@ and breaking changes need a new major version.
 
 ## [Unreleased]
 
+## [0.18.0] - 2026-11-02
+
 ### Added
 
 - Descriptions: a second line per entry from `description` in `items`,
@@ -340,7 +342,8 @@ and breaking changes need a new major version.
   radios with different names. Warning for duplicate values.
 - TypeScript declarations generated from JSDoc.
 
-[Unreleased]: https://github.com/emmgeede/gridselect/compare/v0.17.0...HEAD
+[Unreleased]: https://github.com/emmgeede/gridselect/compare/v0.18.0...HEAD
+[0.18.0]: https://github.com/emmgeede/gridselect/compare/v0.17.0...v0.18.0
 [0.17.0]: https://github.com/emmgeede/gridselect/compare/v0.16.0...v0.17.0
 [0.16.0]: https://github.com/emmgeede/gridselect/compare/v0.15.0...v0.16.0
 [0.15.0]: https://github.com/emmgeede/gridselect/compare/v0.14.0...v0.15.0
