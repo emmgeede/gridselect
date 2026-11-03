@@ -58,6 +58,9 @@ const groupOf = new WeakMap();
  *   one row; "fixed": --gs-panel-width from the field's edge.
  * @property {string} [panelContainer] With panelWidth "full": the panel stays within the content box of
  *   the closest ancestor with data-gridselect-container="<this name>" (and 10 px inside the window).
+ * @property {boolean} [sheet] false: phones (touch, at most 640 px wide) get the normal panel
+ *   instead of a full-screen sheet. Default true.
+ * @property {string} [closeText] Accessible name of the close button on touch screens. Default "Close".
  * @property {"auto" | "fixed"} [panelHeight] "auto" (default) opens the panel towards the room it
  *   needs and lets it grow up to the window edge; "fixed" always opens below, the list as high as
  *   --gs-list-max-height.
@@ -874,6 +877,17 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
 
   const panel = create(doc, "div", "panel");
   setHidden(panel, true);
+  panel.tabIndex = -1;
+  // Touch screens: a title (phones) and a close button above the search.
+  const head = create(doc, "div", "head");
+  const title = create(doc, "div", "title");
+  title.setAttribute("aria-hidden", "true");
+  const closer = create(doc, "button", "close");
+  closer.type = "button";
+  closer.tabIndex = -1;
+  closer.setAttribute("aria-label", typeof opts.closeText === "string" ? opts.closeText : "Close");
+  closer.textContent = "✕";
+  head.append(title, closer);
 
   const search = create(doc, "input", "search");
   search.type = "text";
@@ -1038,7 +1052,7 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
   const status = statusRegion(doc);
   /** @type {(n: number) => string} */
   const resultsText = typeof opts.resultsText === "function" ? opts.resultsText : (n) => (n === 1 ? "1 result" : `${n} results`);
-  panel.append(search, scroller, empty, status);
+  panel.append(head, search, scroller, empty, status);
   const keys = radios.map((r) => fold(labelText(r)));
   const descKeys = (opts.searchDescription ?? wrapper.hasAttribute("data-search-description")) ? radios.map((r) => fold(descText(r))) : null;
   const highlight = (opts.search ?? wrapper.getAttribute("data-search")) === "highlight";
@@ -1216,8 +1230,15 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
     search.setAttribute("aria-expanded", "true");
     applyQuery();
     if (!isList && !isFlow) measure();
+    const matches = (/** @type {string} */ q) => !!view?.matchMedia?.(q).matches;
+    const touch = matches("(pointer: coarse)");
+    panel.toggleAttribute("data-sheet", touch && matches("(max-width: 640px)") && opts.sheet !== false && wrapper.getAttribute("data-sheet") !== "off");
+    title.textContent = nameEl?.textContent ?? ariaLabel ?? "";
+    setHidden(head, !touch);
+    setHidden(title, !panel.hasAttribute("data-sheet"));
     place();
-    search.focus();
+    // On touch screens the keyboard only comes up when someone taps the search.
+    (touch ? panel : search).focus();
     doc.addEventListener("click", onOutsideClick, true);
     view?.addEventListener("scroll", place, { passive: true });
     view?.addEventListener("resize", place);
@@ -1241,7 +1262,10 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
   function place() {
     scroller.style.maxHeight = "";
     panel.removeAttribute("data-placement");
-    Object.assign(panel.style, { width: "", maxWidth: "", left: "", right: "" });
+    Object.assign(panel.style, { width: "", maxWidth: "", left: "", right: "", top: "", height: "" });
+    const vv = view?.visualViewport;
+    // The sheet covers the visible part, which the on-screen keyboard shrinks.
+    if (panel.hasAttribute("data-sheet")) return void (vv && Object.assign(panel.style, { top: `${vv.offsetTop}px`, height: `${vv.height}px` }));
     const f = field.getBoundingClientRect();
     if (!view || !f.height) return;
     if ((opts.panelWidth ?? wrapper.getAttribute("data-panel-width")) !== "fixed") {
@@ -1281,7 +1305,6 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
     const chrome = p.height - scroller.getBoundingClientRect().height;
     const offset = p.top - f.bottom; // the gap CSS puts between field and panel
     // The visible part: on phones the on-screen keyboard shrinks it, not innerHeight.
-    const vv = view.visualViewport;
     const top = vv ? vv.offsetTop : 0;
     const below = (vv ? top + vv.height : view.innerHeight) - f.bottom - offset - 8;
     const above = f.top - top - offset - 8;
@@ -1382,9 +1405,10 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
     return best.pos - cursor;
   }
 
-  search.addEventListener("keydown", (e) => {
+  closer.addEventListener("click", () => close());
+  panel.addEventListener("keydown", (e) => {
     // Keys during an IME composition belong to the input method, not to us.
-    if (e.isComposing) return;
+    if (e.isComposing || e.target === closer) return;
     // Tier digits always pick and are never typed, even without a matching item.
     const pos = tiers.length ? positionOf(tiers, e) : -1;
     if (pos >= 0) {

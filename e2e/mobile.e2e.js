@@ -56,3 +56,65 @@ test("phone width: no horizontal scrolling with the panel open, on the demo and 
     expect(p.right, url).toBeLessThanOrEqual(await page.evaluate(() => document.documentElement.clientWidth));
   }
 });
+
+// F25: phones get a full-screen sheet, touch screens a close button and no digit badges.
+import AxeBuilder from "@axe-core/playwright";
+
+test("phone: the sheet covers the screen, title and close button on top, no keyboard, axe clean", async ({ page }) => {
+  await page.goto("/playground/");
+  await field(page, "filter").scrollIntoViewIfNeeded();
+  await field(page, "filter").tap();
+  const p = await panel(page, "filter").evaluate((el) => el.getBoundingClientRect().toJSON());
+  const vp = page.viewportSize();
+  expect([Math.round(p.left), Math.round(p.top), Math.round(p.width), Math.round(p.height)]).toEqual([0, 0, vp.width, vp.height]);
+  await expect(page.locator("#filter [data-gridselect-title]")).toHaveText("Currency");
+  await expect(page.locator("#filter [data-gridselect-close]")).toBeVisible();
+  await expect(page.locator("#filter [data-gridselect-search]")).not.toBeFocused();
+  await expect(page.locator("#filter [data-gridselect-key]").first()).toBeHidden();
+  const { violations } = await new AxeBuilder({ page }).include("#filter").withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"]).analyze();
+  expect(violations).toEqual([]);
+  // The list scrolls inside the sheet; tapping close returns to the page.
+  expect(await page.locator("#filter [data-gridselect-scroller]").evaluate((el) => el.scrollHeight > el.clientHeight)).toBe(true);
+  await page.locator("#filter [data-gridselect-close]").tap();
+  await expect(panel(page, "filter")).toBeHidden();
+  await expect(field(page, "filter")).toBeFocused();
+});
+
+test("phone: tapping into the search and picking works in the sheet", async ({ page }) => {
+  await page.goto("/playground/");
+  await field(page, "filter").tap();
+  await page.locator("#filter [data-gridselect-search]").tap();
+  await page.locator("#filter [data-gridselect-search]").fill("yen");
+  await page.locator("#filter [data-gridselect-item]:visible").first().tap();
+  await expect(field(page, "filter")).toHaveText("Japanese yen (JPY)");
+});
+
+test.describe("tablet", () => {
+  const { defaultBrowserType: _, ...iPad } = devices["iPad (gen 7)"];
+  test.use({ ...iPad });
+  test("normal panel with a close button, digits hidden", async ({ page }) => {
+    await page.goto("/playground/");
+    await field(page, "filter").tap();
+    await expect(panel(page, "filter")).not.toHaveAttribute("data-sheet", "");
+    await expect(page.locator("#filter [data-gridselect-close]")).toBeVisible();
+    await expect(page.locator("#filter [data-gridselect-title]")).toBeHidden();
+    await expect(page.locator("#filter [data-gridselect-key]").first()).toBeHidden();
+  });
+});
+
+test.describe("desktop", () => {
+  test.use({ isMobile: false, hasTouch: false, viewport: { width: 1280, height: 800 } });
+  test("unchanged: no head, search focused, digits shown", async ({ page }) => {
+    await page.goto("/playground/");
+    await field(page, "filter").click();
+    await expect(page.locator("#filter [data-gridselect-head]")).toBeHidden();
+    await expect(page.locator("#filter [data-gridselect-search]")).toBeFocused();
+    await expect(page.locator("#filter [data-gridselect-key]").first()).toBeVisible();
+  });
+});
+
+test("phone: the sheet keeps square edges in the showcase theme too", async ({ page }) => {
+  await page.goto("/demo/");
+  await field(page, "filter").tap();
+  expect(await panel(page, "filter").evaluate((el) => [getComputedStyle(el).borderTopLeftRadius, getComputedStyle(el).borderTopWidth])).toEqual(["0px", "0px"]);
+});

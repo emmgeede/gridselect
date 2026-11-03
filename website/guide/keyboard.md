@@ -51,6 +51,8 @@ Moving the cursor step by step is slow when a list has forty entries. GridSelect
 
 Because there are only ten digits, items beyond the tenth are reached with a modifier key. Each group of ten items that shares one modifier is called a **tier**. By default the first tier uses the plain digits 1 to 9 and 0 for items 1 to 10, the second tier uses Shift with a digit for items 11 to 20, and the third tier uses Alt with a digit for items 21 to 30. The badge shows the modifier as a letter before the digit: `S1` means Shift and 1, `A1` means Alt and 1. Letters are used instead of symbols such as ⇧ because many people find those symbols hard to recognise.
 
+On devices that are operated by touch alone, such as phones, the badges are hidden: without a hardware keyboard there are no digit keys to press, and tapping an item picks it directly.
+
 <a href="https://gridselect.im/demo/">
 <picture>
   <source media="(prefers-reduced-motion: reduce) and (prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/digits-dark.png?v=3">

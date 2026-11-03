@@ -28,6 +28,8 @@ Most options can also be written as a `data-` attribute on the wrapper, which is
 | `layout` | `data-layout` | `"grid"` | How the panel arranges the items: `"grid"` in columns as wide as the longest item, `"list"` one per row for long texts, `"flow"` one after another like words. See [The panel](/guide/panel.md#layouts). |
 | `panelWidth` | `data-panel-width` | `"full"` | `"full"` makes the panel as wide as the window, 10 pixels from each edge, and narrower when all items fit in one row. `"fixed"` uses the CSS variable `--gs-panel-width`, starting at the field's left edge. |
 | `panelContainer` | `data-panel-container` | none | With `panelWidth: "full"`, keeps the panel inside the nearest ancestor whose `data-gridselect-container` has this name, between its inner edges. Without a matching ancestor the window's width applies. |
+| `sheet` | `data-sheet="off"` | `true` | On phones (touch screens at most 640 pixels wide) the panel opens as a full-screen sheet with the group's name and a close button. `false` keeps the normal panel. See [Phones and tablets](/guide/panel.md#phones-and-tablets). |
+| `closeText` | | `"Close"` | The accessible name of the close button that touch screens show in the panel. |
 | `panelHeight` | `data-panel-height` | `"auto"` | `"auto"` opens the panel where there is more room and lets it grow up to the window's edge, never beyond its content. `"fixed"` always opens below, with the list at most `--gs-list-max-height` high. |
 | `placeholder` | | `"Select…"` | The text in the field while nothing is chosen. |
 | `selectedText` | | `n => n + " selected"` | A function that returns the field text when more than two entries are chosen in a multiple choice. One or two chosen entries show their labels. |

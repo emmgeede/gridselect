@@ -44,10 +44,11 @@ describe("React wrapper", () => {
     expect(gs().hasAttribute("disabled")).toBe(false);
     render(h(GridSelect, { ariaLabel: "Cur", shortcuts: false, items: ["a"] }));
     expect(a("shortcuts")).toBe("off");
-    render(h(GridSelect, { ariaLabel: "Cur", items: ["a"], pinned: ["a", "b"], recent: "k", recentMax: 2, pinnedText: "P", recentText: "R", max: 4, searchDescription: true, panelHeight: "fixed", panelWidth: "fixed", panelContainer: "page" }));
+    render(h(GridSelect, { ariaLabel: "Cur", items: ["a"], pinned: ["a", "b"], recent: "k", recentMax: 2, pinnedText: "P", recentText: "R", max: 4, searchDescription: true, panelHeight: "fixed", panelWidth: "fixed", panelContainer: "page", sheet: false, closeText: "Zu" }));
     expect(a("panel-height")).toBe("fixed");
     expect(a("panel-width")).toBe("fixed");
     expect(a("panel-container")).toBe("page");
+    expect([a("sheet"), a("close-text")]).toEqual(["off", "Zu"]);
     expect(a("max")).toBe("4");
     expect(gs().hasAttribute("search-description")).toBe(true);
     expect([a("pinned"), a("recent"), a("recent-max"), a("pinned-text"), a("recent-text")]).toEqual(["a,b", "k", "2", "P", "R"]);

@@ -12,6 +12,16 @@ new major version.
 
 ## [Unreleased]
 
+### Added
+
+- Touch screens: on phones (touch, at most 640 px wide) the panel opens as
+  a full-screen sheet with the group's name and a close button, and ends
+  above the on-screen keyboard. Tablets keep the normal panel with the close
+  button. The keyboard only comes up when the search input is tapped, and
+  digit badges are hidden on touch-only devices. `sheet: false`
+  (`data-sheet="off"`, `sheet="off"`, React and Vue prop) keeps the normal
+  panel; `closeText` (`close-text`) names the button.
+
 ### Fixed
 
 - Phones: iOS no longer zooms into the page when the panel opens. On touch

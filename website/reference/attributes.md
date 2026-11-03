@@ -16,7 +16,8 @@ These attributes configure the [custom element](/guide/frameworks.md). Most of t
 | `required`, `disabled` | Work as on native form fields. |
 | `threshold`, `layout`, `search`, `match`, `placeholder`, `search-placeholder` | The options of the same name. |
 | `shortcuts` | `off`, or the tiers separated by commas, for example `,Shift,Alt`. |
-| `max`, `search-description`, `panel-height`, `panel-width`, `panel-container` | The options `max`, `searchDescription`, `panelHeight`, `panelWidth` and `panelContainer`. |
+| `max`, `search-description`, `panel-height`, `panel-width`, `panel-container`, `close-text` | The options `max`, `searchDescription`, `panelHeight`, `panelWidth`, `panelContainer` and `closeText`. |
+| `sheet` | `off` keeps the normal panel on phones, like the option `sheet: false`. |
 | `pinned`, `recent`, `recent-max`, `pinned-text`, `recent-text` | Pinned and recent entries; `pinned` is a comma-separated list. |
 | `min-query-length`, `loading-text`, `error-text` | Settings for entries from a server. The function itself is set as the property `el.load`. |
 
@@ -37,6 +38,7 @@ When you use `gridselect()`, you can write most options as `data-` attributes on
 | `data-pinned`, `data-recent`, `data-recent-max` | `pinned`, `recent`, `recentMax` |
 | `data-search-description` | `searchDescription` |
 | `data-panel-width`, `data-panel-height`, `data-panel-container` | `panelWidth`, `panelHeight`, `panelContainer` |
+| `data-sheet="off"` | `sheet: false` |
 
 The container that `data-panel-container` names is marked with `data-gridselect-container="<name>"`. This attribute goes on an element around the wrapper, such as a page column or a `<form>`, not on the wrapper itself; [The panel](/guide/panel.md#limiting-the-panel-to-a-container) explains how it works.
 
@@ -48,7 +50,8 @@ Every element GridSelect builds carries a `data-gridselect-*` attribute and a CS
 |---|---|
 | `data-gridselect` | The wrapper you write around the group. |
 | `data-gridselect-field` | The button above the threshold that shows the choice and opens the panel. |
-| `data-gridselect-panel` | The panel. It carries `data-placement="top"` when it opens upwards. |
+| `data-gridselect-panel` | The panel. It carries `data-placement="top"` when it opens upwards and `data-sheet` when it opens as a full-screen sheet on a phone. |
+| `data-gridselect-head`, `data-gridselect-title`, `data-gridselect-close` | The row above the search on touch screens, the group's name in it (phones only) and the close button. |
 | `data-gridselect-search` | The search input, announced as a combobox. |
 | `data-gridselect-scroller` | The scrolling area of the panel, announced as a listbox. |
 | `data-gridselect-items` | The list of items inside the scrolling area. |

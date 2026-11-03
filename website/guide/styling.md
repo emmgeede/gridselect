@@ -49,7 +49,7 @@ The most important variables are the colours (`--gs-bg`, `--gs-fg`, `--gs-muted`
 
 ## Phones and touch screens
 
-On touch screens the default stylesheet makes the search input's text at least 16 pixels tall. iOS zooms into the page whenever an input with smaller text receives the focus, and because the panel focuses its search input as soon as it opens, a smaller font would zoom the page each time and push the panel beyond the edge of the screen. If you write your own stylesheet or override the font size of `.gridselect__search`, keep it at 16 pixels or more for touch screens, for example inside `@media (pointer: coarse)`.
+On phones the panel opens as a full-screen sheet; [Phones and tablets](/guide/panel.md#phones-and-tablets) explains what changes on touch screens and how to style the sheet through its attribute `data-sheet`. On touch screens the default stylesheet also makes the search input's text at least 16 pixels tall. iOS zooms into the page whenever an input with smaller text receives the focus, and because the panel focuses its search input as soon as it opens, a smaller font would zoom the page each time and push the panel beyond the edge of the screen. If you write your own stylesheet or override the font size of `.gridselect__search`, keep it at 16 pixels or more for touch screens, for example inside `@media (pointer: coarse)`.
 
 ## Light and dark mode
 

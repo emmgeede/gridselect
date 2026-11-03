@@ -12,9 +12,9 @@ import { currencies, countries } from "../.vuepress/data.js";
 
 ## Opening and closing
 
-The field looks like a select box and shows the current choice, or a placeholder ("Select…") when nothing is chosen. The panel opens when someone clicks the field, or presses Enter, Space or the down arrow while the field has the keyboard focus. The focus then moves into the search input, so typing immediately narrows the list.
+The field looks like a select box and shows the current choice, or a placeholder ("Select…") when nothing is chosen. The panel opens when someone clicks the field, or presses Enter, Space or the down arrow while the field has the keyboard focus. The focus then moves into the search input, so typing immediately narrows the list. On touch screens the focus stays in the panel instead, so that the on-screen keyboard does not cover the list; see [Phones and tablets](#phones-and-tablets).
 
-The panel closes when an item is picked (in a single-choice group), when someone presses Escape or Tab, or when they click anywhere outside the field and the panel. Escape and a pick move the focus back to the field; Tab and an outside click let the focus continue to wherever it was going. Closing without a pick never changes the selection.
+The panel closes when an item is picked (in a single-choice group), when someone presses Escape or Tab, when they click anywhere outside the field and the panel, or, on touch screens, when they tap the close button. Escape and a pick move the focus back to the field; Tab and an outside click let the focus continue to wherever it was going. Closing without a pick never changes the selection.
 
 The field shows the label of the chosen item. In a multiple-choice group it shows up to two labels and, from three chosen items on, a count such as "3 selected". You can change that text with the option `selectedText`, for example `selectedText: (n) => n + " ausgewählt"`, and the placeholder with `placeholder`.
 
@@ -100,6 +100,24 @@ If you prefer a predictable panel, set `panelHeight: "fixed"` (attribute `data-p
 | `panelWidth` | `data-panel-width` | `"full"` (default), `"fixed"` |
 | `panelContainer` | `data-panel-container` | the name of an ancestor's `data-gridselect-container`, none by default |
 | `panelHeight` | `data-panel-height` | `"auto"` (default), `"fixed"` |
+| `sheet` | `data-sheet="off"` | `true` (default): a full-screen sheet on phones; `false`: the normal panel |
+| `closeText` | | the accessible name of the close button, `"Close"` by default |
+
+## Phones and tablets
+
+On a touch screen there is no Escape key, and on a phone the panel easily fills the whole screen, so that nothing outside it is left to tap. GridSelect therefore adapts the panel when the device is operated by touch.
+
+On **phones**, meaning touch screens at most 640 pixels wide, the panel opens as a **sheet**: it covers the whole visible screen, much like the list a phone shows for a native select box. At the top it shows the name of the group, so it is clear which field is open, and a large close button (✕). Below follow the search input and the list, which scrolls on its own while the page behind it stays still. When the on-screen keyboard comes up, the sheet shrinks so that it ends above the keyboard. The open sheet carries the attribute `data-sheet`, which you can use in your own CSS.
+
+On **tablets** and other touch screens wider than 640 pixels, the panel keeps its normal position below or above the field, but it also gets the close button.
+
+On every touch screen the keyboard stays down when the panel opens. People see the whole list first and pick by tapping; only when they tap into the search input does the keyboard come up. The digit badges are hidden on devices that are operated by touch alone, because tapping an item already picks it. A tablet with a keyboard and a trackpad still shows them, and the digit shortcuts work there as usual.
+
+If you prefer the normal panel on phones as well, set `sheet: false` (attribute `data-sheet="off"`). The close button is labelled "Close" for screen readers; change that text with the option `closeText`, for example `closeText: "Schließen"`.
+
+<Example :options="{ items: currencies, sheet: false }">
+  <fieldset data-gridselect><legend>Currency (sheet: false, the normal panel on phones too)</legend></fieldset>
+</Example>
 
 ## What GridSelect adds to the page
 

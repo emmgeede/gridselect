@@ -221,6 +221,66 @@
     }
   }
 
+  /* Touch screens: title (phones only) and close button above the search */
+  .gridselect__head {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0 0 0.6rem;
+  }
+
+  .gridselect__title {
+    flex: 1;
+    font-weight: 600;
+  }
+
+  .gridselect__close {
+    margin-inline-start: auto;
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+    border: 1px solid var(--gs-border);
+    border-radius: 0.5rem;
+    background: var(--gs-item-bg);
+    color: var(--gs-fg);
+    font: inherit;
+    font-size: 1.25rem;
+    cursor: pointer;
+  }
+
+  /* Focus sits on the panel itself on touch screens, so the keyboard stays down */
+  .gridselect__panel:focus {
+    outline: none;
+  }
+
+  /* Phones: a full-screen sheet; the script sets top and height to the visible part */
+  .gridselect__panel[data-sheet] {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    width: auto;
+    max-width: none;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    /* a tap picks, it never starts a text selection */
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  .gridselect__panel[data-sheet] > .gridselect__search {
+    -webkit-user-select: text;
+    user-select: text;
+  }
+
+  .gridselect__panel[data-sheet] > .gridselect__scroller {
+    flex: 1;
+    min-height: 0;
+    max-height: none;
+    overscroll-behavior: contain;
+  }
+
   .gridselect__search::placeholder {
     color: var(--gs-muted);
     opacity: 1;
@@ -428,6 +488,13 @@
 
   .gridselect__key:empty {
     display: none;
+  }
+
+  /* Touch only: tapping picks directly, digit badges would only take room */
+  @media (hover: none) and (pointer: coarse) {
+    .gridselect__key {
+      display: none;
+    }
   }
 
   .gridselect__item[aria-selected="true"] > .gridselect__key,
