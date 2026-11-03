@@ -47,6 +47,10 @@ Most adjustments do not need any new rules. The stylesheet reads its colours and
 
 The most important variables are the colours (`--gs-bg`, `--gs-fg`, `--gs-muted`, `--gs-border`, `--gs-accent`), the sizes of items (`--gs-item-min-height`, `--gs-item-padding`, `--gs-item-min-width`, `--gs-gap`) and the panel dimensions (`--gs-panel-width`, `--gs-panel-max-width`, `--gs-list-max-height`). The reference page [CSS variables](/reference/css.md) lists every variable with its default value. If you change colours, check that they still reach the contrast ratios mentioned above.
 
+## Phones and touch screens
+
+On touch screens the default stylesheet makes the search input's text at least 16 pixels tall. iOS zooms into the page whenever an input with smaller text receives the focus, and because the panel focuses its search input as soon as it opens, a smaller font would zoom the page each time and push the panel beyond the edge of the screen. If you write your own stylesheet or override the font size of `.gridselect__search`, keep it at 16 pixels or more for touch screens, for example inside `@media (pointer: coarse)`.
+
 ## Light and dark mode
 
 By default GridSelect follows the operating system's setting through `prefers-color-scheme`. If your site has its own switch, set `data-theme="light"` or `data-theme="dark"` on any ancestor, usually on `<html>`, and GridSelect follows that instead.

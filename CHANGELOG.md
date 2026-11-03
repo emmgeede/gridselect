@@ -12,6 +12,16 @@ new major version.
 
 ## [Unreleased]
 
+### Fixed
+
+- Phones: iOS no longer zooms into the page when the panel opens. On touch
+  screens the search input is at least 16 px, the size below which iOS
+  zooms into a focused input; the zoomed page made the panel wider than the
+  screen.
+- Phones: the panel measures the visible area instead of the whole window,
+  so it ends above the on-screen keyboard and follows it when the keyboard
+  opens or closes.
+
 ### Changed
 
 - Demo: the width section also shows a panel kept within a container

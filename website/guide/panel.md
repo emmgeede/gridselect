@@ -88,7 +88,9 @@ You mark the container with the attribute `data-gridselect-container` and give i
 
 By default (`panelHeight: "auto"`) GridSelect decides each time the panel opens where it should appear. It measures the room between the field and the bottom of the window, and the room between the field and the top. If the whole list fits below the field, the panel opens below. If it does not fit, the panel opens towards the side with more room; when it opens upwards it carries the attribute `data-placement="top"`, which you can use in your own CSS.
 
-The panel then grows up to 8 pixels before the edge of the window, but never taller than its content: a short list gives a short panel, a long list fills the available room and becomes scrollable. If there is less than 10rem of room on both sides, the panel opens below with a list height of 10rem, and the page itself scrolls. While the panel is open, scrolling the page or resizing the window recalculates direction, width and height.
+On phones and tablets the on-screen keyboard covers part of the window while someone types in the search input. GridSelect therefore measures only the part of the page that is actually visible (the browser's *visual viewport*) and measures again when the keyboard opens or closes, so the panel ends above the keyboard instead of disappearing behind it.
+
+The panel then grows up to 8 pixels before the edge of the visible area, but never taller than its content: a short list gives a short panel, a long list fills the available room and becomes scrollable. If there is less than 10rem of room on both sides, the panel opens below with a list height of 10rem, and the page itself scrolls. While the panel is open, scrolling the page or resizing the window recalculates direction, width and height.
 
 If you prefer a predictable panel, set `panelHeight: "fixed"` (attribute `data-panel-height="fixed"`). The panel then always opens below the field, and its list is at most as high as the CSS variable `--gs-list-max-height`, 18rem in the default stylesheet.
 

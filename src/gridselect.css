@@ -214,6 +214,13 @@
     font: inherit;
   }
 
+  /* iOS zooms the page into inputs under 16 px on focus; on touch screens the search is never smaller */
+  @media (pointer: coarse) {
+    .gridselect__search {
+      font-size: max(1em, 16px);
+    }
+  }
+
   .gridselect__search::placeholder {
     color: var(--gs-muted);
     opacity: 1;

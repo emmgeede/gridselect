@@ -1221,6 +1221,8 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
     doc.addEventListener("click", onOutsideClick, true);
     view?.addEventListener("scroll", place, { passive: true });
     view?.addEventListener("resize", place);
+    view?.visualViewport?.addEventListener("resize", place);
+    view?.visualViewport?.addEventListener("scroll", place);
     if (remote && query) setCursor(0);
     if (remote && !silent) remote.opened();
   }
@@ -1278,8 +1280,11 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
     const p = panel.getBoundingClientRect();
     const chrome = p.height - scroller.getBoundingClientRect().height;
     const offset = p.top - f.bottom; // the gap CSS puts between field and panel
-    const below = view.innerHeight - f.bottom - offset - 8;
-    const above = f.top - offset - 8;
+    // The visible part: on phones the on-screen keyboard shrinks it, not innerHeight.
+    const vv = view.visualViewport;
+    const top = vv ? vv.offsetTop : 0;
+    const below = (vv ? top + vv.height : view.innerHeight) - f.bottom - offset - 8;
+    const above = f.top - top - offset - 8;
     const min = 10 * parseFloat(getComputedStyle(doc.documentElement).fontSize);
     const up = p.height > below && above > below && above - chrome >= min;
     const room = Math.max(up ? above : below, min + chrome);
@@ -1296,6 +1301,8 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
     doc.removeEventListener("click", onOutsideClick, true);
     view?.removeEventListener("scroll", place);
     view?.removeEventListener("resize", place);
+    view?.visualViewport?.removeEventListener("resize", place);
+    view?.visualViewport?.removeEventListener("scroll", place);
     if (refocus) field.focus();
   }
 
