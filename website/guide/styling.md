@@ -61,13 +61,14 @@ If you write your own styles, use the attributes that GridSelect sets rather tha
 
 ## Themes
 
-A theme is a second, small stylesheet that you load after `gridselect.css`. It changes colours, sizes and a few details, and it sits in its own cascade layer (`gridselect-<name>`), so your own CSS still wins over it. Four looks are available:
+A theme is a second, small stylesheet that you load after `gridselect.css`. It changes colours, sizes and a few details, and it sits in its own cascade layer (`gridselect-<name>`), so your own CSS still wins over it. Five looks are available:
 
 | Theme | Meant for | How to load it |
 |---|---|---|
 | Default | Strict WCAG 2.2 AA everywhere, with 3:1 borders on every control, in teal. | `gridselect.css` alone |
 | Showcase | A compact, contemporary look in sky blue, with flat rows, check marks and keycap-like badges. | `themes/showcase.css` |
 | High contrast | People with low vision: black and white, 2-pixel borders, 7:1 text contrast (WCAG AAA), underlined matches. | `themes/high-contrast.css` |
+| Tippkraft | Small and quiet, in the warm greys and orange of the tippkraft web app: square-ish items, plain digits, orange only for the cursor and matches. | `themes/tippkraft.css` |
 | Compact | Data-heavy screens: smaller, denser items in the colours of the default stylesheet; items stay at least 24 pixels high. | `themes/compact.css` |
 
 ```js

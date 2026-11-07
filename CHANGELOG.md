@@ -14,6 +14,8 @@ new major version.
 
 ### Added
 
+- Theme `themes/tippkraft.css` (Tippkraft): small items, plain digits, warm
+  greys with orange for the cursor and matches, light and dark.
 - Touch screens: on phones (touch, at most 640 px wide) the panel opens as
   a full-screen sheet with the group's name and a close button, and ends
   above the on-screen keyboard. Tablets keep the normal panel with the close
