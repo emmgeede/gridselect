@@ -1,0 +1,153 @@
+/*
+ * @name Tippkraft
+ * @description Small and quiet, in the warm greys and orange of the tippkraft web app: square-ish items, plain digits, the orange only for the cursor and matches.
+ * @author emmgeede
+ *
+ * Load it after gridselect.css. Items are at least 24 px high (WCAG 2.5.8 target size).
+ */
+@layer gridselect-tippkraft {
+  :root,
+  [data-theme="light"] {
+    --gs-bg: #ffffff;
+    --gs-item-bg: #fafaf9;
+    --gs-fg: #1c1917;
+    --gs-muted: #6b6560;
+    --gs-border: #d6d3d1;
+    --gs-accent: #c03d0c;
+    --gs-accent-fg: #ffffff;
+    --gs-accent-text: #a8360b;
+    --gs-key-bg: transparent;
+    --gs-key-fg: #6b6560;
+    --gs-key-selected-bg: transparent;
+    --gs-cursor-bg: #fff4ed;
+    --gs-search-border: #8f8883;
+    --gs-shadow: 0 10px 25px -5px rgb(28 25 23 / 0.12), 0 4px 6px -4px rgb(28 25 23 / 0.08);
+
+    --gs-radius: 0.375rem;
+    --gs-gap: 0.25rem;
+    --gs-item-min-height: 1.5rem;
+    --gs-item-padding: 0.2rem 0.5rem;
+    --gs-item-min-width: 6rem;
+    --gs-focus-width: 2px;
+    --gs-list-max-height: 16rem;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --gs-bg: #292524;
+      --gs-item-bg: #312d2b;
+      --gs-fg: #f5f5f4;
+      --gs-muted: #a8a29e;
+      --gs-border: #57534e;
+      --gs-accent: #ff7a3d;
+      --gs-accent-fg: #1c1917;
+      --gs-accent-text: #ff9a66;
+      --gs-key-bg: transparent;
+      --gs-key-fg: #a8a29e;
+      --gs-key-selected-bg: transparent;
+      --gs-cursor-bg: #3d2a20;
+      --gs-search-border: #8a837e;
+      --gs-shadow: 0 10px 25px -5px rgb(0 0 0 / 0.5);
+    }
+  }
+
+  [data-theme="dark"] {
+    --gs-bg: #292524;
+    --gs-item-bg: #312d2b;
+    --gs-fg: #f5f5f4;
+    --gs-muted: #a8a29e;
+    --gs-border: #57534e;
+    --gs-accent: #ff7a3d;
+    --gs-accent-fg: #1c1917;
+    --gs-accent-text: #ff9a66;
+    --gs-key-bg: transparent;
+    --gs-key-fg: #a8a29e;
+    --gs-key-selected-bg: transparent;
+    --gs-cursor-bg: #3d2a20;
+    --gs-search-border: #8a837e;
+    --gs-shadow: 0 10px 25px -5px rgb(0 0 0 / 0.5);
+  }
+
+  [data-gridselect] {
+    font-size: 0.875rem;
+    line-height: 1.35;
+  }
+
+  .gridselect__field {
+    min-width: min(12rem, 100%);
+    min-height: 2.25rem;
+    padding: 0.35rem 2rem 0.35rem 0.75rem;
+    border-radius: 0.375rem;
+  }
+
+  .gridselect__field::after {
+    inset-inline-end: 0.8rem;
+    width: 0.35rem;
+    height: 0.35rem;
+    border-width: 0 1.5px 1.5px 0;
+    color: var(--gs-muted);
+  }
+
+  .gridselect__panel {
+    padding: 0.5rem;
+    border-color: var(--gs-border);
+    border-radius: 0.5rem;
+  }
+
+  .gridselect__search {
+    min-height: 2rem;
+    margin-bottom: 0.5rem;
+    padding: 0.25rem 0.6rem;
+    border-color: var(--gs-search-border);
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+  }
+
+  .gridselect__items {
+    gap: 0.25rem;
+  }
+
+  /* Abbreviation and description side by side, one line per item */
+  .gridselect__item {
+    gap: 0.35rem;
+    align-items: baseline;
+    border-color: transparent;
+  }
+
+  .gridselect__item:has([data-gridselect-description]) {
+    align-items: baseline;
+  }
+
+  .gridselect__item:hover {
+    border-color: var(--gs-border);
+  }
+
+  /* Cursor: thin orange line and a tint instead of the default outline with gap */
+  .gridselect__item[data-cursor] {
+    outline-width: 1px;
+    outline-offset: -1px;
+  }
+
+  .gridselect__item[data-cursor]:not([aria-selected="true"]) {
+    background: var(--gs-cursor-bg);
+  }
+
+  [data-gridselect-description] {
+    font-size: 0.75rem;
+  }
+
+  /* Digits as plain small text in front of the item */
+  .gridselect__key {
+    min-width: 1rem;
+    min-height: 0;
+    margin-inline-start: 0;
+    padding: 0;
+    border-radius: 0;
+    font-size: 0.6875rem;
+    font-weight: 500;
+  }
+
+  .gridselect__item[data-cursor]:not([aria-selected="true"]) > .gridselect__key {
+    color: var(--gs-accent-text);
+  }
+}
