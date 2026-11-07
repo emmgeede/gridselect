@@ -61,7 +61,7 @@ If you write your own styles, use the attributes that GridSelect sets rather tha
 
 ## Themes
 
-A theme is a second, small stylesheet that you load after `gridselect.css`. It changes colours, sizes and a few details, and it sits in its own cascade layer (`gridselect-<name>`), so your own CSS still wins over it. Four looks are available:
+A theme is a second, small stylesheet that you load after `gridselect.css`. It changes colours, sizes and a few details, and it sits in its own cascade layer (`gridselect-<name>`), so your own CSS still wins over it. Five looks are available:
 
 | Theme | Meant for | How to load it |
 |---|---|---|
