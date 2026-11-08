@@ -27,7 +27,7 @@ describe("npm package", () => {
     expect(files.map((f) => f.path).sort()).toEqual([
       "CHANGELOG.md", "LICENSE", "README.md", "dist/element.d.ts", "dist/gridselect-element.min.js",
       "dist/gridselect.d.ts", "dist/gridselect.min.js", "dist/react.d.ts", "dist/vue.d.ts", "package.json", "src/element.js", "src/gridselect.css",
-      "src/gridselect.js", "src/react.js", "src/vue.js", "themes/compact.css", "themes/high-contrast.css", "themes/showcase.css",
+      "src/gridselect.js", "src/react.js", "src/vue.js", "themes/compact.css", "themes/high-contrast.css", "themes/showcase.css", "themes/tippkraft.css",
     ]);
   });
 
