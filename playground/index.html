@@ -290,6 +290,20 @@
   </section>
 
   <section>
+    <div class="stamp">Panel · dialog</div>
+    <h2>Inside a scrolling dialog</h2>
+    <p class="note">A modal <code>&lt;dialog&gt;</code> with <code>overflow: auto</code>: the panel measures its room against the dialog, not the window, and Escape closes only the panel.</p>
+    <button type="button" id="open-dialog">Open dialog</button>
+    <dialog id="dialog" style="width:28rem;max-height:32rem;overflow:auto">
+      <p style="height:20rem">A form that scrolls inside the dialog.</p>
+      <fieldset data-gridselect id="in-dialog">
+        <legend>Currency</legend>
+      </fieldset>
+      <p style="height:2rem"></p>
+    </dialog>
+  </section>
+
+  <section>
     <div class="stamp">Layout · list</div>
     <h2>List layout with long labels</h2>
     <p class="note"><code>data-layout="list"</code>: one column, left/right arrows stay in the search input.</p>
@@ -477,6 +491,7 @@
   fill("fuzzy", currencies);
   fill("flow", currencies);
   fill("contained", currencies);
+  fill("in-dialog", currencies);
   fill("list", modules);
   fill("required", countries, { required: true, disabled: [2] });
   fill("checks-long", currencies.slice(0, 24), { type: "checkbox" });
@@ -484,7 +499,7 @@
   fill("limited", ["Cheese", "Olives", "Mushrooms", "Peppers", "Onions"], { type: "checkbox" });
   fill("limited-long", currencies.slice(0, 20), { type: "checkbox" });
 
-  for (const id of ["short", "checks", "filter", "highlight", "fuzzy", "flow", "contained", "checks-long", "list", "required", "pinned", "limited", "limited-long", "select-short", "select-long", "select-multi"]) {
+  for (const id of ["short", "checks", "filter", "highlight", "fuzzy", "flow", "contained", "in-dialog", "checks-long", "list", "required", "pinned", "limited", "limited-long", "select-short", "select-long", "select-multi"]) {
     init(id);
     const wrapper = document.getElementById(id);
     for (const type of ["input", "change"]) {
@@ -493,6 +508,8 @@
       });
     }
   }
+
+  document.getElementById("open-dialog").addEventListener("click", () => document.getElementById("dialog").showModal());
 
   // Groups (F14)
   const label = (code) => currencies.find((c) => c.endsWith(`(${code})`));

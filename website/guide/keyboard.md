@@ -29,7 +29,7 @@ Above the threshold the group consists of the field and the panel. While the fie
 | Up and down arrows | Move the cursor one row up or down. In the grid, rows are the visible rows of the grid; in the list layout one item; in the flow layout the nearest item in the row above or below. The cursor stops at the first and last row. |
 | Enter | Picks the item under the cursor and closes the panel. In a multiple-choice group it ticks or unticks the item, and the panel stays open. |
 | A digit, or a modifier and a digit | Picks the item with that badge, see below. |
-| Escape | Closes the panel without changing anything and puts the focus back on the field. |
+| Escape | Closes the panel without changing anything and puts the focus back on the field. The key goes no further, so a surrounding dialog stays open; the next Escape, with the panel closed, reaches the dialog as usual. |
 | Tab or Shift+Tab | Closes the panel without changing anything; the focus moves on as usual. |
 
 The arrow keys follow what people see: in the grid, "down" means the item directly below, however many columns the window allows. Group headings and the pinned and recent groups are skipped; the cursor only lands on items.

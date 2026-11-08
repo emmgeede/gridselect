@@ -33,9 +33,18 @@ new major version.
 - Phones: the panel measures the visible area instead of the whole window,
   so it ends above the on-screen keyboard and follows it when the keyboard
   opens or closes.
+- Escape that closes the panel stops there and no longer closes a
+  surrounding `<dialog>` as well; with the panel closed it bubbles as usual
+  ([#3](https://github.com/emmgeede/gridselect/issues/3)).
+- Inside a container that scrolls or clips (such as a modal `<dialog>` with
+  `overflow: auto`) the panel measures its room against that container, not
+  only the window, so it is no longer cut off. Moving the cursor scrolls
+  only the list, never the page or a dialog around it
+  ([#2](https://github.com/emmgeede/gridselect/issues/2)).
 
 ### Changed
 
+- Playground: a section with a GridSelect inside a scrolling modal dialog.
 - Demo: the width section also shows a panel kept within a container
   (`data-panel-container`), and its code comments sit on their own line.
 

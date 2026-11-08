@@ -90,6 +90,8 @@ By default (`panelHeight: "auto"`) GridSelect decides each time the panel opens 
 
 On phones and tablets the on-screen keyboard covers part of the window while someone types in the search input. GridSelect therefore measures only the part of the page that is actually visible (the browser's *visual viewport*) and measures again when the keyboard opens or closes, so the panel ends above the keyboard instead of disappearing behind it.
 
+The same applies when the field sits inside a container that scrolls or cuts off its content, for example a modal `<dialog>` with a long form and `overflow: auto`. A container like that would cut off any part of the panel that sticks out of it. GridSelect therefore treats the edges of every such ancestor like the edges of the window: the panel opens towards the side with more room inside the dialog, grows only up to the dialog's edge and is never wider than the dialog. Moving through the list with the arrow keys scrolls only the list, never the dialog or the page around it.
+
 The panel then grows up to 8 pixels before the edge of the visible area, but never taller than its content: a short list gives a short panel, a long list fills the available room and becomes scrollable. If there is less than 10rem of room on both sides, the panel opens below with a list height of 10rem, and the page itself scrolls. While the panel is open, scrolling the page or resizing the window recalculates direction, width and height.
 
 If you prefer a predictable panel, set `panelHeight: "fixed"` (attribute `data-panel-height="fixed"`). The panel then always opens below the field, and its list is at most as high as the CSS variable `--gs-list-max-height`, 18rem in the default stylesheet.

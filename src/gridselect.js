@@ -1117,7 +1117,11 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
     const item = (marked = items[order[cursor]]);
     item.setAttribute("data-cursor", "");
     search.setAttribute("aria-activedescendant", item.id);
-    item.scrollIntoView?.({ block: "nearest" });
+    // Scrolls only the list; scrollIntoView would also scroll the page or a dialog around it.
+    const s = scroller.getBoundingClientRect();
+    const r = item.getBoundingClientRect();
+    const pad = s.top + (parseFloat(getComputedStyle(scroller).scrollPaddingTop) || 0);
+    scroller.scrollTop += Math.min(0, r.top - pad) || Math.max(0, r.bottom - s.bottom);
   }
 
   /** Cursor on the selected entry (on top or in the list), else on the first one. */
@@ -1240,10 +1244,7 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
     // On touch screens the keyboard only comes up when someone taps the search.
     (touch ? panel : search).focus();
     doc.addEventListener("click", onOutsideClick, true);
-    view?.addEventListener("scroll", place, { passive: true });
-    view?.addEventListener("resize", place);
-    view?.visualViewport?.addEventListener("resize", place);
-    view?.visualViewport?.addEventListener("scroll", place);
+    watch("addEventListener");
     if (remote && query) setCursor(0);
     if (remote && !silent) remote.opened();
   }
@@ -1255,6 +1256,8 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
   }
 
   const view = doc.defaultView;
+  /** Re-places the panel on scrolling and resizing (window and visual viewport) while it is open. @param {"addEventListener" | "removeEventListener"} m */
+  const watch = (m) => [view, view?.visualViewport].forEach((t) => ["scroll", "resize"].forEach((e) => t?.[m](e, place)));
   /**
    * "auto": below when everything fits there, else towards the larger room; the list grows up to
    * 8 px before the window edge, never beyond its content, at least 10rem. "fixed": CSS decides.
@@ -1268,20 +1271,31 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
     if (panel.hasAttribute("data-sheet")) return void (vv && Object.assign(panel.style, { top: `${vv.offsetTop}px`, height: `${vv.height}px` }));
     const f = field.getBoundingClientRect();
     if (!view || !f.height) return;
-    if ((opts.panelWidth ?? wrapper.getAttribute("data-panel-width")) !== "fixed") {
-      let lo = 10;
-      let hi = doc.documentElement.clientWidth - 10;
-      // The named container's content box narrows the room (compared by value, never a selector).
-      const name = opts.panelContainer ?? wrapper.getAttribute("data-panel-container");
-      let c = name == null ? null : wrapper;
-      while (c && c.getAttribute("data-gridselect-container") !== name) c = c.parentElement;
-      if (c) {
-        const r = c.getBoundingClientRect();
-        const s = getComputedStyle(c);
-        const left = r.left + c.clientLeft + parseFloat(s.paddingLeft);
-        lo = Math.max(lo, left);
-        hi = Math.min(hi, left + c.clientWidth - parseFloat(s.paddingLeft) - parseFloat(s.paddingRight));
+    // The visible part (on phones the on-screen keyboard shrinks it), cut by every ancestor that
+    // clips or scrolls (a dialog with overflow: auto). The named container's content box narrows
+    // the width only (compared by value, never a selector).
+    let lo = 10;
+    let hi = doc.documentElement.clientWidth - 10;
+    let top = vv ? vv.offsetTop : 0;
+    let bottom = vv ? top + vv.height : view.innerHeight;
+    let name = opts.panelContainer ?? wrapper.getAttribute("data-panel-container");
+    for (let /** @type {Element | null} */ a = wrapper; a && a !== doc.body; a = a.parentElement) {
+      const s = getComputedStyle(a);
+      const own = name != null && a.getAttribute("data-gridselect-container") === name;
+      const clips = s.overflow !== "visible";
+      if (!own && !clips) continue;
+      if (own) name = null; // only the nearest one
+      const r = a.getBoundingClientRect();
+      const pad = own ? parseFloat(s.paddingLeft) : 0;
+      const left = r.left + a.clientLeft + pad;
+      lo = Math.max(lo, left);
+      hi = Math.min(hi, left + a.clientWidth - pad - (own ? parseFloat(s.paddingRight) : 0));
+      if (clips) {
+        top = Math.max(top, r.top + a.clientTop);
+        bottom = Math.min(bottom, r.top + a.clientTop + a.clientHeight);
       }
+    }
+    if ((opts.panelWidth ?? wrapper.getAttribute("data-panel-width")) !== "fixed") {
       const box = /** @type {HTMLElement} */ (panel.offsetParent ?? doc.body);
       const origin = box.getBoundingClientRect().left + box.clientLeft;
       /** Width as a CSS value; left edge under the field, kept within lo..hi. @param {string} width */
@@ -1304,9 +1318,7 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
     const p = panel.getBoundingClientRect();
     const chrome = p.height - scroller.getBoundingClientRect().height;
     const offset = p.top - f.bottom; // the gap CSS puts between field and panel
-    // The visible part: on phones the on-screen keyboard shrinks it, not innerHeight.
-    const top = vv ? vv.offsetTop : 0;
-    const below = (vv ? top + vv.height : view.innerHeight) - f.bottom - offset - 8;
+    const below = bottom - f.bottom - offset - 8;
     const above = f.top - top - offset - 8;
     const min = 10 * parseFloat(getComputedStyle(doc.documentElement).fontSize);
     const up = p.height > below && above > below && above - chrome >= min;
@@ -1322,10 +1334,7 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
     field.setAttribute("aria-expanded", "false");
     search.setAttribute("aria-expanded", "false");
     doc.removeEventListener("click", onOutsideClick, true);
-    view?.removeEventListener("scroll", place);
-    view?.removeEventListener("resize", place);
-    view?.visualViewport?.removeEventListener("resize", place);
-    view?.visualViewport?.removeEventListener("scroll", place);
+    watch("removeEventListener");
     if (refocus) field.focus();
   }
 
@@ -1428,7 +1437,9 @@ function createPanel(wrapper, radios, opts, tiers, fallbackLabel, beforeOpen, mu
       e.preventDefault();
       pick(order[cursor]);
     } else if (e.key === "Escape") {
+      // Handled completely: a surrounding dialog must not close as well.
       e.preventDefault();
+      e.stopPropagation();
       close();
     } else if (e.key === "Tab") {
       close(false);
