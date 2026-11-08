@@ -22,9 +22,9 @@ describe("theme list", () => {
     expect(JSON.parse(readFileSync(join(dir, "index.json"), "utf8")).map((t) => t.file)).toEqual(["alpha.css", "bare.css", "zeta.css"]);
   });
 
-  it("ships at least showcase, high-contrast and compact, each with a full header", () => {
+  it("ships at least showcase, high-contrast, compact and tippkraft, each with a full header", () => {
     const list = themeList("themes");
-    for (const file of ["compact.css", "high-contrast.css", "showcase.css"]) {
+    for (const file of ["compact.css", "high-contrast.css", "showcase.css", "tippkraft.css"]) {
       const t = list.find((x) => x.file === file);
       expect(t, file).toBeTruthy();
       expect(t.name && t.description && t.author, file).toBeTruthy();

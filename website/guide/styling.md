@@ -109,6 +109,16 @@ import "@emmgeede/gridselect/themes/showcase.css";
 <br><sub><b>Compact</b></sub>
 </td>
 </tr>
+<tr>
+<td width="50%">
+<a href="https://gridselect.im/demo/"><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/theme-tippkraft-dark.png?v=1">
+  <img src="https://raw.githubusercontent.com/emmgeede/gridselect/main/assets/theme-tippkraft-light.png?v=1" width="100%" alt="The same panel with the tippkraft theme: warm greys, small square-ish items, an orange cursor ring and plain digits.">
+</picture></a>
+<br><sub><b>Tippkraft</b></sub>
+</td>
+<td width="50%"></td>
+</tr>
 </table>
 
 

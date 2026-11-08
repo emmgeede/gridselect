@@ -12,6 +12,11 @@ new major version.
 
 ## [Unreleased]
 
+### Changed
+
+- Docs: the theme gallery in the styling guide shows the Tippkraft theme in
+  light and dark mode, and the README's features table lists it.
+
 ## [1.2.0] - 2026-11-08
 
 ### Added

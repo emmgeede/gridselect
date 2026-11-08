@@ -201,7 +201,7 @@ The full documentation, with a live example on every page, is at
 | Panel in the full window width | available |
 | `<grid-select>` as a form control (validity, reset, `FormData`) | available |
 | Entries from a server (`load`) | available |
-| Themes: showcase, high contrast, compact, open for contributions | available |
+| Themes: showcase, high contrast, compact, tippkraft, open for contributions | available |
 | React and Vue wrappers | available |
 
 ## Browser support
